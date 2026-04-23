@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>İstatistik</title>
 
-  <style>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=iSxblN7n0gPbLvX81zRvOLjXk9LqNoVc7tOtbyxNojh7ziEZPEmzJ61WAW3plCHfwR82AigJZWiW_KA7A2KTz4dieQ0KGfB2cPfMTP7-ACx3ntDTEBFTCm1iTFsA1swBQzeBMF9hwx5qFfo9UshqHG8Qy_YtAzX6k-sFY-UEAsWLR17Pt1T8vMB38KUoY-oE2e5-8Ma5sSdv_KBpB1z5dEIv5jTJP5giUgXMd2mMYDH9sGSjfEY0lBoqtOB5VET6B_V-Q0DIgH3q-BAIZ_qUKA" charset="UTF-8"></script><style>
     * {
       box-sizing: border-box;
     }
@@ -673,6 +673,12 @@
       background: #c62828;
     }
 
+    .calendar-btn {
+      margin-top: 12px;
+      margin-bottom: 0;
+      background: #111;
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 8px;
@@ -779,9 +785,10 @@
       <div id="kodKutusu" class="kod-kutusu">
         <strong>Silme Kodunuz</strong>
         <div id="silmeKoduYazi" class="kod-deger"></div>
-        <div class="note" style="margin:8px 0 0 0;">
+        <div class="note" id="takvimNotu" style="margin:8px 0 0 0;">
           Bu kodu kaydedin. Randevu iptali için telefon numaranızla birlikte gerekli olacaktır.
         </div>
+        <button id="btnTakvimeEkle" class="calendar-btn" type="button" style="display:none;">Takvime Ekle</button>
       </div>
 
       <h2>Randevular</h2>
@@ -877,6 +884,8 @@
 
     const kodKutusu = document.getElementById("kodKutusu");
     const silmeKoduYazi = document.getElementById("silmeKoduYazi");
+    const takvimNotu = document.getElementById("takvimNotu");
+    const btnTakvimeEkle = document.getElementById("btnTakvimeEkle");
 
     const cancelPhoneInput = document.getElementById("cancelPhone");
     const cancelCodeInput = document.getElementById("cancelCode");
@@ -1473,6 +1482,119 @@
       });
     }
 
+
+    function ikiHane(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function formatDateTimeForICS(dateObj) {
+      return (
+        dateObj.getFullYear() +
+        ikiHane(dateObj.getMonth() + 1) +
+        ikiHane(dateObj.getDate()) + "T" +
+        ikiHane(dateObj.getHours()) +
+        ikiHane(dateObj.getMinutes()) +
+        ikiHane(dateObj.getSeconds())
+      );
+    }
+
+    function formatTarihSaatGosterim(tarih, saat) {
+      const tarihObj = parseAppointmentDateTime(tarih, saat);
+      if (!tarihObj) return tarih + " " + saat;
+
+      return (
+        ikiHane(tarihObj.getDate()) + "/" +
+        ikiHane(tarihObj.getMonth() + 1) + "/" +
+        tarihObj.getFullYear() + " " +
+        ikiHane(tarihObj.getHours()) + ":" +
+        ikiHane(tarihObj.getMinutes())
+      );
+    }
+
+    function icsMetniKacir(metin) {
+      return String(metin || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/\r\n/g, "\n")
+        .replace(/\n/g, "\\n")
+        .replace(/,/g, "\\,")
+        .replace(/;/g, "\\;");
+    }
+
+    function takvimIcsIcerigiOlustur(data) {
+      const baslangic = parseAppointmentDateTime(data.date, data.time);
+      if (!baslangic) return "";
+
+      const bitis = new Date(baslangic.getTime() + 45 * 60 * 1000);
+      const olusturma = new Date();
+
+      const aciklama =
+        "İsim: " + data.name + "\n" +
+        "Telefon: " + data.phone + "\n" +
+        "Hizmet: " + data.service + "\n" +
+        "Tarih: " + formatTarihSaatGosterim(data.date, data.time) + "\n" +
+        "Silme Kodu: " + data.silmeKodu + "\n\n" +
+        "Bu kodu kaydedin. Randevu iptali için telefon numaranızla birlikte gereklidir.";
+
+      const uid = "randevu-" + Date.now() + "-" + Math.random().toString(36).slice(2) + "@kantin10.com.tr";
+
+      return [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        "UID:" + uid,
+        "DTSTAMP:" + formatDateTimeForICS(olusturma),
+        "DTSTART:" + formatDateTimeForICS(baslangic),
+        "DTEND:" + formatDateTimeForICS(bitis),
+        "SUMMARY:" + icsMetniKacir("Berber Randevusu"),
+        "DESCRIPTION:" + icsMetniKacir(aciklama),
+        "BEGIN:VALARM",
+        "TRIGGER:-P1D",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:" + icsMetniKacir("Berber Randevusu - 1 gün kaldı"),
+        "END:VALARM",
+        "BEGIN:VALARM",
+        "TRIGGER:-PT1H",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:" + icsMetniKacir("Berber Randevusu - 1 saat kaldı"),
+        "END:VALARM",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+    }
+
+    function takvimeEkleButonunuHazirla(data) {
+      if (!btnTakvimeEkle) return;
+
+      const icsIcerik = takvimIcsIcerigiOlustur(data);
+      if (!icsIcerik) {
+        btnTakvimeEkle.style.display = "none";
+        return;
+      }
+
+      btnTakvimeEkle.style.display = "block";
+      btnTakvimeEkle.onclick = function () {
+        try {
+          const blob = new Blob([icsIcerik], { type: "text/calendar;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "berber-randevu-" + data.date + "-" + data.time.replace(":", "-") + ".ics";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          setTimeout(function () {
+            URL.revokeObjectURL(url);
+          }, 1000);
+        } catch (error) {
+          console.error("Takvim dosyası oluşturma hatası:", error);
+          alert("Takvim dosyası oluşturulurken bir hata oluştu.");
+        }
+      };
+    }
+
     btnRandevu.addEventListener("click", async function () {
       const name = nameInput.value.trim();
       const phone = telefonuDuzenle(phoneInput.value);
@@ -1590,7 +1712,16 @@
         );
 
         silmeKoduYazi.textContent = silmeKodu;
+        takvimNotu.textContent = "Bu kodu kaydedin. Randevu iptali için telefon numaranızla birlikte gerekli olacaktır. Silme kodunuz: " + silmeKodu;
         kodKutusu.style.display = "block";
+        takvimeEkleButonunuHazirla({
+          name: name,
+          phone: phone,
+          service: service,
+          date: date,
+          time: time,
+          silmeKodu: silmeKodu
+        });
 
         nameInput.value = "";
         phoneInput.value = "";
