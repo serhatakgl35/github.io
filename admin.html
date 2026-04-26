@@ -8,6 +8,13 @@
   <style>
     * { box-sizing: border-box; }
 
+    html {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
       margin: 0;
       background: #f5f5f7;
@@ -116,7 +123,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px;
+      min-width: 720px;
       background: white;
       border-radius: 16px;
       overflow: hidden;
@@ -170,8 +177,20 @@
       .wrap { padding: 12px; }
       .grid, .closed-list { grid-template-columns: 1fr; }
       h1 { font-size: 24px; }
-      .topbar { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
-      .topbar a, .topbar button { white-space: nowrap; }
+      .topbar {
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding: 12px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .topbar a, .topbar button {
+        white-space: nowrap;
+        flex: 0 0 auto;
+        padding: 12px 16px;
+      }
+      table { min-width: 640px; }
+      th, td { padding: 10px; font-size: 13px; }
     }
   </style>
 </head>
@@ -374,12 +393,17 @@
         snap.forEach(d => {
           const data = d.data();
 
-          const tarih = normalizeDate(getField(data, ["tarih", "date"]));
-          const saat = normalizeTime(getField(data, ["saat", "zaman", "time"]));
-          const isim = getField(data, ["isim", "name"], "-");
-          const telefon = getField(data, ["telefon", "phone"], "-");
-          const hizmet = getField(data, ["hizmet", "service"], "-");
-          const silmeKodu = getField(data, ["silmeKodu", "silme_kodu", "deleteCode", "iptalKodu"], "-");
+          const tarih = normalizeDate(getField(data, ["tarih", "date", "randevuTarihi", "randevu_tarihi"]));
+          const saat = normalizeTime(getField(data, ["saat", "zaman", "time", "randevuSaati", "randevu_saati"]));
+
+          // Boş/eksik sistem kayıtlarını gizle.
+          // Örnek: sadece telegramHatirlatma10Gonderildi alanı olan kayıtlar tabloda görünmez.
+          if (!tarih || !saat) return;
+
+          const isim = getField(data, ["isim", "name", "ad", "adSoyad", "ad_soyad", "musteriAdi", "musteri_adi"], "-");
+          const telefon = getField(data, ["telefon", "phone", "tel", "gsm", "numara"], "-");
+          const hizmet = getField(data, ["hizmet", "service", "islem", "işlem"], "-");
+          const silmeKodu = getField(data, ["silmeKodu", "silme_kodu", "deleteCode", "iptalKodu", "iptal_kodu", "kod"], "-");
 
           list.push({
             id: d.id,
@@ -395,7 +419,7 @@
         list.sort((a, b) => `${a.tarih} ${a.saat}`.localeCompare(`${b.tarih} ${b.saat}`));
 
         if (list.length === 0) {
-          appointmentsBody.innerHTML = `<tr><td colspan="7">Aktif randevu yok.</td></tr>`;
+          appointmentsBody.innerHTML = `<tr><td colspan="7">Aktif randevu yok veya eksik/boş kayıtlar gizlendi.</td></tr>`;
           return;
         }
 
@@ -415,9 +439,13 @@
 
           tr.querySelector("button").addEventListener("click", async () => {
             if (!confirm(`${r.tarih} ${r.saat} randevusu silinsin mi?`)) return;
-            await deleteDoc(doc(db, "randevular", r.id));
-            showStatus("Randevu silindi.");
-            loadAppointments();
+            try {
+              await deleteDoc(doc(db, "randevular", r.id));
+              showStatus("Randevu silindi.");
+              loadAppointments();
+            } catch (err) {
+              showStatus("Silme hatası: " + err.message, true);
+            }
           });
 
           appointmentsBody.appendChild(tr);
