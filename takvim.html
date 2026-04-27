@@ -386,7 +386,7 @@
       </div>
 
       <div class="alt-bilgi">
-        Panel 60 saniyede bir yenilenir. Saati geçen hücreler geçmiş olarak gri görünür.
+        Panel 3 dakikada bir yenilenir. Saati geçen hücreler geçmiş olarak gri görünür.
       </div>
     </div>
   </div>
@@ -399,8 +399,7 @@
       getDocs,
       query,
       where,
-      doc,
-      getDoc
+      documentId
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -562,86 +561,107 @@
       return haftaSonuMu(tarih) || resmiTatilMi2026(tarih);
     }
 
-    async function gunKapaliMi(tarih) {
-      if (!tarih) return false;
-
-      if (otomatikKapaliGunMu(tarih)) {
-        return true;
-      }
-
-      try {
-        const gunRef = doc(db, KAPALI_GUNLER_KOLEKSIYON, tarih);
-        const gunSnap = await getDoc(gunRef);
-        return gunSnap.exists();
-      } catch (error) {
-        console.error("Kapalı gün kontrol hatası:", error);
-        return false;
-      }
-    }
-
-    async function kapaliSaatleriGetir(tarih) {
-      if (!tarih) return [];
-
-      try {
-        const q = query(
-          collection(db, KAPALI_SAATLER_KOLEKSIYON),
-          where("tarih", "==", tarih)
-        );
-
-        const snap = await getDocs(q);
-        const kapaliSaatler = [];
-
-        snap.forEach(function(docItem) {
-          const data = docItem.data();
-          if (data && data.saat) {
-            kapaliSaatler.push(data.saat);
-          }
-        });
-
-        return kapaliSaatler;
-      } catch (error) {
-        console.error("Kapalı saatler alınamadı:", error);
-        return [];
-      }
-    }
-
     async function haftalikVerileriHazirla(gunler) {
       const ilkGun = tarihKeyYap(gunler[0]);
       const sonGun = tarihKeyYap(gunler[4]);
 
-      const randevuSnap = await getDocs(collection(db, KOLEKSIYON));
       const randevuMap = {};
       const gunKapaliMap = {};
       const kapaliSaatMap = {};
       const simdi = new Date();
 
-      for (const gun of gunler) {
+      gunler.forEach(function(gun) {
         const tarih = tarihKeyYap(gun);
-        gunKapaliMap[tarih] = await gunKapaliMi(tarih);
-        kapaliSaatMap[tarih] = await kapaliSaatleriGetir(tarih);
+        gunKapaliMap[tarih] = otomatikKapaliGunMu(tarih);
+        kapaliSaatMap[tarih] = [];
+      });
+
+      try {
+        const kapaliGunQ = query(
+          collection(db, KAPALI_GUNLER_KOLEKSIYON),
+          where(documentId(), ">=", ilkGun),
+          where(documentId(), "<=", sonGun)
+        );
+
+        const kapaliGunSnap = await getDocs(kapaliGunQ);
+        kapaliGunSnap.forEach(function(docItem) {
+          gunKapaliMap[docItem.id] = true;
+        });
+      } catch (error) {
+        console.error("Kapalı günler alınamadı:", error);
       }
 
-      randevuSnap.forEach(function(docItem) {
-        const data = docItem.data();
+      try {
+        const kapaliSaatQ = query(
+          collection(db, KAPALI_SAATLER_KOLEKSIYON),
+          where("tarih", ">=", ilkGun),
+          where("tarih", "<=", sonGun)
+        );
 
-        const tarih = kayitTarih(data);
-        const saat = kayitSaat(data);
-        const isim = kayitAd(data) || "-";
-        const telefon = kayitTelefon(data) || "-";
-        const hizmet = kayitHizmet(data) || "-";
-        const gecmisMi = randevuGecmisMi(data, simdi);
+        const kapaliSaatSnap = await getDocs(kapaliSaatQ);
+        kapaliSaatSnap.forEach(function(docItem) {
+          const data = docItem.data();
+          const tarih = data.tarih || data.date || "";
+          const saat = data.saat || data.time || data.zaman || "";
 
-        if (!tarih || !saat) return;
-        if (tarih < ilkGun || tarih > sonGun) return;
+          if (!tarih || !saat) return;
+          if (!kapaliSaatMap[tarih]) kapaliSaatMap[tarih] = [];
+          kapaliSaatMap[tarih].push(saat);
+        });
+      } catch (error) {
+        console.error("Kapalı saatler alınamadı:", error);
+      }
 
-        const key = tarih + "_" + saat;
-        randevuMap[key] = {
-          isim,
-          telefon,
-          hizmet,
-          gecmis: gecmisMi
-        };
-      });
+      async function randevuSorgula(tarihAlani) {
+        try {
+          const q = query(
+            collection(db, KOLEKSIYON),
+            where(tarihAlani, ">=", ilkGun),
+            where(tarihAlani, "<=", sonGun)
+          );
+
+          return await getDocs(q);
+        } catch (error) {
+          console.error(tarihAlani + " alanı ile randevu alınamadı:", error);
+          return null;
+        }
+      }
+
+      const randevuSnapTarih = await randevuSorgula("tarih");
+      const randevuSnapDate = await randevuSorgula("date");
+      const gorulenDoclar = new Set();
+
+      function randevuSnapIsle(snap) {
+        if (!snap) return;
+
+        snap.forEach(function(docItem) {
+          if (gorulenDoclar.has(docItem.id)) return;
+          gorulenDoclar.add(docItem.id);
+
+          const data = docItem.data();
+
+          const tarih = kayitTarih(data);
+          const saat = kayitSaat(data);
+          const isim = kayitAd(data) || "-";
+          const telefon = kayitTelefon(data) || "-";
+          const hizmet = kayitHizmet(data) || "-";
+          const gecmisMi = randevuGecmisMi(data, simdi);
+
+          if (!tarih || !saat) return;
+          if (tarih < ilkGun || tarih > sonGun) return;
+
+          const key = tarih + "_" + saat;
+          randevuMap[key] = {
+            isim,
+            telefon,
+            hizmet,
+            gecmis: gecmisMi
+          };
+        });
+      }
+
+      randevuSnapIsle(randevuSnapTarih);
+      randevuSnapIsle(randevuSnapDate);
 
       return {
         randevuMap,
@@ -769,7 +789,7 @@
 
       setInterval(async function() {
         await paneliCiz();
-      }, 60000);
+      }, 180000);
     }
 
     sistemBaslat();
