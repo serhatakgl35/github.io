@@ -304,39 +304,40 @@
     .calendar-btn { margin-top: 12px; margin-bottom: 0; background: #111; }
 
 
-
     /* DUYURU PANOSU - sadece aktif duyuru varsa görünür */
-    .duyuru-panel {
+    .duyuru-paneli {
+      display: none;
       width: 100%;
       max-width: 100%;
-      margin: 10px auto 0 auto;
-      padding: 0 10px;
+      margin: 0 0 10px 0;
       overflow-x: hidden;
     }
 
-    .duyuru-card {
+    .duyuru-kart {
       width: 100%;
       max-width: 100%;
-      background: #fff7d6;
-      border: 1px solid #f1d36b;
-      border-left: 5px solid #d6a900;
-      color: #2b2200;
+      background: #fff8e1;
+      border: 1px solid #f0d27a;
+      border-left: 5px solid #d6a600;
       border-radius: 14px;
       padding: 12px 14px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
       overflow-wrap: anywhere;
       word-break: break-word;
     }
 
-    .duyuru-card strong {
-      display: block;
+    .duyuru-baslik {
       font-size: 15px;
-      margin-bottom: 4px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #111;
+      line-height: 1.35;
     }
 
-    .duyuru-card div {
+    .duyuru-mesaj {
       font-size: 14px;
+      color: #333;
       line-height: 1.45;
       white-space: pre-wrap;
     }
@@ -367,9 +368,8 @@
     <a href="istatistik.html">İstatistik</a>
   </nav>
 
-  <div id="duyuruPanel" class="duyuru-panel" style="display:none;"></div>
-
   <div class="page">
+    <div id="duyuruPaneli" class="duyuru-paneli"></div>
     <div class="box">
       <h1>💈 Randevu Al</h1>
 
@@ -473,7 +473,8 @@
       query,
       where,
       getDoc,
-      setDoc
+      setDoc,
+      onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -487,6 +488,57 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+
+    const DUYURULAR_KOLEKSIYON = "duyurular";
+    const duyuruPaneli = document.getElementById("duyuruPaneli");
+
+    function duyurulariBaslat() {
+      if (!duyuruPaneli) return;
+
+      try {
+        const duyuruSorgu = query(
+          collection(db, DUYURULAR_KOLEKSIYON),
+          where("aktif", "==", true)
+        );
+
+        onSnapshot(duyuruSorgu, function (snap) {
+          const duyurular = [];
+
+          snap.forEach(function (docItem) {
+            const data = docItem.data() || {};
+            const baslik = temizMetin(data.baslik || "");
+            const mesaj = temizMetin(data.mesaj || "");
+
+            if (!baslik && !mesaj) return;
+
+            duyurular.push(`
+              <div class="duyuru-kart">
+                ${baslik ? `<div class="duyuru-baslik">📢 ${kacisHtml(baslik)}</div>` : ""}
+                ${mesaj ? `<div class="duyuru-mesaj">${kacisHtml(mesaj)}</div>` : ""}
+              </div>
+            `);
+          });
+
+          if (!duyurular.length) {
+            duyuruPaneli.style.display = "none";
+            duyuruPaneli.innerHTML = "";
+            return;
+          }
+
+          duyuruPaneli.innerHTML = duyurular.join("");
+          duyuruPaneli.style.display = "block";
+        }, function (error) {
+          console.error("Duyurular alınamadı:", error);
+          duyuruPaneli.style.display = "none";
+          duyuruPaneli.innerHTML = "";
+        });
+      } catch (error) {
+        console.error("Duyuru sistemi başlatılamadı:", error);
+        duyuruPaneli.style.display = "none";
+        duyuruPaneli.innerHTML = "";
+      }
+    }
 
     const TELEGRAM_BOT_TOKEN = "8635739693:AAFYGCIgGW7WTwvMIhh5Yvy_wXttPR2kC28";
     const TELEGRAM_CHAT_ID = "-1003670319520";
@@ -739,49 +791,6 @@
         .replace(/>/g, "&gt;")
         .replace(/\"/g, "&quot;")
         .replace(/'/g, "&#039;");
-    }
-
-
-
-    async function duyurulariYukle() {
-      const panel = document.getElementById("duyuruPanel");
-      if (!panel) return;
-
-      try {
-        const snap = await getDocs(collection(db, "duyurular"));
-        const duyurular = [];
-
-        snap.forEach(docItem => {
-          const data = docItem.data() || {};
-          if (data.aktif === true) {
-            duyurular.push({ id: docItem.id, ...data });
-          }
-        });
-
-        duyurular.sort((a, b) => {
-          const aa = a.createdAt?.toMillis ? a.createdAt.toMillis() : Date.parse(a.createdAt || "") || 0;
-          const bb = b.createdAt?.toMillis ? b.createdAt.toMillis() : Date.parse(b.createdAt || "") || 0;
-          return bb - aa;
-        });
-
-        if (!duyurular.length) {
-          panel.style.display = "none";
-          panel.innerHTML = "";
-          return;
-        }
-
-        panel.innerHTML = duyurular.map(d => `
-          <div class="duyuru-card">
-            <strong>📢 ${kacisHtml(d.baslik || "Duyuru")}</strong>
-            <div>${kacisHtml(d.mesaj || "")}</div>
-          </div>
-        `).join("");
-        panel.style.display = "block";
-      } catch (error) {
-        console.error("Duyurular yüklenemedi:", error);
-        panel.style.display = "none";
-        panel.innerHTML = "";
-      }
     }
 
     function parseAppointmentDateTime(dateStr, timeStr) {
@@ -1397,6 +1406,7 @@
 
     async function sistemBaslat() {
       try {
+        duyurulariBaslat();
         const kayitliTelefon = sessionStorage.getItem("personelTelefon");
         const kayitliSifre = sessionStorage.getItem("personelSifre");
         if (!kayitliTelefon || !kayitliSifre) {
@@ -1404,7 +1414,6 @@
           return;
         }
 
-        await duyurulariYukle();
         await otomatikPersonelGirisKontrol();
         if (!personelGirisYapildi) {
           window.location.href = "index.html";
