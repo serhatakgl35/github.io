@@ -356,28 +356,15 @@
       }
     }
   
-<style>
-/* PRO PANEL EK */
+/* PRO PANEL SAFE */
+td.today {
+  outline: 2px solid #111;
+  background: #fffde7 !important;
+}
 td.musait { background:#e8f5e9; }
 td.dolu { background:#ffebee; }
 td.gecmis { background:#eeeeee; }
 td.kapali { background:#e0e0e0; }
-
-td.today {
-  outline: 2px solid #111;
-  background: #fffde7 !important;
-  font-weight: bold;
-}
-
-table {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-button {
-  border-radius: 12px !important;
-}
-</style>
 
 </style>
 </head>
@@ -511,19 +498,14 @@ function haftaninBesGunu(baslangic) {
   const bugun = new Date();
   bugun.setHours(0,0,0,0);
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     const d = new Date(baslangic);
     d.setDate(baslangic.getDate() + i);
     d.setHours(0,0,0,0);
-
-    if (d >= bugun) {
-      gunler.push(d);
-    }
-
-    if (gunler.length === 5) break;
+    gunler.push(d);
   }
 
-  return gunler;
+  return gunler.filter(g => g >= bugun);
 }
 
       return gunler;
