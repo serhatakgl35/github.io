@@ -265,6 +265,13 @@
       color: #555;
     }
 
+    .gecmis-bos {
+      background: #eeeeee;
+      color: #999;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
     .kapali-gun-baslik {
       background: #d7d7d7 !important;
       color: #444 !important;
@@ -403,7 +410,7 @@
       </div>
 
       <div class="alt-bilgi">
-        Panel otomatik yenilenmez. Güncel verileri görmek için sayfayı manuel yenileyin. Randevusu olan saati geçmiş kayıtlar müşteri bilgisi korunarak gri görünür.
+        Panel otomatik yenilenmez. Güncel verileri görmek için sayfayı manuel yenileyin. Saati geçen boş hücreler gri, randevusu olan geçmiş kayıtlar müşteri bilgisi korunarak gri görünür.
       </div>
     </div>
   </div>
@@ -441,6 +448,7 @@
     const auth = getAuth(app);
 
     const KOLEKSIYON = "randevular";
+    const RANDEVU_GECMISI_KOLEKSIYON = "randevu_gecmisi";
     const KAPALI_GUNLER_KOLEKSIYON = "kapali_gunler";
     const KAPALI_SAATLER_KOLEKSIYON = "kapali_saatler";
     const OTOMATIK_GECMIS_DAKIKA = 1;
@@ -640,32 +648,38 @@
 
     async function eskiRandevulariTemizle() {
       const sinirTarih = eskiRandevuSinirTarihiKey();
-      const gorulenDoclar = new Set();
 
-      async function alanlaTemizle(tarihAlani) {
-        try {
-          const eskiQ = query(
-            collection(db, KOLEKSIYON),
-            where(tarihAlani, "<", sinirTarih)
-          );
+      async function koleksiyonTemizle(koleksiyonAdi) {
+        const gorulenDoclar = new Set();
 
-          const eskiSnap = await getDocs(eskiQ);
-          const silmeler = [];
+        async function alanlaTemizle(tarihAlani) {
+          try {
+            const eskiQ = query(
+              collection(db, koleksiyonAdi),
+              where(tarihAlani, "<", sinirTarih)
+            );
 
-          eskiSnap.forEach(function(docItem) {
-            if (gorulenDoclar.has(docItem.id)) return;
-            gorulenDoclar.add(docItem.id);
-            silmeler.push(deleteDoc(doc(db, KOLEKSIYON, docItem.id)));
-          });
+            const eskiSnap = await getDocs(eskiQ);
+            const silmeler = [];
 
-          await Promise.all(silmeler);
-        } catch (error) {
-          console.error(tarihAlani + " alanı ile eski randevu temizliği yapılamadı:", error);
+            eskiSnap.forEach(function(docItem) {
+              if (gorulenDoclar.has(docItem.id)) return;
+              gorulenDoclar.add(docItem.id);
+              silmeler.push(deleteDoc(doc(db, koleksiyonAdi, docItem.id)));
+            });
+
+            await Promise.all(silmeler);
+          } catch (error) {
+            console.error(koleksiyonAdi + " / " + tarihAlani + " alanı ile eski randevu temizliği yapılamadı:", error);
+          }
         }
+
+        await alanlaTemizle("date");
+        await alanlaTemizle("tarih");
       }
 
-      await alanlaTemizle("date");
-      await alanlaTemizle("tarih");
+      await koleksiyonTemizle(KOLEKSIYON);
+      await koleksiyonTemizle(RANDEVU_GECMISI_KOLEKSIYON);
     }
 
     async function haftalikVerileriHazirla(gunler) {
@@ -790,6 +804,8 @@
           const kapaliSaatler = kapaliSaatMap[tarih] || [];
           const kapaliSaat = kapaliSaatler.includes(saat);
           const r = randevuMap[key];
+          const slotGecmis = slotGecmisMi(tarih, saat, simdi);
+
           if (kapaliGun) {
             html += '<td class="kapali">';
             html += "<div>KAPALI</div>";
@@ -819,6 +835,10 @@
               html += "</div>";
               html += "</td>";
             }
+          } else if (slotGecmis) {
+            html += '<td class="gecmis-bos">';
+            html += "<div>—</div>";
+            html += "</td>";
           } else {
             html += '<td class="musait">';
             html += "<div>MÜSAİT</div>";
