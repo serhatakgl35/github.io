@@ -1,0 +1,44 @@
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "API_KEY",
+  authDomain: "AUTH_DOMAIN",
+  projectId: "PROJECT_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function eskiVeriyiAktar() {
+  const snap = await getDocs(collection(db, "randevu_gecmisi"));
+
+  const gunluk = {};
+
+  snap.forEach(docItem => {
+    const data = docItem.data();
+    const tarih = (data.date || "").trim();
+    if (!tarih) return;
+
+    if (!gunluk[tarih]) gunluk[tarih] = 0;
+    gunluk[tarih]++;
+  });
+
+  for (const tarih in gunluk) {
+    const ay = tarih.slice(0,7);
+    const yil = tarih.slice(0,4);
+
+    await setDoc(doc(db, "istatistikler", tarih), {
+      tarih,
+      ay,
+      yil,
+      toplam: gunluk[tarih]
+    }, { merge: true });
+  }
+
+  alert("TÜM ESKİ VERİLER AKTARILDI ✅");
+}
+
+eskiVeriyiAktar();
+</script>
