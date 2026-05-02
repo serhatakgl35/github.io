@@ -799,7 +799,6 @@ let aktifRandevular = [];
 
 let aktifAd =
   sessionStorage.getItem("personelAd") ||
-  localStorage.getItem("musteriAd") ||
   localStorage.getItem("personelAd") ||
   "";
 
@@ -827,17 +826,17 @@ if(aktifAd){
 
 async function musteriAdiniGetir(){
   try{
-    if(aktifAd){
-      nameInput.value = aktifAd;
-      nameInput.readOnly = true;
-      hosgeldin.textContent = "Hoş geldin, " + aktifAd;
-      return;
-    }
-
     const temizTel = telefonuDuzenle(aktifTelefon);
     let bulunanAd = "";
 
-    // 1) Kayıt doküman ID'si telefon ise buradan bul
+    if(!temizTel || temizTel.length !== 11){
+      nameInput.value = "";
+      nameInput.readOnly = false;
+      hosgeldin.textContent = "Hoş geldin";
+      return;
+    }
+
+    // 1) Firestore'da belge ID telefon ise direkt bulur: personeller / 05XXXXXXXXX
     const direktRef = doc(db, "personeller", temizTel);
     const direktSnap = await getDoc(direktRef);
 
@@ -846,7 +845,7 @@ async function musteriAdiniGetir(){
       bulunanAd = data.isim || data.ad || data.name || data.adSoyad || "";
     }
 
-    // 2) Doküman ID farklıysa telefon alanından ara
+    // 2) Belge ID farklıysa telefon alanına göre arar
     if(!bulunanAd){
       const q = query(
         collection(db, "personeller"),
@@ -864,16 +863,24 @@ async function musteriAdiniGetir(){
     if(bulunanAd){
       aktifAd = bulunanAd;
       localStorage.setItem("musteriAd", aktifAd);
+      localStorage.setItem("musteriTelefon", temizTel);
       nameInput.value = aktifAd;
       nameInput.readOnly = true;
       hosgeldin.textContent = "Hoş geldin, " + aktifAd;
       return;
     }
 
+    // Firestore'da isim yoksa eski localStorage ismini kullanma; yanlış isim görünmesin.
+    localStorage.removeItem("musteriAd");
+    aktifAd = "";
+    nameInput.value = "";
     nameInput.readOnly = false;
     hosgeldin.textContent = "Hoş geldin";
   }catch(e){
     console.error("İsim alınamadı:", e);
+    localStorage.removeItem("musteriAd");
+    nameInput.value = "";
+    nameInput.readOnly = false;
     hosgeldin.textContent = "Hoş geldin";
   }
 }
@@ -888,7 +895,7 @@ window.cikisYap = function(){
   sessionStorage.removeItem("personelAd");
   sessionStorage.removeItem("personelTelefon");
 
-  location.replace("index.html");
+  location.href = "index.html";
 }
 
 function toastGoster(metin){
@@ -1575,7 +1582,25 @@ function popupKapat(){
 
 btnRandevu.addEventListener("click", randevuAl);
 dateInput.addEventListener("change", saatleriGuncelle);
-phoneInput.addEventListener("input",()=>phoneInput.value = telefonuDuzenle(phoneInput.value));
+phoneInput.addEventListener("input", async ()=>{
+  phoneInput.value = telefonuDuzenle(phoneInput.value);
+  const yeniTel = phoneInput.value;
+
+  if(yeniTel !== aktifTelefon){
+    aktifTelefon = yeniTel;
+    localStorage.setItem("musteriTelefon", yeniTel);
+    localStorage.removeItem("musteriAd");
+    aktifAd = "";
+    nameInput.value = "";
+    nameInput.readOnly = false;
+    hosgeldin.textContent = "Hoş geldin";
+
+    if(yeniTel.length === 11){
+      await musteriAdiniGetir();
+      await sistemiYenile();
+    }
+  }
+});
 
 tabloAlan.addEventListener("click",(e)=>{
   const slot = e.target.closest(".musait");
