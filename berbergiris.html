@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Berber Giriş Paneli</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f5f7, #e8e8ed);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #111;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      border-radius: 26px;
+      padding: 30px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.12);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .logo {
+      width: 62px;
+      height: 62px;
+      border-radius: 20px;
+      background: #111;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0;
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin: 9px 0 26px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 16px;
+      border-radius: 16px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      outline: none;
+      background: #fafafa;
+      margin-bottom: 16px;
+      transition: 0.2s ease;
+    }
+
+    input:focus {
+      background: #fff;
+      border-color: #111;
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 17px;
+      background: #111;
+      color: white;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+      margin-top: 4px;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.20);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 13px 14px;
+      border-radius: 15px;
+      font-size: 14px;
+      display: none;
+      line-height: 1.45;
+    }
+
+    .message.error {
+      display: block;
+      background: #fff1f1;
+      color: #b00020;
+      border: 1px solid #ffd1d1;
+    }
+
+    .message.success {
+      display: block;
+      background: #effaf1;
+      color: #116329;
+      border: 1px solid #ccefd3;
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-card">
+    <div class="logo">✂️</div>
+
+    <h1>Berber Girişi</h1>
+    <p class="subtitle">
+      Randevularını görüntülemek ve işlem yapmak için giriş yap.
+    </p>
+
+    <label for="telefon">Telefon Numarası</label>
+    <input 
+      type="tel" 
+      id="telefon" 
+      placeholder="05XXXXXXXXX"
+      autocomplete="tel"
+    />
+
+    <label for="sifre">Şifre</label>
+    <input 
+      type="password" 
+      id="sifre" 
+      placeholder="Şifrenizi girin"
+      autocomplete="current-password"
+    />
+
+    <button id="girisBtn" onclick="berberGiris()">Giriş Yap</button>
+
+    <div id="mesaj" class="message"></div>
+
+    <div class="footer-note">
+      Bu sayfa yalnızca berber/personel kullanıcıları içindir.
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      where, 
+      getDocs 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "BURAYA_API_KEY",
+      authDomain: "BURAYA_AUTH_DOMAIN",
+      projectId: "BURAYA_PROJECT_ID",
+      storageBucket: "BURAYA_STORAGE_BUCKET",
+      messagingSenderId: "BURAYA_MESSAGING_SENDER_ID",
+      appId: "BURAYA_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const telefonInput = document.getElementById("telefon");
+    const sifreInput = document.getElementById("sifre");
+    const mesajDiv = document.getElementById("mesaj");
+    const girisBtn = document.getElementById("girisBtn");
+
+    function telefonTemizle(value) {
+      let t = String(value || "").replace(/\D/g, "");
+
+      if (t.startsWith("90")) {
+        t = t.substring(2);
+      }
+
+      if (t.length === 10 && t.startsWith("5")) {
+        t = "0" + t;
+      }
+
+      return t;
+    }
+
+    telefonInput.addEventListener("blur", () => {
+      telefonInput.value = telefonTemizle(telefonInput.value);
+    });
+
+    function mesajGoster(text, type) {
+      mesajDiv.textContent = text;
+      mesajDiv.className = "message " + type;
+    }
+
+    window.berberGiris = async function () {
+      const telefon = telefonTemizle(telefonInput.value);
+      const sifre = sifreInput.value.trim();
+
+      mesajDiv.style.display = "none";
+      mesajDiv.className = "message";
+      mesajDiv.textContent = "";
+
+      if (!telefon || telefon.length !== 11 || !telefon.startsWith("05")) {
+        mesajGoster("Lütfen geçerli bir telefon numarası girin. Örnek: 05XXXXXXXXX", "error");
+        return;
+      }
+
+      if (!sifre) {
+        mesajGoster("Lütfen şifrenizi girin.", "error");
+        return;
+      }
+
+      girisBtn.disabled = true;
+      girisBtn.textContent = "Kontrol ediliyor...";
+
+      try {
+        const q = query(
+          collection(db, "berberler"),
+          where("telefon", "==", telefon),
+          where("sifre", "==", sifre),
+          where("aktif", "==", true)
+        );
+
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          mesajGoster("Telefon veya şifre hatalı. Hesap pasif de olabilir.", "error");
+          girisBtn.disabled = false;
+          girisBtn.textContent = "Giriş Yap";
+          return;
+        }
+
+        const docSnap = snap.docs[0];
+        const berber = docSnap.data();
+
+        localStorage.setItem("berberGiris", "true");
+        localStorage.setItem("berberId", docSnap.id);
+        localStorage.setItem("berberAdSoyad", berber.adSoyad || "");
+        localStorage.setItem("berberTelefon", telefon);
+
+        mesajGoster("Giriş başarılı. Berber paneline yönlendiriliyorsunuz...", "success");
+
+        setTimeout(() => {
+          window.location.href = "berber-panel.html";
+        }, 700);
+
+      } catch (error) {
+        console.error(error);
+        mesajGoster("Giriş sırasında hata oluştu. Firebase ayarlarını kontrol edin.", "error");
+        girisBtn.disabled = false;
+        girisBtn.textContent = "Giriş Yap";
+      }
+    };
+  </script>
+
+</body>
+</html>
