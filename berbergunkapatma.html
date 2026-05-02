@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Berber Takvim Yönetimi</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial;
@@ -13,148 +15,742 @@ background:#f5f5f7;
 color:#111;
 }
 
+.topbar{
+position:sticky;
+top:0;
+z-index:50;
+background:#111;
+color:white;
+padding:14px 18px;
+box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+
+.topbar-inner{
+max-width:1150px;
+margin:auto;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:12px;
+}
+
+.brand{
+font-weight:900;
+}
+
+.logout-btn{
+border:none;
+background:#fff;
+color:#111;
+padding:10px 18px;
+border-radius:999px;
+font-weight:900;
+cursor:pointer;
+box-shadow:0 8px 20px rgba(0,0,0,.22);
+}
+
 .container{
-max-width:1100px;
+max-width:1150px;
 margin:20px auto;
-padding:15px;
+padding:0 16px 40px;
 }
 
 .box{
-background:#fff;
+background:white;
+border-radius:24px;
 padding:20px;
-border-radius:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 28px rgba(0,0,0,.08);
+margin-bottom:16px;
+}
+
+h1{
+margin:0 0 8px;
+font-size:25px;
+}
+
+.muted{
+color:#666;
+font-size:14px;
+line-height:1.5;
+}
+
+.role-badge{
+display:inline-block;
+margin-top:10px;
+padding:7px 11px;
+border-radius:999px;
+background:#eee;
+font-size:12px;
+font-weight:900;
+}
+
+.admin{
+background:#e8f0ff;
+color:#174ea6;
+}
+
+.berber{
+background:#eaf7ee;
+color:#137333;
+}
+
+.controls{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-top:14px;
+}
+
+button{
+border:none;
+background:#111;
+color:white;
+padding:11px 14px;
+border-radius:13px;
+font-weight:900;
+cursor:pointer;
+}
+
+button.secondary{
+background:#e9e9ee;
+color:#111;
+}
+
+button:disabled{
+opacity:.45;
+cursor:not-allowed;
+}
+
+.hafta-yazi{
+background:#f3f3f3;
+border:1px solid #ddd;
+border-radius:14px;
+padding:11px;
+text-align:center;
+font-weight:900;
+margin:14px 0;
+}
+
+.status{
+background:white;
+border-radius:16px;
+padding:12px 14px;
+box-shadow:0 6px 18px rgba(0,0,0,.06);
+margin-bottom:14px;
+color:#555;
+font-size:14px;
+}
+
+.tablo-wrap{
+overflow-x:auto;
+border-radius:16px;
+border:1px solid #ddd;
+background:white;
 }
 
 table{
 width:100%;
+min-width:850px;
 border-collapse:collapse;
-margin-top:15px;
+table-layout:fixed;
 }
 
 th,td{
 border:1px solid #ddd;
-padding:8px;
+padding:8px 5px;
 text-align:center;
-cursor:pointer;
+vertical-align:middle;
 }
 
 th{
-background:#eee;
+background:#ececec;
+font-size:12px;
 }
 
-.kapali{
-background:#e0e0e0;
-color:#666;
+.saat-baslik{
+width:80px;
+background:#f4f4f4;
+font-weight:900;
 }
 
-.dolu{
-background:#ffd9d9;
-color:#8b0000;
-font-weight:bold;
+.clickable{
+cursor:pointer;
+transition:.15s;
+}
+
+.clickable:hover{
+filter:brightness(.97);
+box-shadow:inset 0 0 0 2px rgba(0,0,0,.12);
 }
 
 .musait{
 background:#dff3df;
 color:#146214;
+font-weight:900;
+font-size:12px;
 }
 
+.dolu{
+background:#ffd9d9;
+color:#8b0000;
+font-size:11px;
+}
+
+.kapali{
+background:#d9d9d9!important;
+color:#555!important;
+font-weight:900;
+font-size:12px;
+}
+
+.gecmis{
+background:#e4e4e4;
+color:#666;
+font-weight:900;
+font-size:12px;
+}
+
+.dolu-isim{
+font-weight:900;
+font-size:12px;
+margin-bottom:3px;
+}
+
+.dolu-mini{
+font-size:10px;
+line-height:1.25;
+word-break:break-word;
+}
+
+.etiket{
+display:inline-block;
+margin-top:5px;
+padding:2px 7px;
+border-radius:999px;
+font-size:9px;
+font-weight:900;
+}
+
+.etiket-musait{
+background:#c9eec9;
+color:#146214;
+}
+
+.etiket-dolu{
+background:#ffbcbc;
+color:#8b0000;
+}
+
+.etiket-kapali{
+background:#cfcfcf;
+color:#555;
+}
+
+.etiket-gecmis{
+background:#d6d6d6;
+color:#555;
+}
+
+.note{
+font-size:13px;
+color:#666;
+line-height:1.5;
+margin-top:10px;
+}
+
+@media(max-width:600px){
+.controls button{
+width:100%;
+}
+
+.topbar-inner{
+flex-direction:column;
+align-items:flex-start;
+}
+
+h1{
+font-size:22px;
+}
+}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-<div class="box">
-<h2>Takvim Yönetimi</h2>
-
-<div id="takvim"></div>
-
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">✂️ Berber Takvim Yönetimi</div>
+    <button class="logout-btn" onclick="cikis()">Çıkış Yap</button>
+  </div>
 </div>
+
+<div class="container">
+
+  <div class="box">
+    <h1>Haftalık Takvim</h1>
+    <div class="muted">
+      Gün başlığına basınca o gün kapanır/açılır. Saat başlığına basınca o saat tüm hafta kapanır/açılır.
+      Kapalı gün ve saatler gri görünür.
+    </div>
+
+    <div id="rolBadge" class="role-badge">Yetki kontrol ediliyor...</div>
+
+    <div class="controls">
+      <button class="secondary" onclick="oncekiHafta()">← Önceki</button>
+      <button class="secondary" onclick="buHafta()">Bu Hafta</button>
+      <button onclick="takvimYukle()">Yenile</button>
+      <button class="secondary" onclick="sonrakiHafta()">Sonraki →</button>
+    </div>
+
+    <div class="note">
+      Admin: gün/saat açıp kapatabilir.  
+      Berber/personel: sadece takvimi görüntüler.
+    </div>
+  </div>
+
+  <div id="durum" class="status">Yükleniyor...</div>
+  <div id="haftaYazi" class="hafta-yazi">Yükleniyor...</div>
+
+  <div class="tablo-wrap">
+    <div id="takvimAlan">Yükleniyor...</div>
+  </div>
+
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  deleteDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-authDomain:"berber-randevu-14f7f.firebaseapp.com",
-projectId:"berber-randevu-14f7f",
-storageBucket:"berber-randevu-14f7f.firebasestorage.app",
-messagingSenderId:"280530860977",
-appId:"1:280530860977:web:52c0df04c228896f211b90"
+  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain:"berber-randevu-14f7f.firebaseapp.com",
+  projectId:"berber-randevu-14f7f",
+  storageBucket:"berber-randevu-14f7f.firebasestorage.app",
+  messagingSenderId:"280530860977",
+  appId:"1:280530860977:web:52c0df04c228896f211b90"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+const takvimAlan = document.getElementById("takvimAlan");
+const haftaYazi = document.getElementById("haftaYazi");
+const durum = document.getElementById("durum");
+const rolBadge = document.getElementById("rolBadge");
+
 const SAATLER = ["09:00","09:50","10:30","11:20","13:20","14:00","14:50","15:30"];
+const GUN_ADLARI = ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"];
+
+let aktifHafta = pazartesiBul(new Date());
+let randevular = [];
+let kapaliGunler = {};
+let kapaliSaatler = {};
+let kullaniciRol = "berber";
+
+const adminGiris =
+  localStorage.getItem("adminGiris") === "true" ||
+  localStorage.getItem("adminLogin") === "true" ||
+  localStorage.getItem("adminYetki") === "true";
+
+const berberGiris = localStorage.getItem("berberGiris") === "true";
+
+if(!adminGiris && !berberGiris){
+  location.href = "berbergiris.html";
+}
+
+if(adminGiris){
+  kullaniciRol = "admin";
+  rolBadge.textContent = "YETKİ: ADMIN — Gün/Saat Aç-Kapat Aktif";
+  rolBadge.className = "role-badge admin";
+}else{
+  kullaniciRol = "berber";
+  rolBadge.textContent = "YETKİ: BERBER — Sadece Görüntüleme";
+  rolBadge.className = "role-badge berber";
+}
+
+function esc(x){
+  return String(x || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function iki(n){
+  return String(n).padStart(2,"0");
+}
 
 function tarihKey(d){
-return d.toISOString().split("T")[0];
+  return d.getFullYear()+"-"+iki(d.getMonth()+1)+"-"+iki(d.getDate());
 }
 
-function hafta(){
-const d = new Date();
-const day = d.getDay();
-const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-const monday = new Date(d.setDate(diff));
-
-let arr=[];
-for(let i=0;i<5;i++){
-let x=new Date(monday);
-x.setDate(monday.getDate()+i);
-arr.push(x);
-}
-return arr;
+function tarihGoster(d){
+  return iki(d.getDate())+"/"+iki(d.getMonth()+1)+"/"+d.getFullYear();
 }
 
-async function ciz(){
-
-const gunler = hafta();
-let html="<table><tr><th>Saat</th>";
-
-gunler.forEach(g=>{
-const t=tarihKey(g);
-html+=`<th onclick="gunKapat('${t}')">${t}</th>`;
-});
-
-html+="</tr>";
-
-SAATLER.forEach(s=>{
-html+=`<tr><td onclick="saatKapat('${s}')">${s}</td>`;
-
-gunler.forEach(g=>{
-const t=tarihKey(g);
-html+=`<td class="musait">${t}<br>${s}</td>`;
-});
-
-html+="</tr>";
-});
-
-html+="</table>";
-
-document.getElementById("takvim").innerHTML=html;
-
+function tarihFormatla(t){
+  if(!t) return "-";
+  const p = String(t).split("-");
+  if(p.length !== 3) return t;
+  return `${p[2]}/${p[1]}/${p[0]}`;
 }
 
-window.gunKapat = async function(tarih){
-await setDoc(doc(db,"kapali_gunler",tarih),{kapali:true});
-alert("Gün kapatıldı");
+function pazartesiBul(t){
+  const d = new Date(t);
+  d.setHours(0,0,0,0);
+  const gun = d.getDay();
+  const fark = gun === 0 ? -6 : 1 - gun;
+  d.setDate(d.getDate() + fark);
+  return d;
 }
 
-window.saatKapat = async function(saat){
-await setDoc(doc(db,"kapali_saatler",Date.now()+""),{
-tarih:tarihKey(new Date()),
-saat:saat
-});
-alert("Saat kapatıldı");
+function haftaGunleri(baslangic){
+  const arr = [];
+  for(let i=0;i<5;i++){
+    const d = new Date(baslangic);
+    d.setDate(baslangic.getDate()+i);
+    arr.push(d);
+  }
+  return arr;
 }
 
-ciz();
+function gecmisMi(tarih,saat){
+  if(!tarih || !saat) return false;
+  const dt = new Date(`${tarih}T${saat}:00`);
+  const limit = new Date(dt);
+  limit.setMinutes(limit.getMinutes()+1);
+  return new Date() >= limit;
+}
 
+function normalize(d,id){
+  return {
+    id,
+    tarih: d.date || d.tarih || d.kayitTarih || "",
+    saat: d.time || d.saat || d.zaman || d.kayitSaat || "",
+    ad: d.name || d.isim || d.adSoyad || d.kayitAd || "",
+    telefon: d.phone || d.telefon || d.kayitTelefon || "",
+    hizmet: d.service || d.hizmet || d.kayitHizmet || ""
+  };
+}
+
+async function randevulariAl(){
+  const snap = await getDocs(collection(db,"randevular"));
+  let arr = [];
+  snap.forEach(x => arr.push(normalize(x.data(),x.id)));
+  arr = arr.filter(r => r.tarih && r.saat && r.ad && r.telefon);
+  return arr;
+}
+
+async function kapaliGunleriAl(){
+  const snap = await getDocs(collection(db,"kapali_gunler"));
+  const map = {};
+  snap.forEach(d => {
+    map[d.id] = true;
+  });
+  return map;
+}
+
+async function kapaliSaatleriAl(){
+  const snap = await getDocs(collection(db,"kapali_saatler"));
+  const map = {};
+  snap.forEach(d => {
+    const x = d.data();
+    const tarih = x.tarih || "";
+    const saat = x.saat || "";
+
+    if(!tarih || !saat) return;
+
+    const key = tarih + "_" + saat;
+    map[key] = {
+      id: d.id,
+      tarih,
+      saat
+    };
+  });
+  return map;
+}
+
+async function verileriAl(){
+  durum.textContent = "Takvim verileri yükleniyor...";
+
+  const [rArr, gMap, sMap] = await Promise.all([
+    randevulariAl(),
+    kapaliGunleriAl(),
+    kapaliSaatleriAl()
+  ]);
+
+  randevular = rArr;
+  kapaliGunler = gMap;
+  kapaliSaatler = sMap;
+}
+
+function takvimCiz(){
+  const gunler = haftaGunleri(aktifHafta);
+
+  haftaYazi.textContent = tarihGoster(gunler[0]) + " - " + tarihGoster(gunler[4]);
+
+  const randevuMap = {};
+  randevular.forEach(r => {
+    randevuMap[r.tarih + "_" + r.saat] = r;
+  });
+
+  let html = "<table>";
+  html += "<thead><tr>";
+  html += `<th class="saat-baslik">Saat<br><span class="etiket etiket-kapali">TIKLA</span></th>`;
+
+  gunler.forEach((g,i)=>{
+    const tarih = tarihKey(g);
+    const kapali = !!kapaliGunler[tarih];
+    const clickClass = kullaniciRol === "admin" ? "clickable" : "";
+
+    html += `
+      <th class="${kapali ? "kapali" : ""} ${clickClass}"
+          ${kullaniciRol === "admin" ? `onclick="gunToggle('${tarih}')"` : ""}>
+        <div>${GUN_ADLARI[i]}</div>
+        <div style="font-size:11px;color:#555">${tarihGoster(g)}</div>
+        <span class="etiket ${kapali ? "etiket-kapali" : "etiket-musait"}">
+          ${kapali ? "KAPALI GÜN" : (kullaniciRol === "admin" ? "GÜNÜ KAPAT" : "AÇIK")}
+        </span>
+      </th>
+    `;
+  });
+
+  html += "</tr></thead><tbody>";
+
+  SAATLER.forEach(saat=>{
+    const saatHaftadaKapaliMi = gunler.every(g => {
+      const tarih = tarihKey(g);
+      return !!kapaliSaatler[tarih + "_" + saat] || !!kapaliGunler[tarih];
+    });
+
+    const saatClick = kullaniciRol === "admin" ? "clickable" : "";
+
+    html += "<tr>";
+
+    html += `
+      <td class="saat-baslik ${saatHaftadaKapaliMi ? "kapali" : ""} ${saatClick}"
+          ${kullaniciRol === "admin" ? `onclick="saatToggle('${saat}')"` : ""}>
+        ${saat}<br>
+        <span class="etiket ${saatHaftadaKapaliMi ? "etiket-kapali" : "etiket-musait"}">
+          ${saatHaftadaKapaliMi ? "KAPALI" : (kullaniciRol === "admin" ? "SAATİ KAPAT" : "AÇIK")}
+        </span>
+      </td>
+    `;
+
+    gunler.forEach(g=>{
+      const tarih = tarihKey(g);
+      const key = tarih + "_" + saat;
+      const r = randevuMap[key];
+      const gunKapali = !!kapaliGunler[tarih];
+      const saatKapali = !!kapaliSaatler[key];
+
+      if(gunKapali){
+        html += `
+          <td class="kapali">
+            KAPALI<br>
+            <span class="etiket etiket-kapali">GÜN</span>
+          </td>
+        `;
+      }else if(saatKapali){
+        html += `
+          <td class="kapali ${kullaniciRol === "admin" ? "clickable" : ""}"
+              ${kullaniciRol === "admin" ? `onclick="tekSaatToggle('${tarih}','${saat}')"` : ""}>
+            KAPALI<br>
+            <span class="etiket etiket-kapali">SAAT</span>
+          </td>
+        `;
+      }else if(r){
+        if(gecmisMi(r.tarih,r.saat)){
+          html += `
+            <td class="gecmis">
+              <div class="dolu-isim">${esc(r.ad)}</div>
+              <div class="dolu-mini">${esc(r.telefon)}</div>
+              <div class="dolu-mini">${esc(r.hizmet || "-")}</div>
+              <span class="etiket etiket-gecmis">GEÇMİŞ</span>
+            </td>
+          `;
+        }else{
+          html += `
+            <td class="dolu">
+              <div class="dolu-isim">${esc(r.ad)}</div>
+              <div class="dolu-mini">${esc(r.telefon)}</div>
+              <div class="dolu-mini">${esc(r.hizmet || "-")}</div>
+              <span class="etiket etiket-dolu">DOLU</span>
+            </td>
+          `;
+        }
+      }else if(gecmisMi(tarih,saat)){
+        html += `
+          <td class="gecmis">
+            GEÇMİŞ<br>
+            <span class="etiket etiket-gecmis">SÜRE GEÇTİ</span>
+          </td>
+        `;
+      }else{
+        html += `
+          <td class="musait ${kullaniciRol === "admin" ? "clickable" : ""}"
+              ${kullaniciRol === "admin" ? `onclick="tekSaatToggle('${tarih}','${saat}')"` : ""}>
+            MÜSAİT<br>
+            <span class="etiket etiket-musait">
+              ${kullaniciRol === "admin" ? "KAPAT" : "BOŞ"}
+            </span>
+          </td>
+        `;
+      }
+    });
+
+    html += "</tr>";
+  });
+
+  html += "</tbody></table>";
+
+  takvimAlan.innerHTML = html;
+  durum.textContent = "Takvim hazır.";
+}
+
+window.takvimYukle = async function(){
+  try{
+    takvimAlan.innerHTML = "Yükleniyor...";
+    await verileriAl();
+    takvimCiz();
+  }catch(e){
+    console.error(e);
+    durum.textContent = "Takvim yüklenemedi. Firestore Rules veya bağlantı kontrol edilmeli.";
+    takvimAlan.innerHTML = "Hata oluştu.";
+  }
+};
+
+window.gunToggle = async function(tarih){
+  if(kullaniciRol !== "admin") return;
+
+  try{
+    if(kapaliGunler[tarih]){
+      await deleteDoc(doc(db,"kapali_gunler",tarih));
+      durum.textContent = tarihFormatla(tarih) + " günü açıldı.";
+    }else{
+      await setDoc(doc(db,"kapali_gunler",tarih),{
+        tarih,
+        kapali:true,
+        tip:"gun",
+        createdAt:new Date().toISOString()
+      });
+      durum.textContent = tarihFormatla(tarih) + " günü kapatıldı.";
+    }
+
+    await takvimYukle();
+  }catch(e){
+    console.error(e);
+    alert("Gün aç/kapat işlemi başarısız.");
+  }
+};
+
+window.tekSaatToggle = async function(tarih,saat){
+  if(kullaniciRol !== "admin") return;
+
+  const id = tarih + "_" + saat.replace(":","-");
+  const key = tarih + "_" + saat;
+
+  try{
+    if(kapaliSaatler[key]){
+      await deleteDoc(doc(db,"kapali_saatler",kapaliSaatler[key].id));
+      durum.textContent = tarihFormatla(tarih) + " " + saat + " açıldı.";
+    }else{
+      await setDoc(doc(db,"kapali_saatler",id),{
+        tarih,
+        saat,
+        kapali:true,
+        tip:"saat",
+        createdAt:new Date().toISOString()
+      });
+      durum.textContent = tarihFormatla(tarih) + " " + saat + " kapatıldı.";
+    }
+
+    await takvimYukle();
+  }catch(e){
+    console.error(e);
+    alert("Saat aç/kapat işlemi başarısız.");
+  }
+};
+
+window.saatToggle = async function(saat){
+  if(kullaniciRol !== "admin") return;
+
+  const gunler = haftaGunleri(aktifHafta);
+
+  const hepsiKapali = gunler.every(g=>{
+    const tarih = tarihKey(g);
+    return kapaliGunler[tarih] || kapaliSaatler[tarih + "_" + saat];
+  });
+
+  try{
+    if(hepsiKapali){
+      for(const g of gunler){
+        const tarih = tarihKey(g);
+        const key = tarih + "_" + saat;
+
+        if(kapaliSaatler[key]){
+          await deleteDoc(doc(db,"kapali_saatler",kapaliSaatler[key].id));
+        }
+      }
+
+      durum.textContent = saat + " saati bu hafta açıldı.";
+    }else{
+      for(const g of gunler){
+        const tarih = tarihKey(g);
+
+        if(kapaliGunler[tarih]) continue;
+
+        const id = tarih + "_" + saat.replace(":","-");
+
+        await setDoc(doc(db,"kapali_saatler",id),{
+          tarih,
+          saat,
+          kapali:true,
+          tip:"haftalik_saat",
+          createdAt:new Date().toISOString()
+        });
+      }
+
+      durum.textContent = saat + " saati bu hafta kapatıldı.";
+    }
+
+    await takvimYukle();
+  }catch(e){
+    console.error(e);
+    alert("Haftalık saat aç/kapat işlemi başarısız.");
+  }
+};
+
+window.oncekiHafta = function(){
+  aktifHafta.setDate(aktifHafta.getDate()-7);
+  takvimCiz();
+};
+
+window.buHafta = function(){
+  aktifHafta = pazartesiBul(new Date());
+  takvimCiz();
+};
+
+window.sonrakiHafta = function(){
+  aktifHafta.setDate(aktifHafta.getDate()+7);
+  takvimCiz();
+};
+
+window.cikis = function(){
+  localStorage.clear();
+  location.href = "berbergiris.html";
+};
+
+takvimYukle();
 </script>
 
 </body>
