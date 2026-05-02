@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Berber Kayıt</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f5f7, #e5e5ea);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #111;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: white;
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.12);
+    }
+
+    .logo {
+      width: 68px;
+      height: 68px;
+      background: #111;
+      color: white;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      font-size: 30px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0;
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    p {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 10px 0 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 16px;
+      background: #fafafa;
+    }
+
+    input:focus {
+      background: white;
+      border-color: #111;
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 17px;
+      background: #111;
+      color: white;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .msg {
+      display: none;
+      margin-top: 15px;
+      padding: 13px 14px;
+      border-radius: 15px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .msg.success {
+      display: block;
+      background: #effaf1;
+      color: #137333;
+      border: 1px solid #ccefd3;
+    }
+
+    .msg.error {
+      display: block;
+      background: #fff1f1;
+      color: #b00020;
+      border: 1px solid #ffd1d1;
+    }
+
+    .link {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #111;
+      font-weight: 800;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <div class="logo">✂️</div>
+
+    <h1>Berber Kayıt</h1>
+    <p>Bu sayfadan Firestore’a yeni berber/personel kullanıcısı ekleyebilirsin.</p>
+
+    <label>Ad Soyad</label>
+    <input id="adSoyad" type="text" placeholder="Örn: Ahmet Usta">
+
+    <label>Telefon Numarası</label>
+    <input id="telefon" type="tel" placeholder="05XXXXXXXXX">
+
+    <label>Şifre</label>
+    <input id="sifre" type="password" placeholder="Şifre belirle">
+
+    <button id="kayitBtn" onclick="berberKaydet()">Berberi Kaydet</button>
+
+    <div id="mesaj" class="msg"></div>
+
+    <div class="link">
+      <a href="berber-giris.html">Berber giriş sayfasına git</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "BURAYA_API_KEY",
+      authDomain: "BURAYA_AUTH_DOMAIN",
+      projectId: "BURAYA_PROJECT_ID",
+      storageBucket: "BURAYA_STORAGE_BUCKET",
+      messagingSenderId: "BURAYA_MESSAGING_SENDER_ID",
+      appId: "BURAYA_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const adSoyadInput = document.getElementById("adSoyad");
+    const telefonInput = document.getElementById("telefon");
+    const sifreInput = document.getElementById("sifre");
+    const mesajDiv = document.getElementById("mesaj");
+    const kayitBtn = document.getElementById("kayitBtn");
+
+    function telefonTemizle(value) {
+      let t = String(value || "").replace(/\D/g, "");
+
+      if (t.startsWith("90")) {
+        t = t.substring(2);
+      }
+
+      if (t.length === 10 && t.startsWith("5")) {
+        t = "0" + t;
+      }
+
+      return t;
+    }
+
+    telefonInput.addEventListener("blur", () => {
+      telefonInput.value = telefonTemizle(telefonInput.value);
+    });
+
+    function mesajGoster(text, type) {
+      mesajDiv.textContent = text;
+      mesajDiv.className = "msg " + type;
+    }
+
+    window.berberKaydet = async function () {
+      const adSoyad = adSoyadInput.value.trim();
+      const telefon = telefonTemizle(telefonInput.value);
+      const sifre = sifreInput.value.trim();
+
+      mesajDiv.style.display = "none";
+      mesajDiv.className = "msg";
+      mesajDiv.textContent = "";
+
+      if (!adSoyad) {
+        mesajGoster("Ad soyad boş olamaz.", "error");
+        return;
+      }
+
+      if (!telefon || telefon.length !== 11 || !telefon.startsWith("05")) {
+        mesajGoster("Geçerli telefon gir. Örnek: 05XXXXXXXXX", "error");
+        return;
+      }
+
+      if (!sifre || sifre.length < 4) {
+        mesajGoster("Şifre en az 4 karakter olmalı.", "error");
+        return;
+      }
+
+      kayitBtn.disabled = true;
+      kayitBtn.textContent = "Kaydediliyor...";
+
+      try {
+        const kontrolQ = query(
+          collection(db, "berberler"),
+          where("telefon", "==", telefon)
+        );
+
+        const kontrolSnap = await getDocs(kontrolQ);
+
+        if (!kontrolSnap.empty) {
+          mesajGoster("Bu telefon numarasıyla kayıtlı berber zaten var.", "error");
+          kayitBtn.disabled = false;
+          kayitBtn.textContent = "Berberi Kaydet";
+          return;
+        }
+
+        await addDoc(collection(db, "berberler"), {
+          adSoyad: adSoyad,
+          telefon: telefon,
+          sifre: sifre,
+          aktif: true,
+          rol: "berber",
+          createdAt: serverTimestamp()
+        });
+
+        mesajGoster("Berber başarıyla kaydedildi.", "success");
+
+        adSoyadInput.value = "";
+        telefonInput.value = "";
+        sifreInput.value = "";
+
+      } catch (error) {
+        console.error(error);
+        mesajGoster("Kayıt sırasında hata oluştu. Firebase config veya Firestore Rules kontrol edilmeli.", "error");
+      }
+
+      kayitBtn.disabled = false;
+      kayitBtn.textContent = "Berberi Kaydet";
+    };
+  </script>
+
+</body>
+</html>
