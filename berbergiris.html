@@ -115,7 +115,7 @@ color:#137333;
 <p class="subtitle">Randevularını görüntülemek için giriş yap</p>
 
 <label>Telefon Numarası</label>
-<input id="telefon" placeholder="0546 906 65 65">
+<input id="telefon" placeholder="05XXXXXXXXX">
 
 <label>Şifre</label>
 <input id="sifre" type="password" placeholder="Şifre">
@@ -132,11 +132,11 @@ import { getFirestore, collection, query, where, getDocs } from "https://www.gst
 
 const firebaseConfig = {
 apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-  authDomain: "berber-randevu-14f7f.firebaseapp.com",
-  projectId: "berber-randevu-14f7f",
-  storageBucket: "berber-randevu-14f7f.firebasestorage.app",
-  messagingSenderId: "280530860977",
-  appId: "1:280530860977:web:52c0df04c228896f211b90"
+authDomain: "berber-randevu-14f7f.firebaseapp.com",
+projectId: "berber-randevu-14f7f",
+storageBucket: "berber-randevu-14f7f.firebasestorage.app",
+messagingSenderId: "280530860977",
+appId: "1:280530860977:web:52c0df04c228896f211b90"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -145,31 +145,32 @@ const db = getFirestore(app);
 const telInput = document.getElementById("telefon");
 const msg = document.getElementById("msg");
 
-/* 🔥 FORMAT */
+/* 🔥 TEMİZ VE DOĞRU FORMAT */
 function formatTel(v){
+
 let t = v.replace(/\D/g,'');
 
-if(t.startsWith("90")) t=t.substring(2);
-if(t.length===10 && t.startsWith("5")) t="0"+t;
+// boşsa boş bırak
+if(!t) return "";
 
-t=t.substring(0,11);
+// 90 sil
+if(t.startsWith("90")) t = t.substring(2);
 
-let s="";
-if(t.length>0) s+=t.substring(0,4);
-if(t.length>=5) s+=" "+t.substring(4,7);
-if(t.length>=8) s+=" "+t.substring(7,9);
-if(t.length>=10) s+=" "+t.substring(9,11);
+// 🔥 5 ile başlıyorsa otomatik 0 koy
+if(t.startsWith("5")) t = "0" + t;
 
-return s;
+// max 11 karakter
+t = t.substring(0,11);
+
+return t;
 }
 
+/* 🔥 INPUT KONTROL */
 telInput.addEventListener("input",()=>{
+const cursor = telInput.selectionStart;
 telInput.value = formatTel(telInput.value);
+telInput.setSelectionRange(cursor, cursor);
 });
-
-function temiz(v){
-return v.replace(/\D/g,'');
-}
 
 function mesaj(tip,text){
 msg.innerText=text;
@@ -179,7 +180,7 @@ msg.style.display="block";
 
 window.giris = async function(){
 
-const telefon = temiz(telInput.value);
+const telefon = telInput.value;
 const sifre = document.getElementById("sifre").value;
 
 if(telefon.length !== 11){
