@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berber Paneli</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial;background:#f5f5f7;color:#111}
+.topbar{position:sticky;top:0;background:#111;color:white;padding:14px 18px}
+.topbar-inner{display:flex;justify-content:space-between;max-width:1000px;margin:auto}
+.container{max-width:1000px;margin:20px auto;padding:0 15px}
+.card{background:white;padding:18px;border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,0.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:15px}
+.btn{padding:10px;border:none;border-radius:12px;font-weight:bold;cursor:pointer}
+.delete{background:#c62828;color:white}
+.whatsapp{background:#128c7e;color:white}
+.badge{margin-top:10px;display:inline-block;background:#e0f2f1;color:#00695c;padding:5px 10px;border-radius:999px;font-weight:bold}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div>✂️ Berber Paneli</div>
+    <button onclick="cikis()">Çıkış</button>
+  </div>
+</div>
+
+<div class="container">
+  <h2 id="hosgeldin"></h2>
+  <div id="liste" class="grid"></div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+authDomain:"berber-randevu-14f7f.firebaseapp.com",
+projectId:"berber-randevu-14f7f",
+storageBucket:"berber-randevu-14f7f.firebasestorage.app",
+messagingSenderId:"280530860977",
+appId:"1:280530860977:web:52c0df04c228896f211b90"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const liste = document.getElementById("liste");
+const hosgeldin = document.getElementById("hosgeldin");
+
+hosgeldin.innerText = "Hoş geldin, " + (localStorage.getItem("berberAdSoyad") || "Berber");
+
+function temizTel(t){
+t = String(t||"").replace(/\D/g,"");
+if(t.startsWith("90")) t=t.substring(2);
+if(t.length==10 && t.startsWith("5")) t="0"+t;
+return t;
+}
+
+function waTel(t){
+t = temizTel(t);
+if(t.startsWith("0")) t="90"+t.substring(1);
+return t;
+}
+
+function mesaj(r){
+return `Merhaba ${r.ad}, ${r.tarih} ${r.saat} randevunuz iptal edilmiştir.`;
+}
+
+async function yukle(){
+
+liste.innerHTML="";
+
+const snap = await getDocs(collection(db,"randevular"));
+
+let data = [];
+
+snap.forEach(d=>{
+const r = d.data();
+
+const obj = {
+id:d.id,
+tarih: r.date || r.tarih || r.kayitTarih,
+saat: r.time || r.saat || r.zaman || r.kayitSaat,
+ad: r.name || r.isim || r.adSoyad || r.kayitAd,
+telefon: r.phone || r.telefon || r.kayitTelefon,
+hizmet: r.service || r.hizmet || r.kayitHizmet
+};
+
+data.push(obj);
+});
+
+/* 🔥 BOŞ KAYIT FİLTRE */
+data = data.filter(r => r.tarih && r.saat && r.ad && r.telefon);
+
+/* 🔥 SIRALA */
+data.sort((a,b)=> (a.tarih+" "+a.saat).localeCompare(b.tarih+" "+b.saat));
+
+if(!data.length){
+liste.innerHTML="<div class='card'>Randevu yok</div>";
+return;
+}
+
+data.forEach(r=>{
+
+const div = document.createElement("div");
+div.className="card";
+
+div.innerHTML=`
+<b>${r.saat}</b><br>
+${r.tarih}<br><br>
+
+<b>Müşteri:</b> ${r.ad}<br>
+<b>Telefon:</b> ${r.telefon}<br>
+<b>Hizmet:</b> ${r.hizmet || "-"}<br>
+
+<span class="badge">AKTİF</span>
+
+<div style="margin-top:10px;display:flex;gap:8px">
+<button class="btn delete" onclick="sil('${r.id}')">Randevu Sil</button>
+<button class="btn whatsapp" onclick="silMesaj('${r.id}')">Sil ve Mesaj At</button>
+</div>
+`;
+
+div.dataset.r = JSON.stringify(r);
+liste.appendChild(div);
+
+});
+
+}
+
+window.sil = async function(id){
+if(!confirm("Silinsin mi?")) return;
+await deleteDoc(doc(db,"randevular",id));
+yukle();
+}
+
+window.silMesaj = async function(id){
+
+const kart = [...document.querySelectorAll(".card")]
+.find(k=> JSON.parse(k.dataset.r).id === id);
+
+const r = JSON.parse(kart.dataset.r);
+
+await deleteDoc(doc(db,"randevular",id));
+
+const tel = waTel(r.telefon);
+const msg = encodeURIComponent(mesaj(r));
+
+window.open(`https://wa.me/${tel}?text=${msg}`,"_blank");
+
+yukle();
+}
+
+window.cikis = function(){
+localStorage.clear();
+location.href="berbergiris.html";
+}
+
+yukle();
+
+</script>
+
+</body>
+</html>
