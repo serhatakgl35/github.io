@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Berber Paneli</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial;
+background:#f5f5f7;
+color:#111;
+}
+
+.topbar{
+position:sticky;
+top:0;
+background:#111;
+color:#fff;
+padding:14px 18px;
+z-index:50
+}
+
+.topbar-inner{
+max-width:1150px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:space-between
+}
+
+.brand{font-weight:900}
+
+.logout-btn{
+border:none;
+background:#fff;
+color:#111;
+padding:10px 18px;
+border-radius:999px;
+font-weight:900;
+cursor:pointer;
+box-shadow:0 8px 20px rgba(0,0,0,.22)
+}
+
+.container{
+max-width:1150px;
+margin:20px auto;
+padding:0 16px
+}
+
+.hero{
+background:#fff;
+border-radius:24px;
+padding:20px;
+box-shadow:0 10px 28px rgba(0,0,0,.08);
+margin-bottom:16px
+}
+
+.status{
+background:#fff;
+border-radius:16px;
+padding:12px 14px;
+box-shadow:0 6px 18px rgba(0,0,0,.06);
+margin-bottom:14px;
+color:#555
+}
+
+.calendar-controls{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin:12px 0
+}
+
+.btn{
+border:none;
+border-radius:13px;
+padding:11px 13px;
+font-weight:900;
+cursor:pointer;
+background:#111;
+color:#fff
+}
+
+.btn.secondary{
+background:#e9e9ee;
+color:#111
+}
+
+.hafta-yazi{
+background:#f3f3f3;
+border:1px solid #ddd;
+border-radius:12px;
+padding:10px;
+text-align:center;
+font-weight:900;
+margin-bottom:12px
+}
+
+.tablo-wrap{
+overflow-x:auto;
+border-radius:14px;
+border:1px solid #ddd;
+background:white
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+table-layout:fixed;
+min-width:820px
+}
+
+th,td{
+border:1px solid #ddd;
+padding:7px 5px;
+text-align:center;
+vertical-align:middle
+}
+
+thead th{
+background:#ececec;
+font-size:12px
+}
+
+.saat-baslik{
+width:70px;
+background:#f4f4f4;
+font-weight:900
+}
+
+.musait{
+background:#dff3df;
+color:#146214;
+font-weight:900
+}
+
+.dolu{
+background:#ffd9d9;
+color:#8b0000
+}
+
+.kapali,.gecmis{
+background:#e4e4e4;
+color:#666;
+font-weight:900
+}
+
+.dolu-isim{font-weight:900;font-size:12px}
+.dolu-mini{font-size:10px}
+
+.etiket{
+display:inline-block;
+margin-top:4px;
+padding:2px 6px;
+border-radius:999px;
+font-size:9px;
+font-weight:900
+}
+
+.etiket-dolu{background:#ffbcbc;color:#8b0000}
+.etiket-musait{background:#c9eec9;color:#146214}
+.etiket-gecmis{background:#d6d6d6;color:#555}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">✂️ Berber Paneli</div>
+    <button class="logout-btn" onclick="cikis()">Çıkış Yap</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <h2>Haftalık Randevu Takvimi</h2>
+    <p>Sadece takvim görünümü aktif.</p>
+  </div>
+
+  <div id="durum" class="status">Yükleniyor...</div>
+
+  <div class="calendar-controls">
+    <button class="btn secondary" onclick="oncekiHafta()">← Önceki</button>
+    <button class="btn secondary" onclick="buHafta()">Bu Hafta</button>
+    <button class="btn secondary" onclick="yukle()">Yenile</button>
+    <button class="btn secondary" onclick="sonrakiHafta()">Sonraki →</button>
+  </div>
+
+  <div id="haftaYazi" class="hafta-yazi">Yükleniyor...</div>
+
+  <div class="tablo-wrap">
+    <div id="takvimAlan">Yükleniyor...</div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain:"berber-randevu-14f7f.firebaseapp.com",
+  projectId:"berber-randevu-14f7f",
+  storageBucket:"berber-randevu-14f7f.firebasestorage.app",
+  messagingSenderId:"280530860977",
+  appId:"1:280530860977:web:52c0df04c228896f211b90"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+if(localStorage.getItem("berberGiris") !== "true"){
+  location.href="berbergiris.html";
+}
+
+const SAATLER = ["09:00","09:50","10:30","11:20","13:20","14:00","14:50","15:30"];
+const GUNLER = ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"];
+
+let aktifHafta = pazartesiBul(new Date());
+let sonData = [];
+
+function iki(n){return String(n).padStart(2,"0");}
+
+function tarihKey(d){
+  return d.getFullYear()+"-"+iki(d.getMonth()+1)+"-"+iki(d.getDate());
+}
+
+function tarihGoster(d){
+  return iki(d.getDate())+"/"+iki(d.getMonth()+1)+"/"+d.getFullYear();
+}
+
+function pazartesiBul(t){
+  const d=new Date(t);
+  const gun=d.getDay();
+  const fark=gun===0?-6:1-gun;
+  d.setDate(d.getDate()+fark);
+  return d;
+}
+
+function haftaGunleri(b){
+  return Array.from({length:5},(_,i)=>{
+    const d=new Date(b);
+    d.setDate(b.getDate()+i);
+    return d;
+  });
+}
+
+function normalize(d){
+  return {
+    tarih:d.date||d.tarih,
+    saat:d.time||d.saat,
+    ad:d.name||d.isim,
+    telefon:d.phone||d.telefon,
+    hizmet:d.service||d.hizmet
+  };
+}
+
+async function fetchAll(){
+  const snap=await getDocs(collection(db,"randevular"));
+  let arr=[];
+  snap.forEach(x=>arr.push(normalize(x.data())));
+  return arr;
+}
+
+function takvimRender(data){
+
+  const gunler=haftaGunleri(aktifHafta);
+
+  document.getElementById("haftaYazi").innerText =
+    tarihGoster(gunler[0])+" - "+tarihGoster(gunler[4]);
+
+  const map={};
+  data.forEach(r=>{
+    map[r.tarih+"_"+r.saat]=r;
+  });
+
+  let html="<table><thead><tr><th>Saat</th>";
+
+  gunler.forEach((g,i)=>{
+    html+=`<th>${GUNLER[i]}<br>${tarihGoster(g)}</th>`;
+  });
+
+  html+="</tr></thead><tbody>";
+
+  SAATLER.forEach(saat=>{
+    html+="<tr><td class='saat-baslik'>"+saat+"</td>";
+
+    gunler.forEach(g=>{
+      const t=tarihKey(g);
+      const r=map[t+"_"+saat];
+
+      if(r){
+        html+=`
+          <td class="dolu">
+            <div class="dolu-isim">${r.ad}</div>
+            <div class="dolu-mini">${r.telefon}</div>
+            <div class="dolu-mini">${r.hizmet||""}</div>
+            <span class="etiket etiket-dolu">DOLU</span>
+          </td>`;
+      }else{
+        html+=`<td class="musait">MÜSAİT<br><span class="etiket etiket-musait">BOŞ</span></td>`;
+      }
+
+    });
+
+    html+="</tr>";
+  });
+
+  html+="</tbody></table>";
+
+  document.getElementById("takvimAlan").innerHTML=html;
+}
+
+window.yukle = async function(){
+  document.getElementById("durum").innerText="Yükleniyor...";
+  sonData = await fetchAll();
+  takvimRender(sonData);
+  document.getElementById("durum").innerText="Takvim hazır.";
+}
+
+window.oncekiHafta=function(){
+  aktifHafta.setDate(aktifHafta.getDate()-7);
+  takvimRender(sonData);
+}
+
+window.buHafta=function(){
+  aktifHafta=pazartesiBul(new Date());
+  takvimRender(sonData);
+}
+
+window.sonrakiHafta=function(){
+  aktifHafta.setDate(aktifHafta.getDate()+7);
+  takvimRender(sonData);
+}
+
+window.cikis=function(){
+  localStorage.clear();
+  location.href="berbergiris.html";
+}
+
+yukle();
+</script>
+
+</body>
+</html>
