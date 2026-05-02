@@ -1237,7 +1237,7 @@ function takvimHTML(gunler,veriler){
       }else if(saatKapali){
         html += `<td class="slot kapali">KAPALI<div class="etiket">SAAT</div></td>`;
       }else if(r){
-        html += `<td class="slot ${r.gecmis ? "gecmis" : "dolu"}">${r.gecmis ? "GEÇMİŞ" : "DOLU"}<div class="etiket">${r.gecmis ? "GEÇMİŞ" : "DOLU"}</div></td>`;
+        html += `<td class="slot ${r.gecmis ? "gecmis" : "dolu"}">${r.gecmis ? "GEÇMİŞ" : "DOLU"}</td>`;
       }else if(slotGecmis){
         html += `<td class="slot gecmis">GEÇMİŞ<div class="etiket">SÜRE GEÇTİ</div></td>`;
       }else{
