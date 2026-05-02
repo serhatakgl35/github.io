@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Berber Paneli</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
+      background: #f5f5f7;
+      color: #111;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(17,17,17,0.92);
+      backdrop-filter: blur(18px);
+      color: white;
+      padding: 14px 18px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+    }
+
+    .topbar-inner {
+      max-width: 1050px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .logout-btn {
+      border: none;
+      background: #fff;
+      color: #111;
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 24px auto;
+      padding: 0 16px 35px;
+    }
+
+    .hero {
+      background: white;
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 7px;
+      font-size: 25px;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      background: #111;
+      color: white;
+      padding: 12px 15px;
+      border-radius: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: #e9e9ee;
+      color: #111;
+    }
+
+    .status {
+      margin: 14px 0;
+      padding: 13px 15px;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 7px 20px rgba(0,0,0,0.06);
+      color: #555;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 17px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .time {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .date {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 13px;
+      font-weight: 700;
+    }
+
+    .info {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #222;
+    }
+
+    .info b {
+      color: #111;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: #eaf7ee;
+      color: #137333;
+    }
+
+    .badge.past {
+      background: #eeeeee;
+      color: #666;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .delete-btn {
+      border: none;
+      background: #b00020;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .whatsapp-btn {
+      border: none;
+      background: #128c7e;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .empty {
+      background: white;
+      border-radius: 22px;
+      padding: 28px;
+      text-align: center;
+      color: #666;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.07);
+    }
+
+    @media (max-width: 600px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">✂️ Berber Paneli</div>
+      <button class="logout-btn" onclick="cikisYap()">Çıkış Yap</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1 id="hosgeldin">Hoş geldin</h1>
+      <p class="muted">
+        Buradan tüm müşteri randevularını görüntüleyebilir ve işlem yapabilirsin.
+      </p>
+
+      <div class="actions">
+        <button class="btn" onclick="randevulariYukle()">Randevuları Yenile</button>
+        <button class="btn secondary" onclick="bugununRandevulari()">Bugünkü Randevular</button>
+      </div>
+    </div>
+
+    <div id="durum" class="status">Randevular yükleniyor...</div>
+
+    <div id="liste" class="grid"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+      authDomain: "berber-randevu-14f7f.firebaseapp.com",
+      projectId: "berber-randevu-14f7f",
+      storageBucket: "berber-randevu-14f7f.firebasestorage.app",
+      messagingSenderId: "280530860977",
+      appId: "1:280530860977:web:52c0df04c228896f211b90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const girisVar = localStorage.getItem("berberGiris");
+    const berberAdSoyad = localStorage.getItem("berberAdSoyad") || "Berber";
+    const berberTelefon = localStorage.getItem("berberTelefon") || "";
+
+    const listeDiv = document.getElementById("liste");
+    const durumDiv = document.getElementById("durum");
+    const hosgeldin = document.getElementById("hosgeldin");
+
+    if (girisVar !== "true" || !berberTelefon) {
+      window.location.href = "berbergiris.html";
+    }
+
+    hosgeldin.textContent = "Hoş geldin, " + berberAdSoyad;
+
+    function escapeHTML(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function tarihFormatla(tarih) {
+      if (!tarih) return "-";
+
+      const parca = String(tarih).split("-");
+      if (parca.length !== 3) return tarih;
+
+      return `${parca[2]}.${parca[1]}.${parca[0]}`;
+    }
+
+    function bugunStr() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const gun = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${gun}`;
+    }
+
+    function gecmisMi(tarih, saat) {
+      if (!tarih || !saat) return false;
+
+      const randevuZamani = new Date(`${tarih}T${saat}:00`);
+      const simdi = new Date();
+
+      return simdi > randevuZamani;
+    }
+
+    function veriAl(data, alanlar) {
+      for (const alan of alanlar) {
+        if (data[alan] !== undefined && data[alan] !== null && data[alan] !== "") {
+          return data[alan];
+        }
+      }
+      return "";
+    }
+
+    function telefonTemizle(tel) {
+      let t = String(tel || "").replace(/\D/g, "");
+
+      if (t.startsWith("90")) {
+        t = t.substring(2);
+      }
+
+      if (t.length === 10 && t.startsWith("5")) {
+        t = "0" + t;
+      }
+
+      return t;
+    }
+
+    function whatsappTelefon(tel) {
+      let t = telefonTemizle(tel);
+
+      if (t.startsWith("0")) {
+        t = "90" + t.substring(1);
+      }
+
+      return t;
+    }
+
+    function whatsappMesajOlustur(r) {
+      return `Merhaba ${r.ad || ""}, ${tarihFormatla(r.tarih)} ${r.saat || ""} tarihli randevunuz iptal edilmiştir.`;
+    }
+
+    async function randevuSorgula(sadeceBugun = false) {
+      listeDiv.innerHTML = "";
+      durumDiv.textContent = "Randevular yükleniyor...";
+
+      try {
+        const snap = await getDocs(collection(db, "randevular"));
+
+        let randevular = [];
+
+        snap.forEach(docSnap => {
+          const r = docSnap.data();
+
+          randevular.push({
+            id: docSnap.id,
+            ...r,
+            tarih: veriAl(r, ["date", "tarih", "kayitTarih"]),
+            saat: veriAl(r, ["time", "saat", "zaman", "kayitSaat"]),
+            ad: veriAl(r, ["name", "isim", "adSoyad", "kayitAd"]),
+            telefon: veriAl(r, ["phone", "telefon", "kayitTelefon"]),
+            hizmet: veriAl(r, ["service", "hizmet", "kayitHizmet"])
+          });
+        });
+
+        if (sadeceBugun) {
+          const bugun = bugunStr();
+          randevular = randevular.filter(r => r.tarih === bugun);
+        }
+
+        randevular.sort((a, b) => {
+          const ax = `${a.tarih || ""} ${a.saat || ""}`;
+          const bx = `${b.tarih || ""} ${b.saat || ""}`;
+          return ax.localeCompare(bx);
+        });
+
+        renderRandevular(randevular, sadeceBugun);
+
+      } catch (error) {
+        console.error(error);
+        durumDiv.textContent = "Randevular yüklenirken hata oluştu. Firebase ayarlarını ve Firestore Rules kontrol edin.";
+      }
+    }
+
+    function renderRandevular(randevular, sadeceBugun) {
+      listeDiv.innerHTML = "";
+
+      if (!randevular.length) {
+        durumDiv.textContent = sadeceBugun
+          ? "Bugün randevu bulunamadı."
+          : "Randevu bulunamadı.";
+
+        listeDiv.innerHTML = `
+          <div class="empty">
+            Gösterilecek randevu yok.
+          </div>
+        `;
+        return;
+      }
+
+      durumDiv.textContent = `${randevular.length} randevu bulundu.`;
+
+      randevular.forEach(r => {
+        const past = gecmisMi(r.tarih, r.saat);
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <div class="time">${escapeHTML(r.saat || "-")}</div>
+          <div class="date">${escapeHTML(tarihFormatla(r.tarih))}</div>
+
+          <div class="info">
+            <div><b>Müşteri:</b> ${escapeHTML(r.ad || "-")}</div>
+            <div><b>Telefon:</b> ${escapeHTML(r.telefon || "-")}</div>
+            <div><b>Hizmet:</b> ${escapeHTML(r.hizmet || "-")}</div>
+          </div>
+
+          <span class="badge ${past ? "past" : ""}">
+            ${past ? "SAATİ GEÇTİ" : "AKTİF RANDEVU"}
+          </span>
+
+          <div class="card-actions">
+            <button class="delete-btn" onclick="randevuSil('${r.id}')">Randevu Sil</button>
+            <button class="whatsapp-btn" onclick="randevuSilVeMesajAt('${r.id}')">Sil ve Mesaj At</button>
+          </div>
+        `;
+
+        card.dataset.randevu = JSON.stringify(r);
+        listeDiv.appendChild(card);
+      });
+    }
+
+    window.randevuSil = async function (id) {
+      const onay = confirm("Bu randevuyu silmek istediğine emin misin?");
+
+      if (!onay) return;
+
+      try {
+        await deleteDoc(doc(db, "randevular", id));
+        durumDiv.textContent = "Randevu silindi.";
+        randevuSorgula(false);
+      } catch (error) {
+        console.error(error);
+        alert("Randevu silinirken hata oluştu.");
+      }
+    };
+
+    window.randevuSilVeMesajAt = async function (id) {
+      const kartlar = document.querySelectorAll(".card");
+      let randevu = null;
+
+      kartlar.forEach(kart => {
+        const data = JSON.parse(kart.dataset.randevu || "{}");
+        if (data.id === id) {
+          randevu = data;
+        }
+      });
+
+      if (!randevu) {
+        alert("Randevu bilgisi bulunamadı.");
+        return;
+      }
+
+      const onay = confirm("Randevu silinsin ve müşteriye WhatsApp mesajı hazırlansın mı?");
+
+      if (!onay) return;
+
+      try {
+        await deleteDoc(doc(db, "randevular", id));
+
+        const tel = whatsappTelefon(randevu.telefon);
+        const mesaj = encodeURIComponent(whatsappMesajOlustur(randevu));
+
+        if (!tel || tel.length < 12) {
+          alert("Randevu silindi fakat müşteri telefon numarası geçersiz.");
+          randevuSorgula(false);
+          return;
+        }
+
+        durumDiv.textContent = "Randevu silindi. WhatsApp mesajı hazırlanıyor...";
+
+        window.open(`https://wa.me/${tel}?text=${mesaj}`, "_blank");
+
+        randevuSorgula(false);
+
+      } catch (error) {
+        console.error(error);
+        alert("Randevu silinirken hata oluştu.");
+      }
+    };
+
+    window.randevulariYukle = function () {
+      randevuSorgula(false);
+    };
+
+    window.bugununRandevulari = function () {
+      randevuSorgula(true);
+    };
+
+    window.cikisYap = function () {
+      localStorage.removeItem("berberGiris");
+      localStorage.removeItem("berberId");
+      localStorage.removeItem("berberAdSoyad");
+      localStorage.removeItem("berberTelefon");
+      window.location.href = "berbergiris.html";
+    };
+
+    randevuSorgula(false);
+  </script>
+
+</body>
+</html>
