@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Çay Ocağı Ödemeleri</title>
+<title>Ödeme Admin Paneli</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -80,47 +80,88 @@ th{background:#f8f8f8;font-weight:950}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <a href="panel.html">Panel</a>
-  <a href="randevu.html">Berber Randevusu</a>
-  <button onclick="logout()">Çıkış</button>
+
+<div id="adminLogin" class="centerWrap">
+  <div class="card loginCard">
+    <div class="logo">☕</div>
+    <h1 style="text-align:center">Ödeme Admin</h1>
+    <p style="text-align:center">Çay ocağı ödeme takibi</p>
+    <label>Admin Kullanıcı</label>
+    <input id="adminUser" placeholder="admin">
+    <label>Şifre</label>
+    <input id="adminPass" type="password">
+    <button class="main" onclick="adminLogin()">Giriş Yap</button>
+    <div id="loginMsg" class="msg"></div>
+  </div>
 </div>
 
-<div class="wrap">
-  <div class="card">
-    <h1>Çay Ocağı Ödemeleri</h1>
-    <p id="personelInfo">Yükleniyor...</p>
-    <p class="muted" id="donemInfo"></p>
+<div id="adminPanel" class="hide">
+  <div class="topbar">
+    <button onclick="adminLogout()">Çıkış</button>
+    <a href="index.html">Personel Giriş</a>
   </div>
 
-  <div class="grid">
+  <div class="wrap">
     <div class="card">
-      <h3>Bu Dönemki Aidat</h3>
-      <h1 id="aidatTutar">300 TL</h1>
-      <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
-      <div id="uyariAlan"></div>
-    </div>
+      <h1>Admin Ödeme Takibi</h1>
+      <p>Ödeme dönemi ayın 15'inden sonraki ayın 14'üne kadardır. Yeni dönem her ayın 15'inde başlar.</p>
 
-    <div class="card">
-      <h3>Ödeme IBAN</h3>
-      <div class="ibanBox">
-        <div id="ibanText" class="iban">Yükleniyor...</div>
-        <button class="copyBtn" onclick="ibanKopyala()" title="IBAN Kopyala">📋</button>
+      <div class="grid">
+        <div>
+          <label>Dönem Seç</label>
+          <input id="adminAy" type="month" onchange="adminListele()">
+          <p class="muted" id="donemLabelAdmin"></p>
+        </div>
+        <div>
+          <label>Filtre</label>
+          <select id="adminFiltre" onchange="adminListele()">
+            <option value="hepsi">Hepsi</option>
+            <option value="odendi">Ödendi</option>
+            <option value="odeme_bekliyor">Ödeme Bekliyor</option>
+            <option value="reddedildi">Reddedildi</option>
+          </select>
+        </div>
+        <div>
+          <label>Bu Dönem Toplanacak Tutar</label>
+          <input id="aylikTutarInput" type="number" min="0" placeholder="Örn: 600">
+        </div>
       </div>
-      <div id="copyMsg" class="copyMsg"></div>
-      <p class="muted">Açıklama kısmına ad soyad yazılması önerilir.</p>
-    </div>
-  </div>
 
-  <div class="card">
-    <h3>Geçmiş Ödeme Durumlarım</h3>
-    <div id="personelGecmis">Yükleniyor...</div>
+      <button class="main" onclick="aylikTutarKaydet()">Bu Dönem Tutarını Kaydet</button>
+    </div>
+
+    <div class="card">
+      <h3>Özet</h3>
+      <div id="adminOzet" class="grid"></div>
+    </div>
+
+    <div class="card">
+      <h3>Personel Listesi</h3>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Personel</th>
+              <th>Telefon</th>
+              <th>Dönem</th>
+              <th>Tutar</th>
+              <th>Durum</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody id="adminTable"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore, collection, getDocs, query, where,
+  addDoc, updateDoc, doc, getDoc, setDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 const firebaseConfig = {
@@ -198,122 +239,201 @@ async function donemTutariGetir(db, key, fallback=VARSAYILAN_AIDAT){
 }
 
 
-const IBAN = "TR00 0000 0000 0000 0000 0000 00";
-const tel = temizTelefon(localStorage.getItem("musteriTelefon"));
-const adLocal = localStorage.getItem("musteriAd") || "";
-if(!tel) location.href="index.html";
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "123456";
+let aktifDonemTutari = VARSAYILAN_AIDAT;
 
-document.getElementById("ibanText").textContent = IBAN;
-
-window.ibanKopyala = async function(){
-  try{
-    await navigator.clipboard.writeText(IBAN);
-  }catch(e){
-    const temp = document.createElement("input");
-    temp.value = IBAN;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-  }
-  document.getElementById("copyMsg").textContent = "IBAN kopyalandı ✅";
-  setTimeout(()=>document.getElementById("copyMsg").textContent="", 2000);
-};
-
-window.logout = function(){
-  localStorage.removeItem("musteriGiris");
-  localStorage.removeItem("musteriTelefon");
-  localStorage.removeItem("musteriAd");
-  localStorage.removeItem("personelDocId");
-  location.href="index.html";
-};
-
-async function yukle(){
-  const aktifDonem = donemKey();
-  const aktifDonemTutar = await donemTutariGetir(db, aktifDonem);
-
-  let ad = adLocal;
-  try{
-    const ps = await getDoc(doc(db, PERSONEL_COLLECTION, tel));
-    if(ps.exists()){
-      const p = ps.data();
-      ad = p.isim || p.adSoyad || p.ad || p.name || adLocal || "Personel";
-    }
-  }catch(e){ console.warn(e); }
-
-  document.getElementById("personelInfo").textContent = ad + " olarak giriş yapıldı.";
-  document.getElementById("donemInfo").textContent = "Aktif dönem: " + donemLabel(aktifDonem);
-
-  const q1 = query(collection(db, ODEME_COLLECTION), where("personelId", "==", tel));
-  const q2 = query(collection(db, ODEME_COLLECTION), where("telefon", "==", tel));
-  const snap1 = await getDocs(q1);
-  const snap2 = await getDocs(q2);
-
-  const map = new Map();
-  snap1.forEach(d=>map.set(d.id, {id:d.id, ...d.data()}));
-  snap2.forEach(d=>map.set(d.id, {id:d.id, ...d.data()}));
-
-  const list = Array.from(map.values()).sort((a,b)=>String(b.ay||"").localeCompare(String(a.ay||"")));
-
-  let aktifDurum = "odeme_bekliyor";
-  let aktifTutar = aktifDonemTutar;
-  let aktifKayitVar = false;
-  let html = "";
-
-  for(const o of list){
-    const key = o.ay || "-";
-    const kayitDurum = o.durum || "odeme_bekliyor";
-    let donemTutar = await donemTutariGetir(db, key, VARSAYILAN_AIDAT);
-    const kayitTutar = Number(o.tutar || donemTutar || VARSAYILAN_AIDAT);
-
-    if(key === aktifDonem){
-      aktifKayitVar = true;
-      aktifDurum = kayitDurum;
-      aktifTutar = kayitTutar;
-    }
-
-    html += `
-      <div class="historyItem">
-        <div class="historyLeft">
-          <div class="historyTitle">Dönem: ${donemLabel(key)}</div>
-          <div class="historyMoney">${kayitTutar} TL</div>
-          ${o.adminNot ? `<div class="muted">Admin Notu: ${o.adminNot}</div>` : ""}
-        </div>
-        <span class="status ${durumClass(kayitDurum, key)}">${durumText(kayitDurum, key)}</span>
-      </div>
-    `;
-  }
-
-  document.getElementById("aidatTutar").textContent = aktifTutar + " TL";
-  const durumEl = document.getElementById("personelDurum");
-  durumEl.textContent = durumText(aktifDurum, aktifDonem);
-  durumEl.className = "status " + durumClass(aktifDurum, aktifDonem);
-
-  const uyariAlan = document.getElementById("uyariAlan");
-  uyariAlan.innerHTML = "";
-  if(aktifDurum !== "odendi" && donemGectiMi(aktifDonem)){
-    uyariAlan.innerHTML = `<div class="warningBox">ÖDEME GEÇTİ<br>Dönem: ${ayAdi(aktifDonem)}</div>`;
-  }
-
-  if(!html){
-    html = `
-      <div class="historyItem">
-        <div class="historyLeft">
-          <div class="historyTitle">Dönem: ${donemLabel(aktifDonem)}</div>
-          <div class="historyMoney">${aktifDonemTutar} TL</div>
-        </div>
-        <span class="status bekliyor">Ödeme Bekliyor</span>
-      </div>
-    `;
-  }
-
-  document.getElementById("personelGecmis").innerHTML = html;
+function getAd(p){
+  return p.isim || p.adSoyad || p.ad || p.name || p.fullName || "İsimsiz Personel";
+}
+function getTelefonFromDoc(id,p){
+  return temizTelefon(p.telefon || p.phone || p.tel || p.gsm || id || "");
+}
+function getAktif(p){
+  if(p.aktif === false) return false;
+  if(p.active === false) return false;
+  if(p.durum === "pasif") return false;
+  return true;
 }
 
-yukle().catch(e=>{
-  console.error(e);
-  document.getElementById("personelGecmis").innerHTML = "<p class='msg'>Ödeme bilgileri yüklenemedi.</p>";
-});
+window.adminLogin = function(){
+  const u = document.getElementById("adminUser").value.trim();
+  const p = document.getElementById("adminPass").value.trim();
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    localStorage.setItem("cay_admin_login","true");
+    adminAc();
+  }else{
+    document.getElementById("loginMsg").textContent = "Admin bilgileri hatalı";
+  }
+};
+
+window.adminLogout = function(){
+  localStorage.removeItem("cay_admin_login");
+  location.reload();
+};
+
+function adminAc(){
+  document.getElementById("adminLogin").classList.add("hide");
+  document.getElementById("adminPanel").classList.remove("hide");
+  document.getElementById("adminAy").value = donemKey();
+  adminListele();
+}
+
+window.aylikTutarKaydet = async function(){
+  const key = document.getElementById("adminAy").value || donemKey();
+  const tutar = Number(document.getElementById("aylikTutarInput").value || 0);
+  if(!tutar || tutar <= 0) return alert("Geçerli bir tutar gir.");
+
+  await setDoc(doc(db, AYAR_COLLECTION, key), {
+    aylikTutar: tutar,
+    donem: key,
+    donemEtiketi: donemLabel(key),
+    updatedAt: serverTimestamp()
+  }, { merge:true });
+
+  alert("Dönem tutarı kaydedildi.");
+  adminListele();
+};
+
+window.adminListele = async function(){
+  const key = document.getElementById("adminAy").value || donemKey();
+  const filtre = document.getElementById("adminFiltre").value;
+
+  document.getElementById("donemLabelAdmin").textContent = "Dönem: " + donemLabel(key);
+
+  aktifDonemTutari = await donemTutariGetir(db, key, VARSAYILAN_AIDAT);
+  document.getElementById("aylikTutarInput").value = aktifDonemTutari;
+
+  const personelSnap = await getDocs(collection(db, PERSONEL_COLLECTION));
+  const odemeQ = query(collection(db, ODEME_COLLECTION), where("ay", "==", key));
+  const odemeSnap = await getDocs(odemeQ);
+
+  const odemeler = {};
+  odemeSnap.forEach(d=>{
+    const o = { id:d.id, ...d.data() };
+    odemeler[o.personelId] = o;
+    if(o.telefon) odemeler[o.telefon] = o;
+  });
+
+  let personeller = [];
+  personelSnap.forEach(pdoc=>{
+    const personel = { id:pdoc.id, ...pdoc.data() };
+    if(!getAktif(personel)) return;
+    personeller.push(personel);
+  });
+
+  personeller.sort((a,b)=>getAd(a).localeCompare(getAd(b),"tr",{sensitivity:"base"}));
+
+  let rows = "";
+  let say = { odendi:0, odeme_bekliyor:0, reddedildi:0 };
+  let toplamOnayliTutar = 0;
+  let beklenenToplam = personeller.length * aktifDonemTutari;
+
+  personeller.forEach(personel=>{
+    const tel = getTelefonFromDoc(personel.id, personel);
+    const ad = getAd(personel);
+    const odeme = odemeler[personel.id] || odemeler[tel];
+    const durum = odeme ? (odeme.durum || "odeme_bekliyor") : "odeme_bekliyor";
+    const tutar = Number(odeme?.tutar || aktifDonemTutari || VARSAYILAN_AIDAT);
+
+    say[durum] = (say[durum] || 0) + 1;
+    if(durum === "odendi") toplamOnayliTutar += Number(tutar || 0);
+
+    if(filtre !== "hepsi" && filtre !== durum) return;
+
+    const inputId = "tutar_" + tel;
+    const safeAd = String(ad).replaceAll("'","\\'");
+
+    rows += `
+      <tr>
+        <td>${ad}</td>
+        <td>${tel}</td>
+        <td>${donemLabel(key)}</td>
+        <td><input id="${inputId}" class="tutarInput" type="number" min="0" value="${tutar}" placeholder="${aktifDonemTutari}"> TL</td>
+        <td><span class="status ${durumClass(durum, key)}">${durumText(durum, key)}</span></td>
+        <td>
+          <button class="small green" onclick="durumDegistir('${personel.id}','${safeAd}','${tel}','odendi','${inputId}')">Ödendi</button>
+          <button class="small gray" onclick="durumDegistir('${personel.id}','${safeAd}','${tel}','odeme_bekliyor','${inputId}')">Bekliyor</button>
+          <button class="small red" onclick="reddet('${personel.id}','${safeAd}','${tel}','${inputId}')">Reddet</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("adminTable").innerHTML = rows || `<tr><td colspan="6">Kayıt yok.</td></tr>`;
+
+  document.getElementById("adminOzet").innerHTML = `
+    <div class="card"><h3>Bu Dönem Aidatı</h3><h1>${aktifDonemTutari} TL</h1></div>
+    <div class="card"><h3>Ödendi</h3><h1>${say.odendi}</h1></div>
+    <div class="card"><h3>Ödeme Bekliyor</h3><h1>${say.odeme_bekliyor}</h1></div>
+    <div class="card"><h3>Reddedildi</h3><h1>${say.reddedildi}</h1></div>
+    <div class="card"><h3>Beklenen Toplam</h3><h1>${beklenenToplam} TL</h1></div>
+    <div class="card"><h3>Onaylanan Toplam</h3><h1>${toplamOnayliTutar} TL</h1></div>
+  `;
+};
+
+window.durumDegistir = async function(personelId, adSoyad, telefon, yeniDurum, inputId){
+  const key = document.getElementById("adminAy").value || donemKey();
+  let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
+  if(!girilenTutar || girilenTutar <= 0) girilenTutar = aktifDonemTutari || VARSAYILAN_AIDAT;
+
+  const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", key));
+  const snap = await getDocs(q);
+
+  const veri = {
+    personelId,
+    adSoyad,
+    telefon,
+    ay:key,
+    donemEtiketi:donemLabel(key),
+    tutar: girilenTutar,
+    durum: yeniDurum,
+    adminNot: "",
+    updatedAt: serverTimestamp()
+  };
+
+  if(snap.empty){
+    veri.createdAt = serverTimestamp();
+    await addDoc(collection(db, ODEME_COLLECTION), veri);
+  }else{
+    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
+  }
+
+  adminListele();
+};
+
+window.reddet = async function(personelId, adSoyad, telefon, inputId){
+  const sebep = prompt("Reddetme sebebi:", "Ödeme görünmedi");
+  const key = document.getElementById("adminAy").value || donemKey();
+  let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
+  if(!girilenTutar || girilenTutar <= 0) girilenTutar = aktifDonemTutari || VARSAYILAN_AIDAT;
+
+  const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", key));
+  const snap = await getDocs(q);
+
+  const veri = {
+    personelId,
+    adSoyad,
+    telefon,
+    ay:key,
+    donemEtiketi:donemLabel(key),
+    tutar: girilenTutar,
+    durum: "reddedildi",
+    adminNot: sebep || "Reddedildi",
+    updatedAt: serverTimestamp()
+  };
+
+  if(snap.empty){
+    veri.createdAt = serverTimestamp();
+    await addDoc(collection(db, ODEME_COLLECTION), veri);
+  }else{
+    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
+  }
+
+  adminListele();
+};
+
+if(localStorage.getItem("cay_admin_login") === "true") adminAc();
 </script>
 </body>
 </html>
