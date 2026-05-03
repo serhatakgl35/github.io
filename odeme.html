@@ -4,100 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Çay Ocağı Ödeme Takibi</title>
-
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:#f5f5f7;
-  color:#111;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
-}
-.topbar{
-  position:sticky;top:0;z-index:10;
-  background:#111;color:white;
-  padding:14px;
-  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
-  box-shadow:0 4px 18px rgba(0,0,0,.18);
-}
-.topbar button{
-  border:0;border-radius:999px;
-  padding:9px 15px;
-  font-weight:800;
-  cursor:pointer;
-}
+body{margin:0;background:#f5f5f7;color:#111;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+.topbar{position:sticky;top:0;z-index:10;background:#111;color:white;padding:14px;display:flex;justify-content:center;gap:10px;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+.topbar button{border:0;border-radius:999px;padding:9px 15px;font-weight:800;cursor:pointer}
 .wrap{max-width:1100px;margin:28px auto;padding:0 14px}
-.card{
-  background:#fff;
-  border-radius:22px;
-  padding:22px;
-  margin-bottom:18px;
-  box-shadow:0 12px 35px rgba(0,0,0,.08);
-}
+.card{background:#fff;border-radius:22px;padding:22px;margin-bottom:18px;box-shadow:0 12px 35px rgba(0,0,0,.08)}
 h1,h2,h3{margin-top:0}
-input,select,textarea{
-  width:100%;
-  padding:13px;
-  border:1px solid #ddd;
-  border-radius:14px;
-  margin:7px 0 12px;
-  font-size:15px;
-}
-button.main{
-  width:100%;
-  background:#111;
-  color:white;
-  border:0;
-  border-radius:14px;
-  padding:13px;
-  font-weight:900;
-  cursor:pointer;
-}
-button.small{
-  background:#111;
-  color:white;
-  border:0;
-  border-radius:10px;
-  padding:8px 10px;
-  font-weight:800;
-  cursor:pointer;
-  margin:2px;
-}
+input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:14px;margin:7px 0 12px;font-size:15px}
+button.main{width:100%;background:#111;color:white;border:0;border-radius:14px;padding:13px;font-weight:900;cursor:pointer}
+button.small{background:#111;color:white;border:0;border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer;margin:2px}
 button.green{background:#15803d}
 button.red{background:#b91c1c}
 button.gray{background:#4b5563}
 .hide{display:none}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px;
-}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .muted{color:#666;font-size:14px}
-.iban{
-  background:#f5f5f7;
-  padding:15px;
-  border-radius:15px;
-  font-size:18px;
-  font-weight:900;
-  word-break:break-word;
-}
-.status{
-  display:inline-block;
-  padding:7px 12px;
-  border-radius:999px;
-  font-weight:900;
-  font-size:13px;
-}
+.iban{background:#f5f5f7;padding:15px;border-radius:15px;font-size:18px;font-weight:900;word-break:break-word}
+.status{display:inline-block;padding:7px 12px;border-radius:999px;font-weight:900;font-size:13px}
 .odendi{background:#dcfce7;color:#166534}
 .bekliyor{background:#fef3c7;color:#92400e}
 .reddedildi{background:#fee2e2;color:#991b1b}
 table{width:100%;border-collapse:collapse}
-th,td{
-  padding:12px;
-  border-bottom:1px solid #eee;
-  text-align:left;
-  font-size:14px;
-}
+th,td{padding:12px;border-bottom:1px solid #eee;text-align:left;font-size:14px}
 th{background:#f8f8f8}
 </style>
 </head>
@@ -111,116 +41,103 @@ th{background:#f8f8f8}
 
 <div class="wrap">
 
-  <div id="loginCard" class="card">
-    <h1>Çay Ocağı Ödeme Sistemi</h1>
-    <p class="muted">Personel telefon + şifre ile giriş yapar. Admin ödemeleri manuel işaretler.</p>
+<div id="loginCard" class="card">
+  <h1>Çay Ocağı Ödeme Sistemi</h1>
+  <p class="muted">Berber sitesindeki mevcut personeller koleksiyonu ile giriş yapılır.</p>
 
-    <label>Telefon</label>
-    <input id="loginTelefon" placeholder="Örn: 05321234567">
+  <label>Telefon</label>
+  <input id="loginTelefon" placeholder="Örn: 05321234567">
 
-    <label>Şifre</label>
-    <input id="loginSifre" type="password" placeholder="Şifre">
+  <label>Şifre</label>
+  <input id="loginSifre" type="password" placeholder="Şifre">
 
-    <button class="main" onclick="login()">Giriş Yap</button>
+  <button class="main" onclick="login()">Giriş Yap</button>
 
-    <p class="muted">
-      Admin girişi için telefon kısmına <b>admin</b>, şifre kısmına <b>123456</b> yaz.
-    </p>
+  <p class="muted">Admin için telefon: <b>admin</b> / şifre: <b>123456</b></p>
+</div>
+
+<div id="personelPanel" class="hide">
+  <div class="card">
+    <h2>Personel Ödeme Paneli</h2>
+    <p id="personelInfo" class="muted"></p>
   </div>
 
-  <div id="personelPanel" class="hide">
+  <div class="grid">
+    <div class="card">
+      <h3>Bu Ayki Aidat</h3>
+      <h1 id="aidatTutar">300 TL</h1>
+      <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
+    </div>
 
     <div class="card">
-      <h2>Personel Ödeme Paneli</h2>
-      <p id="personelInfo" class="muted"></p>
+      <h3>Ödeme IBAN</h3>
+      <div id="ibanText" class="iban">TR00 0000 0000 0000 0000 0000 00</div>
+      <p class="muted">Açıklama kısmına ad soyad yazılması önerilir.</p>
     </div>
+  </div>
+
+  <div class="card">
+    <h3>Geçmiş Ödeme Durumlarım</h3>
+    <div id="personelGecmis"></div>
+  </div>
+</div>
+
+<div id="adminPanel" class="hide">
+  <div class="card">
+    <h2>Admin Ödeme Takibi</h2>
 
     <div class="grid">
-      <div class="card">
-        <h3>Bu Ayki Aidat</h3>
-        <h1 id="aidatTutar">300 TL</h1>
-        <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
+      <div>
+        <label>Ay Seç</label>
+        <input id="adminAy" type="month">
       </div>
 
-      <div class="card">
-        <h3>Ödeme IBAN</h3>
-        <div id="ibanText" class="iban">TR00 0000 0000 0000 0000 0000 00</div>
-        <p class="muted">Açıklama kısmına ad soyad yazılması önerilir.</p>
+      <div>
+        <label>Filtre</label>
+        <select id="adminFiltre" onchange="adminListele()">
+          <option value="hepsi">Hepsi</option>
+          <option value="odendi">Ödendi</option>
+          <option value="odeme_bekliyor">Ödeme Bekliyor</option>
+          <option value="reddedildi">Reddedildi</option>
+        </select>
       </div>
     </div>
 
-    <div class="card">
-      <h3>Geçmiş Ödeme Durumlarım</h3>
-      <div id="personelGecmis"></div>
-    </div>
-
+    <button class="main" onclick="adminListele()">Listeyi Yenile</button>
   </div>
 
-  <div id="adminPanel" class="hide">
-
-    <div class="card">
-      <h2>Admin Ödeme Takibi</h2>
-
-      <div class="grid">
-        <div>
-          <label>Ay Seç</label>
-          <input id="adminAy" type="month">
-        </div>
-
-        <div>
-          <label>Filtre</label>
-          <select id="adminFiltre" onchange="adminListele()">
-            <option value="hepsi">Hepsi</option>
-            <option value="odendi">Ödendi</option>
-            <option value="odeme_bekliyor">Ödeme Bekliyor</option>
-            <option value="reddedildi">Reddedildi</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="main" onclick="adminListele()">Listeyi Yenile</button>
-    </div>
-
-    <div class="card">
-      <h3>Özet</h3>
-      <div id="adminOzet" class="grid"></div>
-    </div>
-
-    <div class="card">
-      <h3>Personel Listesi</h3>
-      <div style="overflow:auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Personel</th>
-              <th>Telefon</th>
-              <th>Ay</th>
-              <th>Tutar</th>
-              <th>Durum</th>
-              <th>İşlem</th>
-            </tr>
-          </thead>
-          <tbody id="adminTable"></tbody>
-        </table>
-      </div>
-    </div>
-
+  <div class="card">
+    <h3>Özet</h3>
+    <div id="adminOzet" class="grid"></div>
   </div>
+
+  <div class="card">
+    <h3>Personel Listesi</h3>
+    <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Personel</th>
+            <th>Telefon</th>
+            <th>Ay</th>
+            <th>Tutar</th>
+            <th>Durum</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="adminTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-  addDoc,
-  updateDoc,
-  doc,
-  serverTimestamp
+  getFirestore, collection, getDocs, query, where,
+  addDoc, updateDoc, doc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -234,6 +151,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+const PERSONEL_COLLECTION = "personeller";
+const ODEME_COLLECTION = "cay_odemeler";
 
 const ADMIN_TELEFON = "admin";
 const ADMIN_SIFRE = "123456";
@@ -250,8 +170,28 @@ function mevcutAy(){
 
 function temizTelefon(tel){
   tel = String(tel || "").replace(/\D/g,"");
+  if(tel.startsWith("90")) tel = "0" + tel.slice(2);
   if(tel && !tel.startsWith("0")) tel = "0" + tel;
   return tel;
+}
+
+function getAd(p){
+  return p.adSoyad || p.ad || p.isim || p.name || p.fullName || "İsimsiz Personel";
+}
+
+function getTelefon(p){
+  return temizTelefon(p.telefon || p.phone || p.tel || p.gsm || "");
+}
+
+function getSifre(p){
+  return String(p.sifre || p.password || p.pass || "");
+}
+
+function getAktif(p){
+  if(p.aktif === false) return false;
+  if(p.active === false) return false;
+  if(p.durum === "pasif") return false;
+  return true;
 }
 
 function durumText(durum){
@@ -295,27 +235,28 @@ window.login = async function(){
 
   telefon = temizTelefon(telefon);
 
-  const q = query(
-    collection(db, "personeller"),
-    where("telefon", "==", telefon),
-    where("sifre", "==", sifre),
-    where("aktif", "==", true)
-  );
+  const snap = await getDocs(collection(db, PERSONEL_COLLECTION));
 
-  const snap = await getDocs(q);
+  let bulunan = null;
 
-  if(snap.empty){
+  snap.forEach(d=>{
+    const p = { id:d.id, ...d.data() };
+    if(getTelefon(p) === telefon && getSifre(p) === sifre && getAktif(p)){
+      bulunan = p;
+    }
+  });
+
+  if(!bulunan){
     alert("Personel bulunamadı veya şifre hatalı.");
     return;
   }
 
-  const d = snap.docs[0];
-  aktifPersonel = { id:d.id, ...d.data() };
+  aktifPersonel = bulunan;
 
   localStorage.setItem("cay_odeme_login", JSON.stringify({
     tip:"personel",
-    telefon:aktifPersonel.telefon,
-    sifre:aktifPersonel.sifre
+    telefon:getTelefon(aktifPersonel),
+    sifre:getSifre(aktifPersonel)
   }));
 
   personelAc();
@@ -327,7 +268,7 @@ async function personelAc(){
   document.getElementById("personelPanel").classList.remove("hide");
 
   document.getElementById("personelInfo").textContent =
-    `${aktifPersonel.adSoyad} olarak giriş yapıldı.`;
+    `${getAd(aktifPersonel)} olarak giriş yapıldı.`;
 
   document.getElementById("aidatTutar").textContent = AYLIK_AIDAT + " TL";
   document.getElementById("ibanText").textContent = IBAN;
@@ -339,7 +280,7 @@ async function personelOdemeYukle(){
   const ay = mevcutAy();
 
   const q = query(
-    collection(db, "cay_odemeler"),
+    collection(db, ODEME_COLLECTION),
     where("personelId", "==", aktifPersonel.id)
   );
 
@@ -358,9 +299,7 @@ async function personelOdemeYukle(){
         <b>${o.ay}</b><br>
         Tutar: ${o.tutar || AYLIK_AIDAT} TL<br>
         Durum:
-        <span class="status ${durumClass(o.durum)}">
-          ${durumText(o.durum)}
-        </span>
+        <span class="status ${durumClass(o.durum)}">${durumText(o.durum)}</span>
         ${o.adminNot ? `<p class="muted">Admin Notu: ${o.adminNot}</p>` : ""}
       </div>
     `;
@@ -387,10 +326,10 @@ window.adminListele = async function(){
   const ay = document.getElementById("adminAy").value || mevcutAy();
   const filtre = document.getElementById("adminFiltre").value;
 
-  const personelSnap = await getDocs(collection(db, "personeller"));
+  const personelSnap = await getDocs(collection(db, PERSONEL_COLLECTION));
 
   const odemeQ = query(
-    collection(db, "cay_odemeler"),
+    collection(db, ODEME_COLLECTION),
     where("ay", "==", ay)
   );
 
@@ -403,15 +342,11 @@ window.adminListele = async function(){
   });
 
   let rows = "";
-  let say = {
-    odendi:0,
-    odeme_bekliyor:0,
-    reddedildi:0
-  };
+  let say = { odendi:0, odeme_bekliyor:0, reddedildi:0 };
 
-  personelSnap.forEach(p=>{
-    const personel = { id:p.id, ...p.data() };
-    if(personel.aktif === false) return;
+  personelSnap.forEach(pdoc=>{
+    const personel = { id:pdoc.id, ...pdoc.data() };
+    if(!getAktif(personel)) return;
 
     const odeme = odemeler[personel.id];
     const durum = odeme ? odeme.durum : "odeme_bekliyor";
@@ -420,21 +355,20 @@ window.adminListele = async function(){
 
     if(filtre !== "hepsi" && filtre !== durum) return;
 
+    const ad = getAd(personel);
+    const tel = getTelefon(personel);
+
     rows += `
       <tr>
-        <td>${personel.adSoyad || "-"}</td>
-        <td>${personel.telefon || "-"}</td>
+        <td>${ad}</td>
+        <td>${tel}</td>
         <td>${ay}</td>
         <td>${odeme?.tutar || AYLIK_AIDAT} TL</td>
+        <td><span class="status ${durumClass(durum)}">${durumText(durum)}</span></td>
         <td>
-          <span class="status ${durumClass(durum)}">
-            ${durumText(durum)}
-          </span>
-        </td>
-        <td>
-          <button class="small green" onclick="durumDegistir('${personel.id}','${personel.adSoyad || ""}','${personel.telefon || ""}','odendi')">Ödendi</button>
-          <button class="small gray" onclick="durumDegistir('${personel.id}','${personel.adSoyad || ""}','${personel.telefon || ""}','odeme_bekliyor')">Bekliyor</button>
-          <button class="small red" onclick="reddet('${personel.id}','${personel.adSoyad || ""}','${personel.telefon || ""}')">Reddet</button>
+          <button class="small green" onclick="durumDegistir('${personel.id}','${ad}','${tel}','odendi')">Ödendi</button>
+          <button class="small gray" onclick="durumDegistir('${personel.id}','${ad}','${tel}','odeme_bekliyor')">Bekliyor</button>
+          <button class="small red" onclick="reddet('${personel.id}','${ad}','${tel}')">Reddet</button>
         </td>
       </tr>
     `;
@@ -454,7 +388,7 @@ window.durumDegistir = async function(personelId, adSoyad, telefon, yeniDurum){
   const ay = document.getElementById("adminAy").value || mevcutAy();
 
   const q = query(
-    collection(db, "cay_odemeler"),
+    collection(db, ODEME_COLLECTION),
     where("personelId", "==", personelId),
     where("ay", "==", ay)
   );
@@ -474,9 +408,9 @@ window.durumDegistir = async function(personelId, adSoyad, telefon, yeniDurum){
 
   if(snap.empty){
     veri.createdAt = serverTimestamp();
-    await addDoc(collection(db, "cay_odemeler"), veri);
+    await addDoc(collection(db, ODEME_COLLECTION), veri);
   }else{
-    await updateDoc(doc(db, "cay_odemeler", snap.docs[0].id), veri);
+    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
   }
 
   adminListele();
@@ -487,7 +421,7 @@ window.reddet = async function(personelId, adSoyad, telefon){
   const ay = document.getElementById("adminAy").value || mevcutAy();
 
   const q = query(
-    collection(db, "cay_odemeler"),
+    collection(db, ODEME_COLLECTION),
     where("personelId", "==", personelId),
     where("ay", "==", ay)
   );
@@ -507,9 +441,9 @@ window.reddet = async function(personelId, adSoyad, telefon){
 
   if(snap.empty){
     veri.createdAt = serverTimestamp();
-    await addDoc(collection(db, "cay_odemeler"), veri);
+    await addDoc(collection(db, ODEME_COLLECTION), veri);
   }else{
-    await updateDoc(doc(db, "cay_odemeler", snap.docs[0].id), veri);
+    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
   }
 
   adminListele();
@@ -527,18 +461,18 @@ async function otomatikGiris(){
   }
 
   if(data.tip === "personel"){
-    const q = query(
-      collection(db, "personeller"),
-      where("telefon", "==", data.telefon),
-      where("sifre", "==", data.sifre),
-      where("aktif", "==", true)
-    );
+    const snap = await getDocs(collection(db, PERSONEL_COLLECTION));
+    let bulunan = null;
 
-    const snap = await getDocs(q);
+    snap.forEach(d=>{
+      const p = { id:d.id, ...d.data() };
+      if(getTelefon(p) === data.telefon && getSifre(p) === data.sifre && getAktif(p)){
+        bulunan = p;
+      }
+    });
 
-    if(!snap.empty){
-      const d = snap.docs[0];
-      aktifPersonel = { id:d.id, ...d.data() };
+    if(bulunan){
+      aktifPersonel = bulunan;
       personelAc();
     }
   }
