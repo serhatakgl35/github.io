@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Firestore Temizleme</title><style>
+*{box-sizing:border-box}
+:root{--bg:#f5f5f7;--text:#111;--muted:#666;--shadow:0 18px 55px rgba(0,0,0,.10);--soft:0 8px 25px rgba(0,0,0,.08);--r:26px}
+body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(circle at 20% 10%,rgba(255,255,255,.95),transparent 32%),radial-gradient(circle at 80% 0%,rgba(225,229,238,.9),transparent 35%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(17,17,17,.94);padding:14px 18px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;box-shadow:0 4px 18px rgba(0,0,0,.18);backdrop-filter:blur(16px)}
+.topbar a,.topbar button{background:white;color:#111;text-decoration:none;border:0;border-radius:999px;padding:9px 15px;font-weight:900;cursor:pointer}
+.wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
+.centerWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:rgba(255,255,255,.90);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);margin-bottom:18px}
+.loginCard{width:100%;max-width:430px}.logo{width:62px;height:62px;border-radius:20px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+h1{font-size:34px;margin:0 0 12px;font-weight:950;letter-spacing:-.5px}h2,h3{margin-top:0}p{color:var(--muted);line-height:1.45}
+label{font-weight:800;font-size:14px;display:block;margin:0 0 6px}
+input,select{width:100%;padding:14px;border-radius:16px;border:1px solid rgba(0,0,0,.10);margin-bottom:14px;font-size:16px;background:#f0f2f6;outline:none}
+input:focus,select:focus{border-color:#111;background:white}
+button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;color:white;border:0;border-radius:17px;padding:15px 16px;font-weight:950;font-size:16px;cursor:pointer;text-decoration:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.muted{color:var(--muted);font-size:14px}.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
+.status{display:inline-block;padding:8px 13px;border-radius:999px;font-weight:950;font-size:13px;white-space:nowrap}.odendi{background:#dcfce7;color:#166534}.bekliyor{background:#fef3c7;color:#92400e}.reddedildi,.gecikti{background:#fee2e2;color:#991b1b}
+.tableWrap{overflow:auto;border-radius:18px}table{width:100%;border-collapse:collapse;background:white}th,td{padding:13px 14px;border-bottom:1px solid #eee;text-align:left;font-size:14px;vertical-align:middle}th{background:#f8f8f8;font-weight:950}
+.small{background:#111;color:white;border:0;border-radius:12px;padding:9px 11px;font-weight:900;cursor:pointer;margin:2px}.green{background:#15803d}.red{background:#b91c1c}.gray{background:#4b5563}
+.tutarInput{width:105px!important;padding:8px!important;border-radius:10px!important;margin:0!important}.ibanBox{display:flex;align-items:center;gap:10px}
+.iban{flex:1;background:#f5f5f7;border-radius:18px;padding:15px;font-size:15px;letter-spacing:.35px;font-weight:950;word-break:break-word}.copyBtn{width:50px;height:50px;border:0;border-radius:17px;background:#111;color:white;font-size:21px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.copyMsg{margin-top:8px;font-weight:800;color:#166534;min-height:20px}.historyItem{background:white;border-radius:22px;padding:18px;box-shadow:var(--soft);display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
+.historyLeft{display:flex;flex-direction:column;gap:6px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#666;font-weight:800}.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px}
+.hide{display:none!important}@media(max-width:720px){.wrap{padding:0 10px}.card{padding:18px;border-radius:22px}h1{font-size:27px}th,td{font-size:13px;padding:10px}.historyItem{align-items:flex-start;flex-direction:column}.ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:50px}}
+</style></head>
+<body>
+<div class="centerWrap" id="login">
+  <div class="card loginCard"><div class="logo">🧹</div><h1 style="text-align:center">Firestore Temizleme</h1><p style="text-align:center">Eski çay ödeme kayıtlarını temizler.</p><label>Admin Kullanıcı</label><input id="u" placeholder="admin"><label>Şifre</label><input id="p" type="password"><button class="main" onclick="giris()">Giriş Yap</button><div id="msg" class="msg"></div></div>
+</div>
+<div class="wrap hide" id="panel">
+  <div class="card"><h1>Temizleme Paneli</h1><p><b>Dikkat:</b> Bu araç çay ödeme sistemindeki eski kayıtları temizlemek içindir. Randevu/personel kayıtlarına dokunmaz.</p></div>
+  <div class="grid">
+    <div class="card"><h3>Sayım Yap</h3><p>Silmeden önce kaç kayıt olduğunu gör.</p><button class="main" onclick="sayimYap()">Sayım Yap</button></div>
+    <div class="card"><h3>Eski Ödeme Kayıtlarını Sil</h3><p>Sadece <b>cay_odemeler</b> kayıtlarını siler.</p><button class="main" style="background:#b91c1c" onclick="odemeleriSil()">cay_odemeler Sil</button></div>
+    <div class="card"><h3>Ayarları Sil</h3><p>Sadece <b>cay_ayarlar</b> dönem tutarlarını siler.</p><button class="main" style="background:#b91c1c" onclick="ayarlariSil()">cay_ayarlar Sil</button></div>
+  </div>
+  <div class="card"><h3>Sonuç</h3><div id="sonuc" class="muted">Hazır.</div></div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain:"berber-randevu-14f7f.firebaseapp.com",
+  projectId:"berber-randevu-14f7f"
+};
+
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+const ADMIN_USER="admin", ADMIN_PASS="123456";
+window.giris=function(){
+  if(document.getElementById("u").value.trim()===ADMIN_USER && document.getElementById("p").value.trim()===ADMIN_PASS){
+    document.getElementById("login").classList.add("hide");document.getElementById("panel").classList.remove("hide");
+  }else document.getElementById("msg").textContent="Bilgiler hatalı";
+};
+async function kolleksiyonSay(ad){
+  const snap=await getDocs(collection(db,ad));
+  return snap.size;
+}
+window.sayimYap=async function(){
+  const o=await kolleksiyonSay("cay_odemeler");
+  const a=await kolleksiyonSay("cay_ayarlar");
+  document.getElementById("sonuc").innerHTML=`cay_odemeler: <b>${o}</b><br>cay_ayarlar: <b>${a}</b>`;
+};
+async function tumunuSil(kol){
+  const snap=await getDocs(collection(db,kol));
+  let n=0;
+  for(const d of snap.docs){await deleteDoc(doc(db,kol,d.id));n++;}
+  return n;
+}
+window.odemeleriSil=async function(){
+  if(!confirm("cay_odemeler içindeki TÜM ödeme kayıtları silinecek. Emin misin?")) return;
+  const n=await tumunuSil("cay_odemeler");
+  document.getElementById("sonuc").innerHTML=`cay_odemeler temizlendi. Silinen: <b>${n}</b>`;
+};
+window.ayarlariSil=async function(){
+  if(!confirm("cay_ayarlar içindeki TÜM dönem tutarları silinecek. Emin misin?")) return;
+  const n=await tumunuSil("cay_ayarlar");
+  document.getElementById("sonuc").innerHTML=`cay_ayarlar temizlendi. Silinen: <b>${n}</b>`;
+};
+</script>
+</body></html>
