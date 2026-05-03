@@ -1,213 +1,43 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Çay Ocağı Ödemeleri</title>
-
-<style>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Çay Ocağı Ödemeleri</title><style>
 *{box-sizing:border-box}
-:root{
-  --bg:#f5f5f7;
-  --text:#111;
-  --muted:#666;
-  --shadow:0 18px 55px rgba(0,0,0,.10);
-  --soft:0 8px 25px rgba(0,0,0,.08);
-  --r:26px;
-}
-body{
-  margin:0;
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(255,255,255,.95), transparent 32%),
-    radial-gradient(circle at 80% 0%, rgba(225,229,238,.9), transparent 35%),
-    var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
-}
-.topbar{
-  position:sticky;top:0;z-index:20;
-  background:rgba(17,17,17,.94);
-  padding:14px 18px;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  flex-wrap:wrap;
-  box-shadow:0 4px 18px rgba(0,0,0,.18);
-  backdrop-filter:blur(16px);
-}
-.topbar a,.topbar button{
-  background:white;
-  color:#111;
-  text-decoration:none;
-  border:0;
-  border-radius:999px;
-  padding:9px 15px;
-  font-weight:900;
-  cursor:pointer;
-}
+:root{--bg:#f5f5f7;--text:#111;--muted:#666;--shadow:0 18px 55px rgba(0,0,0,.10);--soft:0 8px 25px rgba(0,0,0,.08);--r:26px}
+body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(circle at 20% 10%,rgba(255,255,255,.95),transparent 32%),radial-gradient(circle at 80% 0%,rgba(225,229,238,.9),transparent 35%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(17,17,17,.94);padding:14px 18px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;box-shadow:0 4px 18px rgba(0,0,0,.18);backdrop-filter:blur(16px)}
+.topbar a,.topbar button{background:white;color:#111;text-decoration:none;border:0;border-radius:999px;padding:9px 15px;font-weight:900;cursor:pointer}
 .wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
-.card{
-  background:rgba(255,255,255,.9);
-  border-radius:var(--r);
-  padding:24px;
-  box-shadow:var(--shadow);
-  margin-bottom:18px;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:16px;
-}
-h1{font-size:34px;margin:0 0 12px;font-weight:950}
-h3{margin-top:0}
-p{color:var(--muted);line-height:1.45}
-.muted{color:var(--muted);font-size:14px}
-
-.ibanBox{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.iban{
-  flex:1;
-  background:#f5f5f7;
-  border-radius:18px;
-  padding:15px;
-  font-size:15px;
-  letter-spacing:.4px;
-  font-weight:950;
-  word-break:break-word;
-}
-.copyBtn{
-  width:50px;
-  height:50px;
-  border:0;
-  border-radius:17px;
-  background:#111;
-  color:white;
-  font-size:21px;
-  cursor:pointer;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.copyMsg{
-  margin-top:8px;
-  font-weight:800;
-  color:#166534;
-  min-height:20px;
-}
-
-.status{
-  display:inline-block;
-  padding:8px 13px;
-  border-radius:999px;
-  font-weight:950;
-  font-size:13px;
-  white-space:nowrap;
-}
-.odendi{background:#dcfce7;color:#166534}
-.bekliyor{background:#fef3c7;color:#92400e}
-.reddedildi{background:#fee2e2;color:#991b1b}
-.gecikti{background:#fee2e2;color:#991b1b}
-
-.historyItem{
-  background:white;
-  border-radius:22px;
-  padding:18px;
-  box-shadow:var(--soft);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
-  margin-bottom:12px;
-}
-.historyLeft{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.historyTitle{
-  font-weight:950;
-  font-size:16px;
-}
-.historyMoney{
-  color:#666;
-  font-weight:800;
-}
-.warningBox{
-  background:#fee2e2;
-  color:#991b1b;
-  border-radius:20px;
-  padding:15px;
-  font-weight:900;
-  margin-top:14px;
-}
-
-@media(max-width:720px){
-  .wrap{padding:0 10px}
-  .card{padding:18px;border-radius:22px}
-  h1{font-size:27px}
-  .ibanBox{align-items:stretch}
-  .copyBtn{height:auto;min-width:50px}
-  .historyItem{align-items:flex-start;flex-direction:column}
-}
-</style>
-</head>
-
+.centerWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:rgba(255,255,255,.90);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);margin-bottom:18px}
+.loginCard{width:100%;max-width:430px}.logo{width:62px;height:62px;border-radius:20px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+h1{font-size:34px;margin:0 0 12px;font-weight:950;letter-spacing:-.5px}h2,h3{margin-top:0}p{color:var(--muted);line-height:1.45}
+label{font-weight:800;font-size:14px;display:block;margin:0 0 6px}
+input,select{width:100%;padding:14px;border-radius:16px;border:1px solid rgba(0,0,0,.10);margin-bottom:14px;font-size:16px;background:#f0f2f6;outline:none}
+input:focus,select:focus{border-color:#111;background:white}
+button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;color:white;border:0;border-radius:17px;padding:15px 16px;font-weight:950;font-size:16px;cursor:pointer;text-decoration:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.muted{color:var(--muted);font-size:14px}.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
+.status{display:inline-block;padding:8px 13px;border-radius:999px;font-weight:950;font-size:13px;white-space:nowrap}.odendi{background:#dcfce7;color:#166534}.bekliyor{background:#fef3c7;color:#92400e}.reddedildi,.gecikti{background:#fee2e2;color:#991b1b}
+.tableWrap{overflow:auto;border-radius:18px}table{width:100%;border-collapse:collapse;background:white}th,td{padding:13px 14px;border-bottom:1px solid #eee;text-align:left;font-size:14px;vertical-align:middle}th{background:#f8f8f8;font-weight:950}
+.small{background:#111;color:white;border:0;border-radius:12px;padding:9px 11px;font-weight:900;cursor:pointer;margin:2px}.green{background:#15803d}.red{background:#b91c1c}.gray{background:#4b5563}
+.tutarInput{width:105px!important;padding:8px!important;border-radius:10px!important;margin:0!important}.ibanBox{display:flex;align-items:center;gap:10px}
+.iban{flex:1;background:#f5f5f7;border-radius:18px;padding:15px;font-size:15px;letter-spacing:.35px;font-weight:950;word-break:break-word}.copyBtn{width:50px;height:50px;border:0;border-radius:17px;background:#111;color:white;font-size:21px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.copyMsg{margin-top:8px;font-weight:800;color:#166534;min-height:20px}.historyItem{background:white;border-radius:22px;padding:18px;box-shadow:var(--soft);display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
+.historyLeft{display:flex;flex-direction:column;gap:6px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#666;font-weight:800}.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px}
+.hide{display:none!important}@media(max-width:720px){.wrap{padding:0 10px}.card{padding:18px;border-radius:22px}h1{font-size:27px}th,td{font-size:13px;padding:10px}.historyItem{align-items:flex-start;flex-direction:column}.ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:50px}}
+</style></head>
 <body>
-
-<div class="topbar">
-  <a href="panel.html">Panel</a>
-  <a href="randevu.html">Berber Randevusu</a>
-  <button onclick="logout()">Çıkış</button>
-</div>
-
+<div class="topbar"><a href="panel.html">Panel</a><a href="randevu.html">Berber Randevusu</a><button onclick="logout()">Çıkış</button></div>
 <div class="wrap">
-
-  <div class="card">
-    <h1>Çay Ocağı Ödemeleri</h1>
-    <p id="personelInfo">Yükleniyor...</p>
-  </div>
-
+  <div class="card"><h1>Çay Ocağı Ödemeleri</h1><p id="personelInfo">Yükleniyor...</p><p class="muted" id="donemInfo"></p></div>
   <div class="grid">
-    <div class="card">
-      <h3>Bu Ayki Aidat</h3>
-      <h1 id="aidatTutar">300 TL</h1>
-      <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
-      <div id="uyariAlan"></div>
-    </div>
-
-    <div class="card">
-      <h3>Ödeme IBAN</h3>
-
-      <div class="ibanBox">
-        <div id="ibanText" class="iban">Yükleniyor...</div>
-        <button class="copyBtn" onclick="ibanKopyala()" title="IBAN Kopyala">📋</button>
-      </div>
-
-      <div id="copyMsg" class="copyMsg"></div>
-      <p class="muted">Açıklama kısmına ad soyad yazılması önerilir.</p>
-    </div>
+    <div class="card"><h3>Bu Dönemki Aidat</h3><h1 id="aidatTutar">300 TL</h1><p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p><div id="uyariAlan"></div></div>
+    <div class="card"><h3>Ödeme IBAN</h3><div class="ibanBox"><div id="ibanText" class="iban">Yükleniyor...</div><button class="copyBtn" onclick="ibanKopyala()" title="IBAN Kopyala">📋</button></div><div id="copyMsg" class="copyMsg"></div><p class="muted">Açıklama kısmına ad soyad yazılması önerilir.</p></div>
   </div>
-
-  <div class="card">
-    <h3>Geçmiş Ödeme Durumlarım</h3>
-    <div id="personelGecmis">Yükleniyor...</div>
-  </div>
-
+  <div class="card"><h3>Geçmiş Ödeme Durumlarım</h3><div id="personelGecmis">Yükleniyor...</div></div>
 </div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
@@ -215,205 +45,137 @@ const firebaseConfig = {
   projectId:"berber-randevu-14f7f"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 
-const ODEME_COLLECTION = "cay_odemeler";
-const AYLIK_AIDAT = 300;
-const IBAN = "TR00 0000 0000 0000 0000 0000 00";
+const ODEME_COLLECTION="cay_odemeler";
+const AYAR_COLLECTION="cay_ayarlar";
+const PERSONEL_COLLECTION="personeller";
+const VARSAYILAN_AIDAT=300;
 
-const tel = localStorage.getItem("musteriTelefon");
-const adLocal = localStorage.getItem("musteriAd") || "";
-
-if(!tel){
-  location.href="index.html";
+function temizTelefon(tel){
+  tel=String(tel||"").replace(/\D/g,"");
+  if(tel.startsWith("90")) tel="0"+tel.slice(2);
+  if(tel && !tel.startsWith("0")) tel="0"+tel;
+  return tel.slice(0,11);
 }
-
-document.getElementById("ibanText").textContent = IBAN;
-
-function mevcutAy(){
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+function aylarTR(){return ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];}
+function ayAdi(key){const m=Number(String(key||"").split("-")[1]);return aylarTR()[m-1]||key;}
+function addMonthsKey(key,delta){const [y,m]=String(key).split("-").map(Number);const d=new Date(y,m-1+delta,1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
+function donemKey(date=new Date()){
+  const y=date.getFullYear(), m=date.getMonth()+1;
+  if(date.getDate()>=15) return y+"-"+String(m).padStart(2,"0");
+  const d=new Date(y,m-2,1);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 }
-
-function ayAdi(ayStr){
-  const aylar = [
-    "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
-    "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
-  ];
-  const m = Number(String(ayStr || "").split("-")[1]);
-  return aylar[m-1] || ayStr;
-}
-
-function ayGectiMi(ayStr){
-  if(!ayStr || !ayStr.includes("-")) return false;
-
-  const [y,m] = ayStr.split("-").map(Number);
-  const simdi = new Date();
-
-  const suAnAy = simdi.getFullYear() * 100 + (simdi.getMonth() + 1);
-  const kontrolAy = y * 100 + m;
-
-  return kontrolAy < suAnAy;
-}
-
-function durumText(durum, ay){
-  if(durum === "odendi") return "Ödendi";
-  if(durum === "reddedildi") return "Reddedildi";
-
-  if(ayGectiMi(ay)){
-    return "ÖDEME GEÇTİ - Dönem: " + ayAdi(ay);
-  }
-
+function donemLabel(key){const next=addMonthsKey(key,1);return `15 ${ayAdi(key)} - 14 ${ayAdi(next)}`;}
+function donemGectiMi(key){return String(key)<donemKey(new Date());}
+function durumText(durum,key){
+  if(durum==="odendi") return "Ödendi";
+  if(durum==="reddedildi") return "Reddedildi";
+  if(donemGectiMi(key)) return "ÖDEME GEÇTİ - Dönem: "+ayAdi(key);
   return "Ödeme Bekliyor";
 }
-
-function durumClass(durum, ay){
-  if(durum === "odendi") return "odendi";
-  if(durum === "reddedildi") return "reddedildi";
-
-  if(ayGectiMi(ay)){
-    return "gecikti";
-  }
-
+function durumClass(durum,key){
+  if(durum==="odendi") return "odendi";
+  if(durum==="reddedildi") return "reddedildi";
+  if(donemGectiMi(key)) return "gecikti";
   return "bekliyor";
 }
-
-window.ibanKopyala = async function(){
+function odemeDocId(key,tel){return key+"_"+temizTelefon(tel);}
+async function donemTutariGetir(db,key,fallback=VARSAYILAN_AIDAT){
   try{
-    await navigator.clipboard.writeText(IBAN);
-  }catch(e){
-    const temp = document.createElement("input");
-    temp.value = IBAN;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-  }
+    const snap=await getDoc(doc(db,AYAR_COLLECTION,key));
+    if(snap.exists()){
+      const t=Number(snap.data().aylikTutar||0);
+      if(t>0) return t;
+    }
+  }catch(e){console.warn(e);}
+  return fallback;
+}
 
-  document.getElementById("copyMsg").textContent = "IBAN kopyalandı ✅";
+const IBAN="TR00 0000 0000 0000 0000 0000 00";
+const tel=temizTelefon(localStorage.getItem("musteriTelefon"));
+const adLocal=localStorage.getItem("musteriAd")||"";
+if(!tel) location.href="index.html";
+document.getElementById("ibanText").textContent=IBAN;
 
-  setTimeout(()=>{
-    document.getElementById("copyMsg").textContent = "";
-  }, 2000);
+window.ibanKopyala=async function(){
+  try{await navigator.clipboard.writeText(IBAN);}
+  catch(e){const temp=document.createElement("input");temp.value=IBAN;document.body.appendChild(temp);temp.select();document.execCommand("copy");document.body.removeChild(temp);}
+  document.getElementById("copyMsg").textContent="IBAN kopyalandı ✅";
+  setTimeout(()=>document.getElementById("copyMsg").textContent="",2000);
+};
+window.logout=function(){
+  localStorage.removeItem("musteriGiris");localStorage.removeItem("musteriTelefon");localStorage.removeItem("musteriAd");localStorage.removeItem("personelDocId");
+  location.href="index.html";
 };
 
-function logout(){
-  localStorage.removeItem("musteriGiris");
-  localStorage.removeItem("musteriTelefon");
-  localStorage.removeItem("musteriAd");
-  localStorage.removeItem("personelDocId");
-  location.href="index.html";
+async function personelAdiGetir(){
+  let ad=adLocal;
+  try{
+    const ps=await getDoc(doc(db,PERSONEL_COLLECTION,tel));
+    if(ps.exists()){const p=ps.data(); ad=p.isim||p.adSoyad||p.ad||p.name||adLocal||"Personel";}
+  }catch(e){console.warn(e);}
+  return ad || "Personel";
 }
-window.logout = logout;
 
 async function yukle(){
-  let ad = adLocal;
+  const aktifDonem=donemKey();
+  const aktifDonemTutar=await donemTutariGetir(db,aktifDonem);
+  const ad=await personelAdiGetir();
 
-  try{
-    const ps = await getDoc(doc(db,"personeller",tel));
-    if(ps.exists()){
-      const p = ps.data();
-      ad = p.isim || p.adSoyad || p.ad || p.name || adLocal || "Personel";
-    }
-  }catch(e){
-    console.warn(e);
-  }
+  document.getElementById("personelInfo").textContent=ad+" olarak giriş yapıldı.";
+  document.getElementById("donemInfo").textContent="Aktif dönem: "+donemLabel(aktifDonem);
 
-  document.getElementById("personelInfo").textContent = ad + " olarak giriş yapıldı.";
+  const q1=query(collection(db,ODEME_COLLECTION),where("telefon","==",tel));
+  const q2=query(collection(db,ODEME_COLLECTION),where("personelId","==",tel));
+  const snap1=await getDocs(q1); const snap2=await getDocs(q2);
 
-  const ay = mevcutAy();
+  const map=new Map();
+  snap1.forEach(d=>map.set(d.id,{id:d.id,...d.data()}));
+  snap2.forEach(d=>map.set(d.id,{id:d.id,...d.data()}));
 
-  const q1 = query(collection(db, ODEME_COLLECTION), where("personelId", "==", tel));
-  const q2 = query(collection(db, ODEME_COLLECTION), where("telefon", "==", tel));
+  const list=Array.from(map.values()).sort((a,b)=>String(b.ay||"").localeCompare(String(a.ay||"")));
 
-  const snap1 = await getDocs(q1);
-  const snap2 = await getDocs(q2);
+  let aktifDurum="odeme_bekliyor";
+  let aktifTutar=aktifDonemTutar;
+  let html="";
 
-  const map = new Map();
+  for(const o of list){
+    const key=o.ay||"-";
+    if(!String(key).includes("-")) continue;
+    const kayitDurum=o.durum||"odeme_bekliyor";
+    const donemTutar=await donemTutariGetir(db,key,VARSAYILAN_AIDAT);
+    const kayitTutar=Number(o.tutar||donemTutar||VARSAYILAN_AIDAT);
 
-  snap1.forEach(d=>{
-    map.set(d.id, { id:d.id, ...d.data() });
-  });
+    if(key===aktifDonem){aktifDurum=kayitDurum; aktifTutar=kayitTutar;}
 
-  snap2.forEach(d=>{
-    map.set(d.id, { id:d.id, ...d.data() });
-  });
-
-  const list = Array.from(map.values()).sort((a,b)=>{
-    return String(b.ay || "").localeCompare(String(a.ay || ""));
-  });
-
-  let buAyDurum = "odeme_bekliyor";
-  let buAyTutar = AYLIK_AIDAT;
-  let buAyKayitVar = false;
-  let html = "";
-
-  list.forEach(o=>{
-    const kayitAy = o.ay || "-";
-    const kayitDurum = o.durum || "odeme_bekliyor";
-    const kayitTutar = o.tutar || AYLIK_AIDAT;
-
-    if(kayitAy === ay){
-      buAyKayitVar = true;
-      buAyDurum = kayitDurum;
-      buAyTutar = kayitTutar;
-    }
-
-    html += `
+    html+=`
       <div class="historyItem">
         <div class="historyLeft">
-          <div class="historyTitle">Dönem: ${ayAdi(kayitAy)} ${kayitAy}</div>
+          <div class="historyTitle">Dönem: ${donemLabel(key)}</div>
           <div class="historyMoney">${kayitTutar} TL</div>
           ${o.adminNot ? `<div class="muted">Admin Notu: ${o.adminNot}</div>` : ""}
         </div>
+        <span class="status ${durumClass(kayitDurum,key)}">${durumText(kayitDurum,key)}</span>
+      </div>`;
+  }
 
-        <span class="status ${durumClass(kayitDurum, kayitAy)}">
-          ${durumText(kayitDurum, kayitAy)}
-        </span>
-      </div>
-    `;
-  });
+  document.getElementById("aidatTutar").textContent=aktifTutar+" TL";
+  const durumEl=document.getElementById("personelDurum");
+  durumEl.textContent=durumText(aktifDurum,aktifDonem);
+  durumEl.className="status "+durumClass(aktifDurum,aktifDonem);
 
-  document.getElementById("aidatTutar").textContent = buAyTutar + " TL";
-
-  const durumEl = document.getElementById("personelDurum");
-  durumEl.textContent = durumText(buAyDurum, ay);
-  durumEl.className = "status " + durumClass(buAyDurum, ay);
-
-  const uyariAlan = document.getElementById("uyariAlan");
-  uyariAlan.innerHTML = "";
-
-  if(buAyDurum !== "odendi" && ayGectiMi(ay)){
-    uyariAlan.innerHTML = `
-      <div class="warningBox">
-        ÖDEME GEÇTİ<br>
-        Dönem: ${ayAdi(ay)}
-      </div>
-    `;
+  document.getElementById("uyariAlan").innerHTML="";
+  if(aktifDurum!=="odendi" && donemGectiMi(aktifDonem)){
+    document.getElementById("uyariAlan").innerHTML=`<div class="warningBox">ÖDEME GEÇTİ<br>Dönem: ${ayAdi(aktifDonem)}</div>`;
   }
 
   if(!html){
-    html = `
-      <div class="historyItem">
-        <div class="historyLeft">
-          <div class="historyTitle">Dönem: ${ayAdi(ay)} ${ay}</div>
-          <div class="historyMoney">${AYLIK_AIDAT} TL</div>
-        </div>
-        <span class="status bekliyor">Ödeme Bekliyor</span>
-      </div>
-    `;
+    html=`<div class="historyItem"><div class="historyLeft"><div class="historyTitle">Dönem: ${donemLabel(aktifDonem)}</div><div class="historyMoney">${aktifDonemTutar} TL</div></div><span class="status bekliyor">Ödeme Bekliyor</span></div>`;
   }
-
-  document.getElementById("personelGecmis").innerHTML = html;
+  document.getElementById("personelGecmis").innerHTML=html;
 }
-
-yukle().catch(e=>{
-  console.error(e);
-  document.getElementById("personelGecmis").innerHTML =
-    "<p class='muted'>Ödeme bilgileri yüklenemedi.</p>";
-});
+yukle().catch(e=>{console.error(e);document.getElementById("personelGecmis").innerHTML="<p class='msg'>Ödeme bilgileri yüklenemedi.</p>";});
 </script>
-
-</body>
-</html>
+</body></html>
