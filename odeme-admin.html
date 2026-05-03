@@ -3,224 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ödeme Admin Paneli</title>
+<title>Çay Ocağı Ödemeleri</title>
 <style>
 *{box-sizing:border-box}
 :root{
-  --bg:#f5f5f7;
-  --text:#111;
-  --muted:#666;
-  --card:#fff;
-  --dark:#111;
+  --bg:#f5f5f7; --text:#111; --muted:#666;
   --shadow:0 18px 55px rgba(0,0,0,.10);
   --soft:0 8px 25px rgba(0,0,0,.08);
   --r:26px;
 }
 body{
-  margin:0;
-  min-height:100vh;
+  margin:0; min-height:100vh; color:var(--text);
   background:
     radial-gradient(circle at 20% 10%, rgba(255,255,255,.95), transparent 32%),
     radial-gradient(circle at 80% 0%, rgba(225,229,238,.9), transparent 35%),
     var(--bg);
-  color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
 }
 .topbar{
-  position:sticky;top:0;z-index:20;
-  background:rgba(17,17,17,.94);
-  color:white;
-  padding:14px 18px;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  flex-wrap:wrap;
-  box-shadow:0 4px 18px rgba(0,0,0,.18);
-  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:20;background:rgba(17,17,17,.94);
+  padding:14px 18px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+  box-shadow:0 4px 18px rgba(0,0,0,.18);backdrop-filter:blur(16px);
 }
 .topbar a,.topbar button{
-  background:white;color:#111;text-decoration:none;border:0;
-  border-radius:999px;padding:9px 15px;font-weight:900;cursor:pointer;
+  background:white;color:#111;text-decoration:none;border:0;border-radius:999px;
+  padding:9px 15px;font-weight:900;cursor:pointer;
 }
 .wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
 .centerWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .card{
-  background:rgba(255,255,255,.88);
-  border-radius:var(--r);
-  padding:24px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(18px);
-  margin-bottom:18px;
+  background:rgba(255,255,255,.90);border-radius:var(--r);padding:24px;
+  box-shadow:var(--shadow);backdrop-filter:blur(18px);margin-bottom:18px;
 }
 .loginCard{width:100%;max-width:430px}
 .logo{
   width:62px;height:62px;border-radius:20px;background:#111;color:white;
-  display:flex;align-items:center;justify-content:center;font-size:28px;
-  margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;
 }
-h1{font-size:30px;margin:0 0 10px;font-weight:950;letter-spacing:-.5px}
+h1{font-size:34px;margin:0 0 12px;font-weight:950;letter-spacing:-.5px}
 h2,h3{margin-top:0}
 p{color:var(--muted);line-height:1.45}
 label{font-weight:800;font-size:14px;display:block;margin:0 0 6px}
 input,select{
-  width:100%;
-  padding:14px;
-  border-radius:16px;
-  border:1px solid rgba(0,0,0,.10);
-  margin-bottom:14px;
-  font-size:16px;
-  background:#f0f2f6;
-  outline:none;
+  width:100%;padding:14px;border-radius:16px;border:1px solid rgba(0,0,0,.10);
+  margin-bottom:14px;font-size:16px;background:#f0f2f6;outline:none;
 }
 input:focus,select:focus{border-color:#111;background:white}
 button.main,.btnMain{
-  width:100%;
-  display:block;
-  text-align:center;
-  background:#111;
-  color:white;
-  border:0;
-  border-radius:17px;
-  padding:15px 16px;
-  font-weight:950;
-  font-size:16px;
-  cursor:pointer;
-  text-decoration:none;
+  width:100%;display:block;text-align:center;background:#111;color:white;border:0;
+  border-radius:17px;padding:15px 16px;font-weight:950;font-size:16px;cursor:pointer;text-decoration:none;
 }
-button.main:disabled{opacity:.55;cursor:not-allowed}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
-.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
-.menuCard{
-  background:white;border-radius:28px;padding:26px;text-decoration:none;color:#111;
-  box-shadow:var(--shadow);transition:.18s transform,.18s box-shadow;
-}
-.menuCard:hover{transform:translateY(-3px);box-shadow:0 22px 65px rgba(0,0,0,.13)}
-.menuIcon{
-  width:58px;height:58px;border-radius:20px;background:#111;color:white;
-  display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;
-}
-.muted{color:var(--muted);font-size:14px}
-.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
-.iban{
-  background:#f5f5f7;
-  border-radius:18px;
-  padding:16px;
-  font-size:18px;
-  font-weight:950;
-  word-break:break-word;
-}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.muted{color:var(--muted);font-size:14px}.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
 .status{display:inline-block;padding:8px 13px;border-radius:999px;font-weight:950;font-size:13px;white-space:nowrap}
-.odendi{background:#dcfce7;color:#166534}
-.bekliyor{background:#fef3c7;color:#92400e}
-.reddedildi{background:#fee2e2;color:#991b1b}
+.odendi{background:#dcfce7;color:#166534}.bekliyor{background:#fef3c7;color:#92400e}.reddedildi,.gecikti{background:#fee2e2;color:#991b1b}
 .tableWrap{overflow:auto;border-radius:18px}
 table{width:100%;border-collapse:collapse;background:white}
 th,td{padding:13px 14px;border-bottom:1px solid #eee;text-align:left;font-size:14px;vertical-align:middle}
 th{background:#f8f8f8;font-weight:950}
-.small{
-  background:#111;color:white;border:0;border-radius:12px;
-  padding:9px 11px;font-weight:900;cursor:pointer;margin:2px;
-}
+.small{background:#111;color:white;border:0;border-radius:12px;padding:9px 11px;font-weight:900;cursor:pointer;margin:2px}
 .green{background:#15803d}.red{background:#b91c1c}.gray{background:#4b5563}
-.tutarInput{width:95px!important;padding:8px!important;border-radius:10px!important;margin:0!important}
-.aidatSaved{color:#166534;font-weight:900;min-height:20px;margin-top:8px}
+.tutarInput{width:105px!important;padding:8px!important;border-radius:10px!important;margin:0!important}
+.ibanBox{display:flex;align-items:center;gap:10px}
+.iban{flex:1;background:#f5f5f7;border-radius:18px;padding:15px;font-size:15px;letter-spacing:.35px;font-weight:950;word-break:break-word}
+.copyBtn{width:50px;height:50px;border:0;border-radius:17px;background:#111;color:white;font-size:21px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.copyMsg{margin-top:8px;font-weight:800;color:#166534;min-height:20px}
+.historyItem{background:white;border-radius:22px;padding:18px;box-shadow:var(--soft);display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
+.historyLeft{display:flex;flex-direction:column;gap:6px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#666;font-weight:800}
+.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px}
 .hide{display:none!important}
 @media(max-width:720px){
-  h1{font-size:25px}
-  .wrap{padding:0 10px}
-  .card{padding:18px;border-radius:22px}
-  th,td{font-size:13px;padding:10px}
+  .wrap{padding:0 10px}.card{padding:18px;border-radius:22px}h1{font-size:27px}
+  th,td{font-size:13px;padding:10px}.historyItem{align-items:flex-start;flex-direction:column}
+  .ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:50px}
 }
 </style>
 </head>
 <body>
-
-<div id="adminLogin" class="centerWrap">
-  <div class="card loginCard">
-    <div class="logo">☕</div>
-    <h1 style="text-align:center">Ödeme Admin</h1>
-    <p style="text-align:center">Çay ocağı ödeme takibi</p>
-
-    <label>Admin Kullanıcı</label>
-    <input id="adminUser" placeholder="admin">
-
-    <label>Şifre</label>
-    <input id="adminPass" type="password">
-
-    <button class="main" onclick="adminLogin()">Giriş Yap</button>
-    <div id="loginMsg" class="msg"></div>
-  </div>
+<div class="topbar">
+  <a href="panel.html">Panel</a>
+  <a href="randevu.html">Berber Randevusu</a>
+  <button onclick="logout()">Çıkış</button>
 </div>
 
-<div id="adminPanel" class="hide">
-  <div class="topbar">
-    <button onclick="adminLogout()">Çıkış</button>
-    <a href="index.html">Personel Giriş</a>
+<div class="wrap">
+  <div class="card">
+    <h1>Çay Ocağı Ödemeleri</h1>
+    <p id="personelInfo">Yükleniyor...</p>
+    <p class="muted" id="donemInfo"></p>
   </div>
 
-  <div class="wrap">
+  <div class="grid">
     <div class="card">
-      <h1>Admin Ödeme Takibi</h1>
-      <p>Personeller A-Z sıralanır. Bu ay toplanacak tutarı elle belirleyebilirsin. Personel satırında tutar boşsa bu ayın tutarı otomatik kullanılır.</p>
+      <h3>Bu Dönemki Aidat</h3>
+      <h1 id="aidatTutar">300 TL</h1>
+      <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
+      <div id="uyariAlan"></div>
+    </div>
 
-      <div class="grid">
-        <div>
-          <label>Ay Seç</label>
-          <input id="adminAy" type="month" onchange="adminListele()">
-        </div>
-        <div>
-          <label>Filtre</label>
-          <select id="adminFiltre" onchange="adminListele()">
-            <option value="hepsi">Hepsi</option>
-            <option value="odendi">Ödendi</option>
-            <option value="odeme_bekliyor">Ödeme Bekliyor</option>
-            <option value="reddedildi">Reddedildi</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Bu Ay Toplanacak Tutar</label>
-          <input id="aylikAidatInput" type="number" min="0" placeholder="300">
-          <button class="small green" onclick="aidatKaydet()">Tutarı Kaydet</button>
-          <div id="aidatSaved" class="aidatSaved"></div>
-        </div>
+    <div class="card">
+      <h3>Ödeme IBAN</h3>
+      <div class="ibanBox">
+        <div id="ibanText" class="iban">Yükleniyor...</div>
+        <button class="copyBtn" onclick="ibanKopyala()" title="IBAN Kopyala">📋</button>
       </div>
-
-      <button class="main" onclick="adminListele()">Listeyi Yenile</button>
+      <div id="copyMsg" class="copyMsg"></div>
+      <p class="muted">Açıklama kısmına ad soyad yazılması önerilir.</p>
     </div>
+  </div>
 
-    <div class="card">
-      <h3>Özet</h3>
-      <div id="adminOzet" class="grid"></div>
-    </div>
-
-    <div class="card">
-      <h3>Personel Listesi</h3>
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Personel</th>
-              <th>Telefon</th>
-              <th>Ay</th>
-              <th>Tutar</th>
-              <th>Durum</th>
-              <th>İşlem</th>
-            </tr>
-          </thead>
-          <tbody id="adminTable"></tbody>
-        </table>
-      </div>
-    </div>
+  <div class="card">
+    <h3>Geçmiş Ödeme Durumlarım</h3>
+    <div id="personelGecmis">Yükleniyor...</div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore, collection, getDocs, query, where,
-  addDoc, updateDoc, doc, getDoc, setDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 const firebaseConfig = {
@@ -233,70 +133,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const PERSONEL_COLLECTION = "personeller";
+
 const ODEME_COLLECTION = "cay_odemeler";
-
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "123456";
-
-const AYLIK_AIDAT = 300;
-let aktifAidat = AYLIK_AIDAT;
-
-function mevcutAy(){
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
-}
-
-function aidatDocId(ay){
-  return "aidat_" + ay;
-}
-
-async function aidatYukle(ay){
-  try{
-    const ref = doc(db, "cay_ayarlari", aidatDocId(ay));
-    const snap = await getDoc(ref);
-
-    if(snap.exists()){
-      aktifAidat = Number(snap.data().tutar || AYLIK_AIDAT);
-    }else{
-      aktifAidat = AYLIK_AIDAT;
-    }
-
-    const input = document.getElementById("aylikAidatInput");
-    if(input) input.value = aktifAidat;
-  }catch(e){
-    console.warn("Aidat ayarı okunamadı:", e);
-    aktifAidat = AYLIK_AIDAT;
-  }
-
-  return aktifAidat;
-}
-
-window.aidatKaydet = async function(){
-  const ay = document.getElementById("adminAy").value || mevcutAy();
-  let tutar = Number(document.getElementById("aylikAidatInput")?.value || 0);
-
-  if(!tutar || tutar <= 0){
-    tutar = AYLIK_AIDAT;
-  }
-
-  aktifAidat = tutar;
-
-  await setDoc(doc(db, "cay_ayarlari", aidatDocId(ay)), {
-    ay,
-    tutar,
-    updatedAt: serverTimestamp()
-  }, { merge:true });
-
-  document.getElementById("aidatSaved").textContent = "Bu ayın tutarı " + tutar + " TL olarak kaydedildi ✅";
-
-  setTimeout(()=>{
-    const el = document.getElementById("aidatSaved");
-    if(el) el.textContent = "";
-  }, 2200);
-
-  adminListele();
-};
+const AYAR_COLLECTION = "cay_ayarlar";
+const PERSONEL_COLLECTION = "personeller";
+const VARSAYILAN_AIDAT = 300;
 
 function temizTelefon(tel){
   tel = String(tel || "").replace(/\D/g,"");
@@ -304,183 +145,175 @@ function temizTelefon(tel){
   if(tel && !tel.startsWith("0")) tel = "0" + tel;
   return tel;
 }
-
-function getAd(p){
-  return p.isim || p.adSoyad || p.ad || p.name || p.fullName || "İsimsiz Personel";
+function aylarTR(){
+  return ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 }
-
-function getTelefonFromDoc(id,p){
-  return temizTelefon(p.telefon || p.phone || p.tel || p.gsm || id || "");
+function ayAdi(key){
+  const m = Number(String(key || "").split("-")[1]);
+  return aylarTR()[m-1] || key;
 }
-
-function getAktif(p){
-  if(p.aktif === false) return false;
-  if(p.active === false) return false;
-  if(p.durum === "pasif") return false;
-  return true;
+function addMonthsKey(key, delta){
+  const [y,m] = key.split("-").map(Number);
+  const d = new Date(y, m-1 + delta, 1);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
 }
-
-function durumText(durum){
+function donemKey(date=new Date()){
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  if(date.getDate() >= 15){
+    return y + "-" + String(m).padStart(2,"0");
+  }
+  const d = new Date(y, m-2, 1);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+}
+function donemLabel(key){
+  const next = addMonthsKey(key, 1);
+  return `15 ${ayAdi(key)} - 14 ${ayAdi(next)}`;
+}
+function donemGectiMi(key){
+  return key < donemKey(new Date());
+}
+function durumText(durum, key){
   if(durum === "odendi") return "Ödendi";
   if(durum === "reddedildi") return "Reddedildi";
+  if(donemGectiMi(key)) return "ÖDEME GEÇTİ - Dönem: " + ayAdi(key);
   return "Ödeme Bekliyor";
 }
-
-function durumClass(durum){
+function durumClass(durum, key){
   if(durum === "odendi") return "odendi";
   if(durum === "reddedildi") return "reddedildi";
+  if(donemGectiMi(key)) return "gecikti";
   return "bekliyor";
 }
-
-window.adminLogin = function(){
-  const u = document.getElementById("adminUser").value.trim();
-  const p = document.getElementById("adminPass").value.trim();
-
-  if(u === ADMIN_USER && p === ADMIN_PASS){
-    localStorage.setItem("cay_admin_login","true");
-    adminAc();
-  }else{
-    document.getElementById("loginMsg").textContent = "Admin bilgileri hatalı";
-  }
-};
-
-window.adminLogout = function(){
-  localStorage.removeItem("cay_admin_login");
-  location.reload();
-};
-
-function adminAc(){
-  document.getElementById("adminLogin").classList.add("hide");
-  document.getElementById("adminPanel").classList.remove("hide");
-  document.getElementById("adminAy").value = mevcutAy();
-  adminListele();
+async function donemTutariGetir(db, key, fallback=VARSAYILAN_AIDAT){
+  try{
+    const ref = doc(db, AYAR_COLLECTION, key);
+    const snap = await getDoc(ref);
+    if(snap.exists()){
+      const t = Number(snap.data().aylikTutar || 0);
+      if(t > 0) return t;
+    }
+  }catch(e){ console.warn(e); }
+  return fallback;
 }
 
-window.adminListele = async function(){
-  const ay = document.getElementById("adminAy").value || mevcutAy();
-  const filtre = document.getElementById("adminFiltre").value;
 
-  await aidatYukle(ay);
+const IBAN = "TR00 0000 0000 0000 0000 0000 00";
+const tel = temizTelefon(localStorage.getItem("musteriTelefon"));
+const adLocal = localStorage.getItem("musteriAd") || "";
+if(!tel) location.href="index.html";
 
-  const personelSnap = await getDocs(collection(db, PERSONEL_COLLECTION));
-  const odemeQ = query(collection(db, ODEME_COLLECTION), where("ay", "==", ay));
-  const odemeSnap = await getDocs(odemeQ);
+document.getElementById("ibanText").textContent = IBAN;
 
-  const odemeler = {};
-  odemeSnap.forEach(d=>{
-    const o = { id:d.id, ...d.data() };
-    odemeler[o.personelId] = o;
-    if(o.telefon) odemeler[o.telefon] = o;
-  });
+window.ibanKopyala = async function(){
+  try{
+    await navigator.clipboard.writeText(IBAN);
+  }catch(e){
+    const temp = document.createElement("input");
+    temp.value = IBAN;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+  }
+  document.getElementById("copyMsg").textContent = "IBAN kopyalandı ✅";
+  setTimeout(()=>document.getElementById("copyMsg").textContent="", 2000);
+};
 
-  let personeller = [];
-  personelSnap.forEach(pdoc=>{
-    const personel = { id:pdoc.id, ...pdoc.data() };
-    if(!getAktif(personel)) return;
-    personeller.push(personel);
-  });
+window.logout = function(){
+  localStorage.removeItem("musteriGiris");
+  localStorage.removeItem("musteriTelefon");
+  localStorage.removeItem("musteriAd");
+  localStorage.removeItem("personelDocId");
+  location.href="index.html";
+};
 
-  personeller.sort((a,b)=>getAd(a).localeCompare(getAd(b),"tr",{sensitivity:"base"}));
+async function yukle(){
+  const aktifDonem = donemKey();
+  const aktifDonemTutar = await donemTutariGetir(db, aktifDonem);
 
-  let rows = "";
-  let say = { odendi:0, odeme_bekliyor:0, reddedildi:0 };
-  let toplamOnayliTutar = 0;
+  let ad = adLocal;
+  try{
+    const ps = await getDoc(doc(db, PERSONEL_COLLECTION, tel));
+    if(ps.exists()){
+      const p = ps.data();
+      ad = p.isim || p.adSoyad || p.ad || p.name || adLocal || "Personel";
+    }
+  }catch(e){ console.warn(e); }
 
-  personeller.forEach(personel=>{
-    const tel = getTelefonFromDoc(personel.id, personel);
-    const ad = getAd(personel);
-    const odeme = odemeler[personel.id] || odemeler[tel];
-    const durum = odeme ? (odeme.durum || "odeme_bekliyor") : "odeme_bekliyor";
-    const tutar = odeme?.tutar || aktifAidat;
+  document.getElementById("personelInfo").textContent = ad + " olarak giriş yapıldı.";
+  document.getElementById("donemInfo").textContent = "Aktif dönem: " + donemLabel(aktifDonem);
 
-    say[durum] = (say[durum] || 0) + 1;
-    if(durum === "odendi") toplamOnayliTutar += Number(tutar || 0);
+  const q1 = query(collection(db, ODEME_COLLECTION), where("personelId", "==", tel));
+  const q2 = query(collection(db, ODEME_COLLECTION), where("telefon", "==", tel));
+  const snap1 = await getDocs(q1);
+  const snap2 = await getDocs(q2);
 
-    if(filtre !== "hepsi" && filtre !== durum) return;
+  const map = new Map();
+  snap1.forEach(d=>map.set(d.id, {id:d.id, ...d.data()}));
+  snap2.forEach(d=>map.set(d.id, {id:d.id, ...d.data()}));
 
-    const inputId = "tutar_" + tel;
+  const list = Array.from(map.values()).sort((a,b)=>String(b.ay||"").localeCompare(String(a.ay||"")));
 
-    rows += `
-      <tr>
-        <td>${ad}</td>
-        <td>${tel}</td>
-        <td>${ay}</td>
-        <td><input id="${inputId}" class="tutarInput" type="number" min="0" value="${tutar}" placeholder="300"> TL</td>
-        <td><span class="status ${durumClass(durum)}">${durumText(durum)}</span></td>
-        <td>
-          <button class="small green" onclick="durumDegistir('${personel.id}','${ad.replaceAll("'","\\'")}','${tel}','odendi','${inputId}')">Ödendi</button>
-          <button class="small gray" onclick="durumDegistir('${personel.id}','${ad.replaceAll("'","\\'")}','${tel}','odeme_bekliyor','${inputId}')">Bekliyor</button>
-          <button class="small red" onclick="reddet('${personel.id}','${ad.replaceAll("'","\\'")}','${tel}','${inputId}')">Reddet</button>
-        </td>
-      </tr>
+  let aktifDurum = "odeme_bekliyor";
+  let aktifTutar = aktifDonemTutar;
+  let aktifKayitVar = false;
+  let html = "";
+
+  for(const o of list){
+    const key = o.ay || "-";
+    const kayitDurum = o.durum || "odeme_bekliyor";
+    let donemTutar = await donemTutariGetir(db, key, VARSAYILAN_AIDAT);
+    const kayitTutar = Number(o.tutar || donemTutar || VARSAYILAN_AIDAT);
+
+    if(key === aktifDonem){
+      aktifKayitVar = true;
+      aktifDurum = kayitDurum;
+      aktifTutar = kayitTutar;
+    }
+
+    html += `
+      <div class="historyItem">
+        <div class="historyLeft">
+          <div class="historyTitle">Dönem: ${donemLabel(key)}</div>
+          <div class="historyMoney">${kayitTutar} TL</div>
+          ${o.adminNot ? `<div class="muted">Admin Notu: ${o.adminNot}</div>` : ""}
+        </div>
+        <span class="status ${durumClass(kayitDurum, key)}">${durumText(kayitDurum, key)}</span>
+      </div>
     `;
-  });
-
-  document.getElementById("adminTable").innerHTML = rows || `<tr><td colspan="6">Kayıt yok.</td></tr>`;
-
-  document.getElementById("adminOzet").innerHTML = `
-    <div class="card"><h3>Ödendi</h3><h1>${say.odendi}</h1></div>
-    <div class="card"><h3>Ödeme Bekliyor</h3><h1>${say.odeme_bekliyor}</h1></div>
-    <div class="card"><h3>Reddedildi</h3><h1>${say.reddedildi}</h1></div>
-    <div class="card"><h3>Bu Ayın Aidatı</h3><h1>${aktifAidat} TL</h1></div>
-    <div class="card"><h3>Onaylanan Toplam</h3><h1>${toplamOnayliTutar} TL</h1></div>
-  `;
-};
-
-window.durumDegistir = async function(personelId, adSoyad, telefon, yeniDurum, inputId){
-  const ay = document.getElementById("adminAy").value || mevcutAy();
-  let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
-  if(!girilenTutar || girilenTutar <= 0) girilenTutar = aktifAidat;
-
-  const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", ay));
-  const snap = await getDocs(q);
-
-  const veri = {
-    personelId, adSoyad, telefon, ay,
-    tutar: girilenTutar,
-    durum: yeniDurum,
-    adminNot: "",
-    updatedAt: serverTimestamp()
-  };
-
-  if(snap.empty){
-    veri.createdAt = serverTimestamp();
-    await addDoc(collection(db, ODEME_COLLECTION), veri);
-  }else{
-    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
   }
 
-  adminListele();
-};
+  document.getElementById("aidatTutar").textContent = aktifTutar + " TL";
+  const durumEl = document.getElementById("personelDurum");
+  durumEl.textContent = durumText(aktifDurum, aktifDonem);
+  durumEl.className = "status " + durumClass(aktifDurum, aktifDonem);
 
-window.reddet = async function(personelId, adSoyad, telefon, inputId){
-  const sebep = prompt("Reddetme sebebi:", "Ödeme görünmedi");
-  const ay = document.getElementById("adminAy").value || mevcutAy();
-  let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
-  if(!girilenTutar || girilenTutar <= 0) girilenTutar = aktifAidat;
-
-  const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", ay));
-  const snap = await getDocs(q);
-
-  const veri = {
-    personelId, adSoyad, telefon, ay,
-    tutar: girilenTutar,
-    durum: "reddedildi",
-    adminNot: sebep || "Reddedildi",
-    updatedAt: serverTimestamp()
-  };
-
-  if(snap.empty){
-    veri.createdAt = serverTimestamp();
-    await addDoc(collection(db, ODEME_COLLECTION), veri);
-  }else{
-    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
+  const uyariAlan = document.getElementById("uyariAlan");
+  uyariAlan.innerHTML = "";
+  if(aktifDurum !== "odendi" && donemGectiMi(aktifDonem)){
+    uyariAlan.innerHTML = `<div class="warningBox">ÖDEME GEÇTİ<br>Dönem: ${ayAdi(aktifDonem)}</div>`;
   }
 
-  adminListele();
-};
+  if(!html){
+    html = `
+      <div class="historyItem">
+        <div class="historyLeft">
+          <div class="historyTitle">Dönem: ${donemLabel(aktifDonem)}</div>
+          <div class="historyMoney">${aktifDonemTutar} TL</div>
+        </div>
+        <span class="status bekliyor">Ödeme Bekliyor</span>
+      </div>
+    `;
+  }
 
-if(localStorage.getItem("cay_admin_login") === "true") adminAc();
+  document.getElementById("personelGecmis").innerHTML = html;
+}
+
+yukle().catch(e=>{
+  console.error(e);
+  document.getElementById("personelGecmis").innerHTML = "<p class='msg'>Ödeme bilgileri yüklenemedi.</p>";
+});
 </script>
 </body>
 </html>
