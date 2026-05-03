@@ -28,16 +28,23 @@ body{
 .topbar{
   position:sticky;top:0;z-index:20;
   background:rgba(17,17,17,.94);
-  color:white;
   padding:14px 18px;
   display:flex;
   justify-content:center;
   gap:10px;
   flex-wrap:wrap;
+  box-shadow:0 4px 18px rgba(0,0,0,.18);
+  backdrop-filter:blur(16px);
 }
 .topbar a,.topbar button{
-  background:white;color:#111;text-decoration:none;border:0;
-  border-radius:999px;padding:9px 15px;font-weight:900;cursor:pointer;
+  background:white;
+  color:#111;
+  text-decoration:none;
+  border:0;
+  border-radius:999px;
+  padding:9px 15px;
+  font-weight:900;
+  cursor:pointer;
 }
 .wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
 .card{
@@ -47,40 +54,103 @@ body{
   box-shadow:var(--shadow);
   margin-bottom:18px;
 }
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
-
-.iban{
-  background:#f5f5f7;
-  border-radius:18px;
-  padding:16px;
-  font-size:18px;
-  font-weight:950;
-  word-break:break-word;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
 }
+h1{font-size:34px;margin:0 0 12px;font-weight:950}
+h3{margin-top:0}
+p{color:var(--muted);line-height:1.45}
+.muted{color:var(--muted);font-size:14px}
 
 .ibanBox{
   display:flex;
   align-items:center;
   gap:10px;
 }
-
+.iban{
+  flex:1;
+  background:#f5f5f7;
+  border-radius:18px;
+  padding:15px;
+  font-size:15px;
+  letter-spacing:.4px;
+  font-weight:950;
+  word-break:break-word;
+}
 .copyBtn{
-  width:48px;
-  height:48px;
+  width:50px;
+  height:50px;
   border:0;
-  border-radius:16px;
+  border-radius:17px;
   background:#111;
   color:white;
-  font-size:20px;
+  font-size:21px;
   cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+.copyMsg{
+  margin-top:8px;
+  font-weight:800;
+  color:#166534;
+  min-height:20px;
 }
 
-.status{padding:8px 13px;border-radius:999px;font-weight:900;font-size:13px}
+.status{
+  display:inline-block;
+  padding:8px 13px;
+  border-radius:999px;
+  font-weight:950;
+  font-size:13px;
+  white-space:nowrap;
+}
 .odendi{background:#dcfce7;color:#166534}
 .bekliyor{background:#fef3c7;color:#92400e}
 .reddedildi{background:#fee2e2;color:#991b1b}
+.gecikti{background:#fee2e2;color:#991b1b}
 
-.muted{color:#666;font-size:14px}
+.historyItem{
+  background:white;
+  border-radius:22px;
+  padding:18px;
+  box-shadow:var(--soft);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:12px;
+}
+.historyLeft{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.historyTitle{
+  font-weight:950;
+  font-size:16px;
+}
+.historyMoney{
+  color:#666;
+  font-weight:800;
+}
+.warningBox{
+  background:#fee2e2;
+  color:#991b1b;
+  border-radius:20px;
+  padding:15px;
+  font-weight:900;
+  margin-top:14px;
+}
+
+@media(max-width:720px){
+  .wrap{padding:0 10px}
+  .card{padding:18px;border-radius:22px}
+  h1{font-size:27px}
+  .ibanBox{align-items:stretch}
+  .copyBtn{height:auto;min-width:50px}
+  .historyItem{align-items:flex-start;flex-direction:column}
+}
 </style>
 </head>
 
@@ -88,48 +158,56 @@ body{
 
 <div class="topbar">
   <a href="panel.html">Panel</a>
-  <a href="randevu.html">Berber</a>
+  <a href="randevu.html">Berber Randevusu</a>
   <button onclick="logout()">Çıkış</button>
 </div>
 
 <div class="wrap">
 
-<div class="card">
-  <h1>Çay Ocağı Ödemeleri</h1>
-  <p id="personelInfo"></p>
-</div>
-
-<div class="grid">
-
-<div class="card">
-  <h3>Bu Ayki Aidat</h3>
-  <h1 id="aidatTutar">300 TL</h1>
-  <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
-</div>
-
-<div class="card">
-  <h3>IBAN</h3>
-
-  <div class="ibanBox">
-    <div id="ibanText" class="iban"></div>
-    <button class="copyBtn" onclick="ibanKopyala()">📋</button>
+  <div class="card">
+    <h1>Çay Ocağı Ödemeleri</h1>
+    <p id="personelInfo">Yükleniyor...</p>
   </div>
 
-  <p id="copyMsg" class="muted"></p>
-</div>
+  <div class="grid">
+    <div class="card">
+      <h3>Bu Ayki Aidat</h3>
+      <h1 id="aidatTutar">300 TL</h1>
+      <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
+      <div id="uyariAlan"></div>
+    </div>
 
-</div>
+    <div class="card">
+      <h3>Ödeme IBAN</h3>
 
-<div class="card">
-  <h3>Geçmiş Ödemeler</h3>
-  <div id="personelGecmis"></div>
-</div>
+      <div class="ibanBox">
+        <div id="ibanText" class="iban">Yükleniyor...</div>
+        <button class="copyBtn" onclick="ibanKopyala()" title="IBAN Kopyala">📋</button>
+      </div>
+
+      <div id="copyMsg" class="copyMsg"></div>
+      <p class="muted">Açıklama kısmına ad soyad yazılması önerilir.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Geçmiş Ödeme Durumlarım</h3>
+    <div id="personelGecmis">Yükleniyor...</div>
+  </div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
@@ -140,61 +218,201 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const IBAN = "TR00 0000 0000 0000 0000 0000 00";
+const ODEME_COLLECTION = "cay_odemeler";
 const AYLIK_AIDAT = 300;
+const IBAN = "TR00 0000 0000 0000 0000 0000 00";
 
 const tel = localStorage.getItem("musteriTelefon");
-const ad = localStorage.getItem("musteriAd");
+const adLocal = localStorage.getItem("musteriAd") || "";
 
-if(!tel) location.href="index.html";
+if(!tel){
+  location.href="index.html";
+}
 
 document.getElementById("ibanText").textContent = IBAN;
-document.getElementById("personelInfo").textContent = ad + " olarak giriş yapıldı.";
 
-/* IBAN KOPYALA */
+function mevcutAy(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+}
+
+function ayAdi(ayStr){
+  const aylar = [
+    "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+    "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
+  ];
+  const m = Number(String(ayStr || "").split("-")[1]);
+  return aylar[m-1] || ayStr;
+}
+
+function ayGectiMi(ayStr){
+  if(!ayStr || !ayStr.includes("-")) return false;
+
+  const [y,m] = ayStr.split("-").map(Number);
+  const simdi = new Date();
+
+  const suAnAy = simdi.getFullYear() * 100 + (simdi.getMonth() + 1);
+  const kontrolAy = y * 100 + m;
+
+  return kontrolAy < suAnAy;
+}
+
+function durumText(durum, ay){
+  if(durum === "odendi") return "Ödendi";
+  if(durum === "reddedildi") return "Reddedildi";
+
+  if(ayGectiMi(ay)){
+    return "ÖDEME GEÇTİ - Dönem: " + ayAdi(ay);
+  }
+
+  return "Ödeme Bekliyor";
+}
+
+function durumClass(durum, ay){
+  if(durum === "odendi") return "odendi";
+  if(durum === "reddedildi") return "reddedildi";
+
+  if(ayGectiMi(ay)){
+    return "gecikti";
+  }
+
+  return "bekliyor";
+}
+
 window.ibanKopyala = async function(){
   try{
     await navigator.clipboard.writeText(IBAN);
-  }catch{
-    const temp=document.createElement("input");
-    temp.value=IBAN;
+  }catch(e){
+    const temp = document.createElement("input");
+    temp.value = IBAN;
     document.body.appendChild(temp);
     temp.select();
     document.execCommand("copy");
     document.body.removeChild(temp);
   }
-  document.getElementById("copyMsg").textContent="IBAN kopyalandı ✅";
-  setTimeout(()=>document.getElementById("copyMsg").textContent="",2000);
+
+  document.getElementById("copyMsg").textContent = "IBAN kopyalandı ✅";
+
+  setTimeout(()=>{
+    document.getElementById("copyMsg").textContent = "";
+  }, 2000);
 };
 
-/* ÖDEME VERİSİ */
-async function yukle(){
-  const snap = await getDocs(query(collection(db,"cay_odemeler"), where("telefon","==",tel)));
+function logout(){
+  localStorage.removeItem("musteriGiris");
+  localStorage.removeItem("musteriTelefon");
+  localStorage.removeItem("musteriAd");
+  localStorage.removeItem("personelDocId");
+  location.href="index.html";
+}
+window.logout = logout;
 
-  let html="";
-  snap.forEach(d=>{
-    const o=d.data();
-    html+=`
-      <div class="card">
-        ${o.ay} - ${o.tutar} TL
-        <br>
-        <span class="status ${o.durum==="odendi"?"odendi":o.durum==="reddedildi"?"reddedildi":"bekliyor"}">
-        ${o.durum}
+async function yukle(){
+  let ad = adLocal;
+
+  try{
+    const ps = await getDoc(doc(db,"personeller",tel));
+    if(ps.exists()){
+      const p = ps.data();
+      ad = p.isim || p.adSoyad || p.ad || p.name || adLocal || "Personel";
+    }
+  }catch(e){
+    console.warn(e);
+  }
+
+  document.getElementById("personelInfo").textContent = ad + " olarak giriş yapıldı.";
+
+  const ay = mevcutAy();
+
+  const q1 = query(collection(db, ODEME_COLLECTION), where("personelId", "==", tel));
+  const q2 = query(collection(db, ODEME_COLLECTION), where("telefon", "==", tel));
+
+  const snap1 = await getDocs(q1);
+  const snap2 = await getDocs(q2);
+
+  const map = new Map();
+
+  snap1.forEach(d=>{
+    map.set(d.id, { id:d.id, ...d.data() });
+  });
+
+  snap2.forEach(d=>{
+    map.set(d.id, { id:d.id, ...d.data() });
+  });
+
+  const list = Array.from(map.values()).sort((a,b)=>{
+    return String(b.ay || "").localeCompare(String(a.ay || ""));
+  });
+
+  let buAyDurum = "odeme_bekliyor";
+  let buAyTutar = AYLIK_AIDAT;
+  let buAyKayitVar = false;
+  let html = "";
+
+  list.forEach(o=>{
+    const kayitAy = o.ay || "-";
+    const kayitDurum = o.durum || "odeme_bekliyor";
+    const kayitTutar = o.tutar || AYLIK_AIDAT;
+
+    if(kayitAy === ay){
+      buAyKayitVar = true;
+      buAyDurum = kayitDurum;
+      buAyTutar = kayitTutar;
+    }
+
+    html += `
+      <div class="historyItem">
+        <div class="historyLeft">
+          <div class="historyTitle">Dönem: ${ayAdi(kayitAy)} ${kayitAy}</div>
+          <div class="historyMoney">${kayitTutar} TL</div>
+          ${o.adminNot ? `<div class="muted">Admin Notu: ${o.adminNot}</div>` : ""}
+        </div>
+
+        <span class="status ${durumClass(kayitDurum, kayitAy)}">
+          ${durumText(kayitDurum, kayitAy)}
         </span>
       </div>
     `;
   });
 
-  document.getElementById("personelGecmis").innerHTML = html || "Kayıt yok";
+  document.getElementById("aidatTutar").textContent = buAyTutar + " TL";
+
+  const durumEl = document.getElementById("personelDurum");
+  durumEl.textContent = durumText(buAyDurum, ay);
+  durumEl.className = "status " + durumClass(buAyDurum, ay);
+
+  const uyariAlan = document.getElementById("uyariAlan");
+  uyariAlan.innerHTML = "";
+
+  if(buAyDurum !== "odendi" && ayGectiMi(ay)){
+    uyariAlan.innerHTML = `
+      <div class="warningBox">
+        ÖDEME GEÇTİ<br>
+        Dönem: ${ayAdi(ay)}
+      </div>
+    `;
+  }
+
+  if(!html){
+    html = `
+      <div class="historyItem">
+        <div class="historyLeft">
+          <div class="historyTitle">Dönem: ${ayAdi(ay)} ${ay}</div>
+          <div class="historyMoney">${AYLIK_AIDAT} TL</div>
+        </div>
+        <span class="status bekliyor">Ödeme Bekliyor</span>
+      </div>
+    `;
+  }
+
+  document.getElementById("personelGecmis").innerHTML = html;
 }
 
-yukle();
-
-function logout(){
-  localStorage.clear();
-  location.href="index.html";
-}
-window.logout=logout;
+yukle().catch(e=>{
+  console.error(e);
+  document.getElementById("personelGecmis").innerHTML =
+    "<p class='muted'>Ödeme bilgileri yüklenemedi.</p>";
+});
 </script>
 
 </body>
