@@ -22,7 +22,9 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
 .tutarInput{width:105px!important;padding:8px!important;border-radius:10px!important;margin:0!important}.ibanBox{display:flex;align-items:center;gap:10px}
 .iban{flex:1;background:#f5f5f7;border-radius:18px;padding:15px;font-size:15px;letter-spacing:.35px;font-weight:950;word-break:break-word}.copyBtn{width:50px;height:50px;border:0;border-radius:17px;background:#111;color:white;font-size:21px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
 .copyMsg{margin-top:8px;font-weight:800;color:#166534;min-height:20px}.historyItem{background:white;border-radius:22px;padding:18px;box-shadow:var(--soft);display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
-.historyLeft{display:flex;flex-direction:column;gap:6px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#666;font-weight:800}.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px}
+.historyLeft{display:flex;flex-direction:column;gap:6px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#666;font-weight:800;line-height:1.6}.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px}
+.fazla,.tamam{display:inline-block;margin-top:6px;color:#166534;background:#dcfce7;padding:6px 10px;border-radius:999px;font-weight:950}
+.borc{display:inline-block;margin-top:6px;color:#991b1b;background:#fee2e2;padding:6px 10px;border-radius:999px;font-weight:950}
 .hide{display:none!important}@media(max-width:720px){.wrap{padding:0 10px}.card{padding:18px;border-radius:22px}h1{font-size:27px}th,td{font-size:13px;padding:10px}.historyItem{align-items:flex-start;flex-direction:column}.ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:50px}}
 </style></head>
 <body>
@@ -42,12 +44,12 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
       <button class="main" onclick="aylikTutarKaydet()">Bu Dönem Tutarını Kaydet</button>
     </div>
     <div class="card"><h3>Özet</h3><div id="adminOzet" class="grid"></div></div>
-    <div class="card"><h3>Personel Listesi</h3><div class="tableWrap"><table><thead><tr><th>Personel</th><th>Telefon</th><th>Dönem</th><th>Tutar</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="adminTable"></tbody></table></div></div>
+    <div class="card"><h3>Personel Listesi</h3><div class="tableWrap"><table><thead><tr><th>Personel</th><th>Telefon</th><th>Dönem</th><th>Ödenen Tutar</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="adminTable"></tbody></table></div></div>
   </div>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
@@ -101,6 +103,12 @@ async function donemTutariGetir(db,key,fallback=VARSAYILAN_AIDAT){
     }
   }catch(e){console.warn(e);}
   return fallback;
+}
+function borcFazlaHtml(donemTutar, odenenTutar){
+  const fark = Number(odenenTutar || 0) - Number(donemTutar || 0);
+  if(fark > 0) return `<span class="fazla">Fazla Ödeme: ${fark} TL</span>`;
+  if(fark < 0) return `<span class="borc">Güncel Borç: ${Math.abs(fark)} TL</span>`;
+  return `<span class="tamam">Borç Yok</span>`;
 }
 
 const ADMIN_USER="admin"; const ADMIN_PASS="123456";
