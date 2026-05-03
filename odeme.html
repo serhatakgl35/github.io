@@ -296,7 +296,7 @@ window.login = async function(){
   telefon = temizTelefon(telefon);
 
   const q = query(
-    collection(db, "cay_personeller"),
+    collection(db, "personeller"),
     where("telefon", "==", telefon),
     where("sifre", "==", sifre),
     where("aktif", "==", true)
