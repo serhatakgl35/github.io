@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Üye Listesi</title>
+  <title>Personel Listesi</title>
 
   <style>
     *{box-sizing:border-box}
@@ -14,7 +14,6 @@
       color:#111;
       padding:18px;
     }
-
     .topbar{
       max-width:1100px;
       margin:0 auto 18px;
@@ -23,25 +22,17 @@
       border-radius:18px;
       padding:14px 18px;
       display:flex;
-      gap:12px;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       box-shadow:0 10px 30px rgba(0,0,0,.12);
     }
-
     .topbar a{
       color:white;
       text-decoration:none;
       font-weight:700;
       font-size:14px;
-      opacity:.9;
     }
-
-    .wrap{
-      max-width:1100px;
-      margin:auto;
-    }
-
+    .wrap{max-width:1100px;margin:auto}
     .card{
       background:white;
       border-radius:24px;
@@ -49,44 +40,34 @@
       box-shadow:0 14px 40px rgba(0,0,0,.08);
       margin-bottom:18px;
     }
-
     h1{
       margin:0 0 6px;
       font-size:28px;
       letter-spacing:-.5px;
     }
-
-    .muted{
-      color:#666;
-      font-size:14px;
-    }
-
+    .muted{color:#666;font-size:14px}
     .stats{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
       gap:14px;
       margin-top:18px;
     }
-
     .stat{
       background:#f5f5f7;
       border-radius:18px;
       padding:16px;
     }
-
     .stat b{
       display:block;
       font-size:26px;
       margin-bottom:4px;
     }
-
     .controls{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       margin-top:18px;
     }
-
     input{
       flex:1;
       min-width:220px;
@@ -96,7 +77,6 @@
       font-size:15px;
       outline:none;
     }
-
     button{
       border:0;
       background:#111;
@@ -106,22 +86,20 @@
       font-weight:800;
       cursor:pointer;
     }
-
     button.secondary{
       background:#e9e9ee;
       color:#111;
     }
-
-    .table-wrap{
-      overflow-x:auto;
+    button.danger{
+      background:#ffe9e9;
+      color:#b00020;
     }
-
+    .table-wrap{overflow-x:auto}
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:720px;
+      min-width:760px;
     }
-
     th,td{
       text-align:left;
       padding:13px 12px;
@@ -129,32 +107,28 @@
       font-size:14px;
       white-space:nowrap;
     }
-
     th{
       color:#555;
       font-size:13px;
       background:#fafafa;
     }
-
     .badge{
       padding:6px 10px;
       border-radius:999px;
-      background:#eef2ff;
+      background:#e9f8ee;
+      color:#157347;
       font-weight:800;
       font-size:12px;
     }
-
-    .danger{
+    .badge.off{
       background:#ffe9e9;
       color:#b00020;
     }
-
     .empty{
       text-align:center;
       padding:24px;
       color:#777;
     }
-
     @media(max-width:600px){
       body{padding:12px}
       .topbar{border-radius:16px}
@@ -167,22 +141,20 @@
 <body>
 
   <div class="topbar">
-    <strong>Üye Listesi</strong>
-    <div>
-      <a href="admin.html">Admin Paneli</a>
-    </div>
+    <strong>Personel Listesi</strong>
+    <a href="admin.html">Admin Paneli</a>
   </div>
 
   <div class="wrap">
 
     <div class="card">
-      <h1>Siteye Üye Olanlar</h1>
-      <div class="muted">Firestore kayıtlarından çekilir. Arama yapabilir ve tabloyu indirebilirsin.</div>
+      <h1>Siteye Üye Olan Personeller</h1>
+      <div class="muted">Firestore / personeller koleksiyonundan çekilir.</div>
 
       <div class="stats">
         <div class="stat">
           <b id="toplamUye">0</b>
-          <span>Toplam Üye</span>
+          <span>Toplam Personel</span>
         </div>
         <div class="stat">
           <b id="bugunUye">0</b>
@@ -195,7 +167,7 @@
       </div>
 
       <div class="controls">
-        <input id="aramaInput" placeholder="Ad, telefon veya e-posta ara..." />
+        <input id="aramaInput" placeholder="İsim veya telefon ara..." />
         <button onclick="csvIndir()">Tabloyu İndir</button>
         <button class="secondary" onclick="uyeleriGetir()">Yenile</button>
       </div>
@@ -206,9 +178,9 @@
         <table>
           <thead>
             <tr>
-              <th>Ad</th>
+              <th>İsim</th>
               <th>Telefon</th>
-              <th>E-posta</th>
+              <th>Şifre</th>
               <th>Kayıt Tarihi</th>
               <th>Durum</th>
               <th>İşlem</th>
@@ -238,12 +210,12 @@
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-  authDomain: "berber-randevu-14f7f.firebaseapp.com",
-  projectId: "berber-randevu-14f7f",
-  storageBucket: "berber-randevu-14f7f.firebasestorage.app",
-  messagingSenderId: "280530860977",
-  appId: "1:280530860977:web:52c0df04c228896f211b90"
+      apiKey: "BURAYA_API_KEY",
+      authDomain: "BURAYA_AUTH_DOMAIN",
+      projectId: "BURAYA_PROJECT_ID",
+      storageBucket: "BURAYA_STORAGE_BUCKET",
+      messagingSenderId: "BURAYA_MESSAGING_SENDER_ID",
+      appId: "BURAYA_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -267,7 +239,14 @@
 
         const d = new Date(value);
         if(isNaN(d.getTime())) return "-";
-        return d.toLocaleString("tr-TR");
+
+        return d.toLocaleString("tr-TR", {
+          day:"2-digit",
+          month:"2-digit",
+          year:"numeric",
+          hour:"2-digit",
+          minute:"2-digit"
+        });
       }catch(e){
         return "-";
       }
@@ -277,23 +256,38 @@
       if(!value) return false;
 
       let d;
-      if(value.toDate){
-        d = value.toDate();
-      }else{
-        d = new Date(value);
+
+      try{
+        if(value.toDate){
+          d = value.toDate();
+        }else{
+          d = new Date(value);
+        }
+
+        if(isNaN(d.getTime())) return false;
+
+        const now = new Date();
+
+        return d.getFullYear() === now.getFullYear() &&
+               d.getMonth() === now.getMonth() &&
+               d.getDate() === now.getDate();
+
+      }catch(e){
+        return false;
       }
-
-      if(isNaN(d.getTime())) return false;
-
-      const now = new Date();
-
-      return d.getFullYear() === now.getFullYear() &&
-             d.getMonth() === now.getMonth() &&
-             d.getDate() === now.getDate();
     }
 
     function temiz(v){
       return String(v || "").toLowerCase().trim();
+    }
+
+    function htmlTemizle(v){
+      return String(v ?? "-")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
     async function uyeleriGetir(){
@@ -307,7 +301,10 @@
         let snap;
 
         try{
-          const q = query(collection(db, UYE_COLLECTION), orderBy("kayitTarihi", "desc"));
+          const q = query(
+            collection(db, UYE_COLLECTION),
+            orderBy("createdAt", "desc")
+          );
           snap = await getDocs(q);
         }catch(err){
           snap = await getDocs(collection(db, UYE_COLLECTION));
@@ -320,23 +317,22 @@
 
           tumUyeler.push({
             id: item.id,
-            ad: d.ad || d.isim || d.name || "-",
-            telefon: d.telefon || d.phone || "-",
-            email: d.email || d.eposta || "-",
-            kayitTarihi: d.kayitTarihi || d.createdAt || d.tarih || null,
-            aktif: d.aktifMi !== false
+            isim: d.isim || d.ad || d.name || "-",
+            telefon: d.telefon || item.id || "-",
+            sifre: d.sifre || "-",
+            createdAt: d.createdAt || d.kayitTarihi || d.tarih || null,
+            aktif: d.aktif !== false && d.aktifMi !== false
           });
         });
 
         filtrele();
-        istatistikYaz();
 
       }catch(error){
         console.error(error);
         tablo.innerHTML = `
           <tr>
             <td colspan="6" class="empty">
-              Üyeler yüklenemedi. Firebase config veya Firestore kuralını kontrol et.
+              Personeller yüklenemedi. Firebase config veya Firestore kurallarını kontrol et.
             </td>
           </tr>
         `;
@@ -347,7 +343,7 @@
       const arama = temiz(aramaInput.value);
 
       filtreliUyeler = tumUyeler.filter(u => {
-        const metin = temiz(`${u.ad} ${u.telefon} ${u.email}`);
+        const metin = temiz(`${u.isim} ${u.telefon}`);
         return metin.includes(arama);
       });
 
@@ -367,12 +363,14 @@
 
       tablo.innerHTML = filtreliUyeler.map(u => `
         <tr>
-          <td>${u.ad}</td>
-          <td>${u.telefon}</td>
-          <td>${u.email}</td>
-          <td>${tarihYaz(u.kayitTarihi)}</td>
+          <td>${htmlTemizle(u.isim)}</td>
+          <td>${htmlTemizle(u.telefon)}</td>
+          <td>${htmlTemizle(u.sifre)}</td>
+          <td>${tarihYaz(u.createdAt)}</td>
           <td>
-            <span class="badge">${u.aktif ? "Aktif" : "Pasif"}</span>
+            <span class="badge ${u.aktif ? "" : "off"}">
+              ${u.aktif ? "Aktif" : "Pasif"}
+            </span>
           </td>
           <td>
             <button class="danger" onclick="uyeSil('${u.id}')">Sil</button>
@@ -383,12 +381,12 @@
 
     function istatistikYaz(){
       document.getElementById("toplamUye").textContent = tumUyeler.length;
-      document.getElementById("bugunUye").textContent = tumUyeler.filter(u => bugunMu(u.kayitTarihi)).length;
+      document.getElementById("bugunUye").textContent = tumUyeler.filter(u => bugunMu(u.createdAt)).length;
       document.getElementById("gosterilenUye").textContent = filtreliUyeler.length;
     }
 
     async function uyeSil(id){
-      const onay = confirm("Bu üyeyi silmek istiyor musun?");
+      const onay = confirm("Bu personeli silmek istiyor musun?");
       if(!onay) return;
 
       try{
@@ -396,8 +394,8 @@
         tumUyeler = tumUyeler.filter(u => u.id !== id);
         filtrele();
       }catch(error){
-        alert("Üye silinemedi. Firestore yetkilerini kontrol et.");
         console.error(error);
+        alert("Personel silinemedi. Firestore yetkilerini kontrol et.");
       }
     }
 
@@ -408,15 +406,15 @@
       }
 
       const satirlar = [
-        ["Ad", "Telefon", "E-posta", "Kayıt Tarihi", "Durum"]
+        ["İsim", "Telefon", "Şifre", "Kayıt Tarihi", "Durum"]
       ];
 
       filtreliUyeler.forEach(u => {
         satirlar.push([
-          u.ad,
+          u.isim,
           u.telefon,
-          u.email,
-          tarihYaz(u.kayitTarihi),
+          u.sifre,
+          tarihYaz(u.createdAt),
           u.aktif ? "Aktif" : "Pasif"
         ]);
       });
@@ -432,7 +430,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "uye-listesi.csv";
+      a.download = "personel-listesi.csv";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
