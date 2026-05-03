@@ -387,7 +387,7 @@ window.adminListele = async function(){
   const ay = document.getElementById("adminAy").value || mevcutAy();
   const filtre = document.getElementById("adminFiltre").value;
 
-  const personelSnap = await getDocs(collection(db, "cay_personeller"));
+  const personelSnap = await getDocs(collection(db, "personeller"));
 
   const odemeQ = query(
     collection(db, "cay_odemeler"),
@@ -528,7 +528,7 @@ async function otomatikGiris(){
 
   if(data.tip === "personel"){
     const q = query(
-      collection(db, "cay_personeller"),
+      collection(db, "personeller"),
       where("telefon", "==", data.telefon),
       where("sifre", "==", data.sifre),
       where("aktif", "==", true)
