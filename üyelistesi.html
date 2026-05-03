@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Üye Listesi</title>
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+      background:#f5f5f7;
+      color:#111;
+      padding:18px;
+    }
+
+    .topbar{
+      max-width:1100px;
+      margin:0 auto 18px;
+      background:#111;
+      color:white;
+      border-radius:18px;
+      padding:14px 18px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      box-shadow:0 10px 30px rgba(0,0,0,.12);
+    }
+
+    .topbar a{
+      color:white;
+      text-decoration:none;
+      font-weight:700;
+      font-size:14px;
+      opacity:.9;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:auto;
+    }
+
+    .card{
+      background:white;
+      border-radius:24px;
+      padding:22px;
+      box-shadow:0 14px 40px rgba(0,0,0,.08);
+      margin-bottom:18px;
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size:28px;
+      letter-spacing:-.5px;
+    }
+
+    .muted{
+      color:#666;
+      font-size:14px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .stat{
+      background:#f5f5f7;
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .stat b{
+      display:block;
+      font-size:26px;
+      margin-bottom:4px;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    input{
+      flex:1;
+      min-width:220px;
+      border:1px solid #ddd;
+      border-radius:14px;
+      padding:13px 14px;
+      font-size:15px;
+      outline:none;
+    }
+
+    button{
+      border:0;
+      background:#111;
+      color:white;
+      border-radius:14px;
+      padding:13px 16px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    button.secondary{
+      background:#e9e9ee;
+      color:#111;
+    }
+
+    .table-wrap{
+      overflow-x:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:720px;
+    }
+
+    th,td{
+      text-align:left;
+      padding:13px 12px;
+      border-bottom:1px solid #eee;
+      font-size:14px;
+      white-space:nowrap;
+    }
+
+    th{
+      color:#555;
+      font-size:13px;
+      background:#fafafa;
+    }
+
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      background:#eef2ff;
+      font-weight:800;
+      font-size:12px;
+    }
+
+    .danger{
+      background:#ffe9e9;
+      color:#b00020;
+    }
+
+    .empty{
+      text-align:center;
+      padding:24px;
+      color:#777;
+    }
+
+    @media(max-width:600px){
+      body{padding:12px}
+      .topbar{border-radius:16px}
+      .card{padding:18px;border-radius:20px}
+      h1{font-size:24px}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <strong>Üye Listesi</strong>
+    <div>
+      <a href="admin.html">Admin Paneli</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="card">
+      <h1>Siteye Üye Olanlar</h1>
+      <div class="muted">Firestore kayıtlarından çekilir. Arama yapabilir ve tabloyu indirebilirsin.</div>
+
+      <div class="stats">
+        <div class="stat">
+          <b id="toplamUye">0</b>
+          <span>Toplam Üye</span>
+        </div>
+        <div class="stat">
+          <b id="bugunUye">0</b>
+          <span>Bugün Kayıt Olan</span>
+        </div>
+        <div class="stat">
+          <b id="gosterilenUye">0</b>
+          <span>Gösterilen Kayıt</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="aramaInput" placeholder="Ad, telefon veya e-posta ara..." />
+        <button onclick="csvIndir()">Tabloyu İndir</button>
+        <button class="secondary" onclick="uyeleriGetir()">Yenile</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ad</th>
+              <th>Telefon</th>
+              <th>E-posta</th>
+              <th>Kayıt Tarihi</th>
+              <th>Durum</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody id="uyeTablo">
+            <tr>
+              <td colspan="6" class="empty">Yükleniyor...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      deleteDoc,
+      doc,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain: "berber-randevu-14f7f.firebaseapp.com",
+  projectId: "berber-randevu-14f7f",
+  storageBucket: "berber-randevu-14f7f.firebasestorage.app",
+  messagingSenderId: "280530860977",
+  appId: "1:280530860977:web:52c0df04c228896f211b90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const UYE_COLLECTION = "kullanicilar";
+
+    let tumUyeler = [];
+    let filtreliUyeler = [];
+
+    const tablo = document.getElementById("uyeTablo");
+    const aramaInput = document.getElementById("aramaInput");
+
+    function tarihYaz(value){
+      if(!value) return "-";
+
+      try{
+        if(value.toDate){
+          return value.toDate().toLocaleString("tr-TR");
+        }
+
+        const d = new Date(value);
+        if(isNaN(d.getTime())) return "-";
+        return d.toLocaleString("tr-TR");
+      }catch(e){
+        return "-";
+      }
+    }
+
+    function bugunMu(value){
+      if(!value) return false;
+
+      let d;
+      if(value.toDate){
+        d = value.toDate();
+      }else{
+        d = new Date(value);
+      }
+
+      if(isNaN(d.getTime())) return false;
+
+      const now = new Date();
+
+      return d.getFullYear() === now.getFullYear() &&
+             d.getMonth() === now.getMonth() &&
+             d.getDate() === now.getDate();
+    }
+
+    function temiz(v){
+      return String(v || "").toLowerCase().trim();
+    }
+
+    async function uyeleriGetir(){
+      tablo.innerHTML = `
+        <tr>
+          <td colspan="6" class="empty">Yükleniyor...</td>
+        </tr>
+      `;
+
+      try{
+        let snap;
+
+        try{
+          const q = query(collection(db, UYE_COLLECTION), orderBy("kayitTarihi", "desc"));
+          snap = await getDocs(q);
+        }catch(err){
+          snap = await getDocs(collection(db, UYE_COLLECTION));
+        }
+
+        tumUyeler = [];
+
+        snap.forEach(item => {
+          const d = item.data();
+
+          tumUyeler.push({
+            id: item.id,
+            ad: d.ad || d.isim || d.name || "-",
+            telefon: d.telefon || d.phone || "-",
+            email: d.email || d.eposta || "-",
+            kayitTarihi: d.kayitTarihi || d.createdAt || d.tarih || null,
+            aktif: d.aktifMi !== false
+          });
+        });
+
+        filtrele();
+        istatistikYaz();
+
+      }catch(error){
+        console.error(error);
+        tablo.innerHTML = `
+          <tr>
+            <td colspan="6" class="empty">
+              Üyeler yüklenemedi. Firebase config veya Firestore kuralını kontrol et.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function filtrele(){
+      const arama = temiz(aramaInput.value);
+
+      filtreliUyeler = tumUyeler.filter(u => {
+        const metin = temiz(`${u.ad} ${u.telefon} ${u.email}`);
+        return metin.includes(arama);
+      });
+
+      tabloYaz();
+      istatistikYaz();
+    }
+
+    function tabloYaz(){
+      if(filtreliUyeler.length === 0){
+        tablo.innerHTML = `
+          <tr>
+            <td colspan="6" class="empty">Kayıt bulunamadı.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tablo.innerHTML = filtreliUyeler.map(u => `
+        <tr>
+          <td>${u.ad}</td>
+          <td>${u.telefon}</td>
+          <td>${u.email}</td>
+          <td>${tarihYaz(u.kayitTarihi)}</td>
+          <td>
+            <span class="badge">${u.aktif ? "Aktif" : "Pasif"}</span>
+          </td>
+          <td>
+            <button class="danger" onclick="uyeSil('${u.id}')">Sil</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function istatistikYaz(){
+      document.getElementById("toplamUye").textContent = tumUyeler.length;
+      document.getElementById("bugunUye").textContent = tumUyeler.filter(u => bugunMu(u.kayitTarihi)).length;
+      document.getElementById("gosterilenUye").textContent = filtreliUyeler.length;
+    }
+
+    async function uyeSil(id){
+      const onay = confirm("Bu üyeyi silmek istiyor musun?");
+      if(!onay) return;
+
+      try{
+        await deleteDoc(doc(db, UYE_COLLECTION, id));
+        tumUyeler = tumUyeler.filter(u => u.id !== id);
+        filtrele();
+      }catch(error){
+        alert("Üye silinemedi. Firestore yetkilerini kontrol et.");
+        console.error(error);
+      }
+    }
+
+    function csvIndir(){
+      if(filtreliUyeler.length === 0){
+        alert("İndirilecek kayıt yok.");
+        return;
+      }
+
+      const satirlar = [
+        ["Ad", "Telefon", "E-posta", "Kayıt Tarihi", "Durum"]
+      ];
+
+      filtreliUyeler.forEach(u => {
+        satirlar.push([
+          u.ad,
+          u.telefon,
+          u.email,
+          tarihYaz(u.kayitTarihi),
+          u.aktif ? "Aktif" : "Pasif"
+        ]);
+      });
+
+      const csv = satirlar.map(r =>
+        r.map(v => `"${String(v).replaceAll('"', '""')}"`).join(";")
+      ).join("\n");
+
+      const blob = new Blob(["\uFEFF" + csv], {
+        type: "text/csv;charset=utf-8;"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "uye-listesi.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    aramaInput.addEventListener("input", filtrele);
+
+    window.uyeleriGetir = uyeleriGetir;
+    window.uyeSil = uyeSil;
+    window.csvIndir = csvIndir;
+
+    uyeleriGetir();
+  </script>
+
+</body>
+</html>
