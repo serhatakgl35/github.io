@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Personel Listesi</title>
+  <title>Personel Üye Listesi</title>
 
   <style>
     *{box-sizing:border-box}
@@ -14,8 +14,9 @@
       color:#111;
       padding:18px;
     }
+
     .topbar{
-      max-width:1100px;
+      max-width:1180px;
       margin:0 auto 18px;
       background:#111;
       color:white;
@@ -26,13 +27,20 @@
       align-items:center;
       box-shadow:0 10px 30px rgba(0,0,0,.12);
     }
+
     .topbar a{
       color:white;
       text-decoration:none;
-      font-weight:700;
+      font-weight:800;
       font-size:14px;
+      margin-left:12px;
     }
-    .wrap{max-width:1100px;margin:auto}
+
+    .wrap{
+      max-width:1180px;
+      margin:auto;
+    }
+
     .card{
       background:white;
       border-radius:24px;
@@ -40,34 +48,51 @@
       box-shadow:0 14px 40px rgba(0,0,0,.08);
       margin-bottom:18px;
     }
+
     h1{
       margin:0 0 6px;
       font-size:28px;
       letter-spacing:-.5px;
     }
-    .muted{color:#666;font-size:14px}
+
+    .muted{
+      color:#666;
+      font-size:14px;
+    }
+
     .stats{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
       gap:14px;
       margin-top:18px;
     }
+
     .stat{
       background:#f5f5f7;
       border-radius:18px;
       padding:16px;
+      border:1px solid #eee;
     }
+
     .stat b{
       display:block;
-      font-size:26px;
+      font-size:28px;
       margin-bottom:4px;
     }
+
+    .stat span{
+      color:#555;
+      font-size:14px;
+      font-weight:700;
+    }
+
     .controls{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       margin-top:18px;
     }
+
     input{
       flex:1;
       min-width:220px;
@@ -77,29 +102,37 @@
       font-size:15px;
       outline:none;
     }
+
     button{
       border:0;
       background:#111;
       color:white;
       border-radius:14px;
       padding:13px 16px;
-      font-weight:800;
+      font-weight:900;
       cursor:pointer;
     }
+
     button.secondary{
       background:#e9e9ee;
       color:#111;
     }
+
     button.danger{
       background:#ffe9e9;
       color:#b00020;
     }
-    .table-wrap{overflow-x:auto}
+
+    .table-wrap{
+      overflow-x:auto;
+    }
+
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:760px;
+      min-width:920px;
     }
+
     th,td{
       text-align:left;
       padding:13px 12px;
@@ -107,28 +140,33 @@
       font-size:14px;
       white-space:nowrap;
     }
+
     th{
       color:#555;
       font-size:13px;
       background:#fafafa;
     }
+
     .badge{
       padding:6px 10px;
       border-radius:999px;
       background:#e9f8ee;
       color:#157347;
-      font-weight:800;
+      font-weight:900;
       font-size:12px;
     }
+
     .badge.off{
       background:#ffe9e9;
       color:#b00020;
     }
+
     .empty{
       text-align:center;
       padding:24px;
       color:#777;
     }
+
     @media(max-width:600px){
       body{padding:12px}
       .topbar{border-radius:16px}
@@ -141,27 +179,44 @@
 <body>
 
   <div class="topbar">
-    <strong>Personel Listesi</strong>
-    <a href="admin.html">Admin Paneli</a>
+    <strong>Personel Üyeleri</strong>
+    <div>
+      <a href="admin.html">Admin Paneli</a>
+      <a href="index.html">Ana Sayfa</a>
+    </div>
   </div>
 
   <div class="wrap">
 
     <div class="card">
       <h1>Siteye Üye Olan Personeller</h1>
-      <div class="muted">Firestore / personeller koleksiyonundan çekilir.</div>
+      <div class="muted">
+        Personeller, randevular ve geçmiş randevular birlikte hesaplanır.
+      </div>
 
       <div class="stats">
         <div class="stat">
-          <b id="toplamUye">0</b>
+          <b id="toplamPersonel">0</b>
           <span>Toplam Personel</span>
         </div>
+
         <div class="stat">
-          <b id="bugunUye">0</b>
+          <b id="bugunKayit">0</b>
           <span>Bugün Kayıt Olan</span>
         </div>
+
         <div class="stat">
-          <b id="gosterilenUye">0</b>
+          <b id="toplamRandevu">0</b>
+          <span>Toplam Randevu</span>
+        </div>
+
+        <div class="stat">
+          <b id="bugunRandevu">0</b>
+          <span>Bugünkü Randevu</span>
+        </div>
+
+        <div class="stat">
+          <b id="gosterilenKayit">0</b>
           <span>Gösterilen Kayıt</span>
         </div>
       </div>
@@ -169,7 +224,7 @@
       <div class="controls">
         <input id="aramaInput" placeholder="İsim veya telefon ara..." />
         <button onclick="csvIndir()">Tabloyu İndir</button>
-        <button class="secondary" onclick="uyeleriGetir()">Yenile</button>
+        <button class="secondary" onclick="verileriGetir()">Yenile</button>
       </div>
     </div>
 
@@ -180,15 +235,16 @@
             <tr>
               <th>İsim</th>
               <th>Telefon</th>
-              <th>Şifre</th>
               <th>Kayıt Tarihi</th>
+              <th>Son Randevu</th>
+              <th>Toplam Randevu</th>
               <th>Durum</th>
               <th>İşlem</th>
             </tr>
           </thead>
           <tbody id="uyeTablo">
             <tr>
-              <td colspan="6" class="empty">Yükleniyor...</td>
+              <td colspan="7" class="empty">Yükleniyor...</td>
             </tr>
           </tbody>
         </table>
@@ -204,81 +260,36 @@
       collection,
       getDocs,
       deleteDoc,
-      doc,
-      query,
-      orderBy
+      doc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-  authDomain: "berber-randevu-14f7f.firebaseapp.com",
-  projectId: "berber-randevu-14f7f",
-  storageBucket: "berber-randevu-14f7f.firebasestorage.app",
-  messagingSenderId: "280530860977",
-  appId: "1:280530860977:web:52c0df04c228896f211b90"
+      apiKey: "BURAYA_API_KEY",
+      authDomain: "BURAYA_AUTH_DOMAIN",
+      projectId: "BURAYA_PROJECT_ID",
+      storageBucket: "BURAYA_STORAGE_BUCKET",
+      messagingSenderId: "BURAYA_MESSAGING_SENDER_ID",
+      appId: "BURAYA_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const UYE_COLLECTION = "personeller";
+    const PERSONEL_COLLECTION = "personeller";
+    const AKTIF_RANDEVU_COLLECTION = "randevular";
+    const GECMIS_RANDEVU_COLLECTION = "randevu_gecmisi";
 
-    let tumUyeler = [];
-    let filtreliUyeler = [];
+    let tumPersoneller = [];
+    let filtreliPersoneller = [];
+    let tumRandevular = [];
 
     const tablo = document.getElementById("uyeTablo");
     const aramaInput = document.getElementById("aramaInput");
 
-    function tarihYaz(value){
-      if(!value) return "-";
-
-      try{
-        if(value.toDate){
-          return value.toDate().toLocaleString("tr-TR");
-        }
-
-        const d = new Date(value);
-        if(isNaN(d.getTime())) return "-";
-
-        return d.toLocaleString("tr-TR", {
-          day:"2-digit",
-          month:"2-digit",
-          year:"numeric",
-          hour:"2-digit",
-          minute:"2-digit"
-        });
-      }catch(e){
-        return "-";
-      }
-    }
-
-    function bugunMu(value){
-      if(!value) return false;
-
-      let d;
-
-      try{
-        if(value.toDate){
-          d = value.toDate();
-        }else{
-          d = new Date(value);
-        }
-
-        if(isNaN(d.getTime())) return false;
-
-        const now = new Date();
-
-        return d.getFullYear() === now.getFullYear() &&
-               d.getMonth() === now.getMonth() &&
-               d.getDate() === now.getDate();
-
-      }catch(e){
-        return false;
-      }
-    }
-
-    function temiz(v){
-      return String(v || "").toLowerCase().trim();
+    function telefonTemizle(v){
+      let t = String(v || "").replace(/\D/g,"");
+      if(t.length === 10) t = "0" + t;
+      return t;
     }
 
     function htmlTemizle(v){
@@ -290,49 +301,184 @@
         .replaceAll("'","&#039;");
     }
 
-    async function uyeleriGetir(){
+    function tarihObjesi(value){
+      if(!value) return null;
+
+      try{
+        if(value.toDate) return value.toDate();
+
+        const d = new Date(value);
+        if(!isNaN(d.getTime())) return d;
+
+        return null;
+      }catch(e){
+        return null;
+      }
+    }
+
+    function tarihYaz(value){
+      const d = tarihObjesi(value);
+      if(!d) return "-";
+
+      return d.toLocaleString("tr-TR", {
+        day:"2-digit",
+        month:"2-digit",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+      });
+    }
+
+    function tarihSaattenOlustur(r){
+      const tarih = r.date || r.tarih || r.kayitTarih || "";
+      const saat = r.time || r.saat || r.zaman || r.kayitSaat || "";
+
+      if(tarih && saat){
+        const d = new Date(`${tarih}T${saat}`);
+        if(!isNaN(d.getTime())) return d;
+      }
+
+      if(tarih){
+        const d = new Date(tarih);
+        if(!isNaN(d.getTime())) return d;
+      }
+
+      return tarihObjesi(r.createdAt || r.kayitTarihi || r.olusturmaTarihi);
+    }
+
+    function bugunMu(value){
+      const d = tarihObjesi(value);
+      if(!d) return false;
+
+      const now = new Date();
+
+      return d.getFullYear() === now.getFullYear() &&
+             d.getMonth() === now.getMonth() &&
+             d.getDate() === now.getDate();
+    }
+
+    function randevuBugunMu(r){
+      const tarih = r.date || r.tarih || r.kayitTarih || "";
+      if(tarih){
+        const bugun = new Date();
+        const yyyy = bugun.getFullYear();
+        const mm = String(bugun.getMonth() + 1).padStart(2, "0");
+        const dd = String(bugun.getDate()).padStart(2, "0");
+        return tarih === `${yyyy}-${mm}-${dd}`;
+      }
+
+      const d = tarihSaattenOlustur(r);
+      if(!d) return false;
+
+      const now = new Date();
+
+      return d.getFullYear() === now.getFullYear() &&
+             d.getMonth() === now.getMonth() &&
+             d.getDate() === now.getDate();
+    }
+
+    function temiz(v){
+      return String(v || "").toLowerCase().trim();
+    }
+
+    async function koleksiyonOku(collectionName){
+      const snap = await getDocs(collection(db, collectionName));
+      const arr = [];
+
+      snap.forEach(item => {
+        arr.push({
+          id: item.id,
+          ...item.data()
+        });
+      });
+
+      return arr;
+    }
+
+    async function verileriGetir(){
       tablo.innerHTML = `
         <tr>
-          <td colspan="6" class="empty">Yükleniyor...</td>
+          <td colspan="7" class="empty">Yükleniyor...</td>
         </tr>
       `;
 
       try{
-        let snap;
+        const personeller = await koleksiyonOku(PERSONEL_COLLECTION);
+
+        let aktifRandevular = [];
+        let gecmisRandevular = [];
 
         try{
-          const q = query(
-            collection(db, UYE_COLLECTION),
-            orderBy("createdAt", "desc")
-          );
-          snap = await getDocs(q);
-        }catch(err){
-          snap = await getDocs(collection(db, UYE_COLLECTION));
+          aktifRandevular = await koleksiyonOku(AKTIF_RANDEVU_COLLECTION);
+        }catch(e){
+          console.warn("randevular okunamadı", e);
         }
 
-        tumUyeler = [];
+        try{
+          gecmisRandevular = await koleksiyonOku(GECMIS_RANDEVU_COLLECTION);
+        }catch(e){
+          console.warn("randevu_gecmisi okunamadı", e);
+        }
 
-        snap.forEach(item => {
-          const d = item.data();
+        tumRandevular = [...aktifRandevular, ...gecmisRandevular];
 
-          tumUyeler.push({
-            id: item.id,
-            isim: d.isim || d.ad || d.name || "-",
-            telefon: d.telefon || item.id || "-",
-            sifre: d.sifre || "-",
-            createdAt: d.createdAt || d.kayitTarihi || d.tarih || null,
-            aktif: d.aktif !== false && d.aktifMi !== false
+        const randevuMap = {};
+
+        tumRandevular.forEach(r => {
+          const tel = telefonTemizle(
+            r.telefon || r.phone || r.kayitTelefon || r.personelTelefon || r.userPhone
+          );
+
+          if(!tel) return;
+
+          if(!randevuMap[tel]){
+            randevuMap[tel] = [];
+          }
+
+          randevuMap[tel].push(r);
+        });
+
+        tumPersoneller = personeller.map(p => {
+          const telefon = telefonTemizle(p.telefon || p.phone || p.id);
+          const randevular = randevuMap[telefon] || [];
+
+          let sonRandevu = null;
+
+          randevular.forEach(r => {
+            const d = tarihSaattenOlustur(r);
+            if(!d) return;
+
+            if(!sonRandevu || d > sonRandevu){
+              sonRandevu = d;
+            }
           });
+
+          return {
+            id: p.id,
+            isim: p.isim || p.ad || p.name || "-",
+            telefon: telefon || p.telefon || p.id || "-",
+            createdAt: p.createdAt || p.kayitTarihi || p.tarih || null,
+            aktif: p.aktif !== false && p.aktifMi !== false,
+            toplamRandevu: randevular.length,
+            sonRandevu: sonRandevu
+          };
+        });
+
+        tumPersoneller.sort((a,b) => {
+          const da = tarihObjesi(a.createdAt);
+          const dbb = tarihObjesi(b.createdAt);
+          return (dbb?.getTime() || 0) - (da?.getTime() || 0);
         });
 
         filtrele();
 
       }catch(error){
         console.error(error);
+
         tablo.innerHTML = `
           <tr>
-            <td colspan="6" class="empty">
-              Personeller yüklenemedi. Firebase config veya Firestore kurallarını kontrol et.
+            <td colspan="7" class="empty">
+              Veriler yüklenemedi. Firebase config veya Firestore kurallarını kontrol et.
             </td>
           </tr>
         `;
@@ -342,8 +488,8 @@
     function filtrele(){
       const arama = temiz(aramaInput.value);
 
-      filtreliUyeler = tumUyeler.filter(u => {
-        const metin = temiz(`${u.isim} ${u.telefon}`);
+      filtreliPersoneller = tumPersoneller.filter(p => {
+        const metin = temiz(`${p.isim} ${p.telefon}`);
         return metin.includes(arama);
       });
 
@@ -352,46 +498,49 @@
     }
 
     function tabloYaz(){
-      if(filtreliUyeler.length === 0){
+      if(filtreliPersoneller.length === 0){
         tablo.innerHTML = `
           <tr>
-            <td colspan="6" class="empty">Kayıt bulunamadı.</td>
+            <td colspan="7" class="empty">Kayıt bulunamadı.</td>
           </tr>
         `;
         return;
       }
 
-      tablo.innerHTML = filtreliUyeler.map(u => `
+      tablo.innerHTML = filtreliPersoneller.map(p => `
         <tr>
-          <td>${htmlTemizle(u.isim)}</td>
-          <td>${htmlTemizle(u.telefon)}</td>
-          <td>${htmlTemizle(u.sifre)}</td>
-          <td>${tarihYaz(u.createdAt)}</td>
+          <td>${htmlTemizle(p.isim)}</td>
+          <td>${htmlTemizle(p.telefon)}</td>
+          <td>${tarihYaz(p.createdAt)}</td>
+          <td>${p.sonRandevu ? tarihYaz(p.sonRandevu) : "-"}</td>
+          <td><strong>${p.toplamRandevu}</strong></td>
           <td>
-            <span class="badge ${u.aktif ? "" : "off"}">
-              ${u.aktif ? "Aktif" : "Pasif"}
+            <span class="badge ${p.aktif ? "" : "off"}">
+              ${p.aktif ? "Aktif" : "Pasif"}
             </span>
           </td>
           <td>
-            <button class="danger" onclick="uyeSil('${u.id}')">Sil</button>
+            <button class="danger" onclick="personelSil('${p.id}')">Sil</button>
           </td>
         </tr>
       `).join("");
     }
 
     function istatistikYaz(){
-      document.getElementById("toplamUye").textContent = tumUyeler.length;
-      document.getElementById("bugunUye").textContent = tumUyeler.filter(u => bugunMu(u.createdAt)).length;
-      document.getElementById("gosterilenUye").textContent = filtreliUyeler.length;
+      document.getElementById("toplamPersonel").textContent = tumPersoneller.length;
+      document.getElementById("bugunKayit").textContent = tumPersoneller.filter(p => bugunMu(p.createdAt)).length;
+      document.getElementById("toplamRandevu").textContent = tumRandevular.length;
+      document.getElementById("bugunRandevu").textContent = tumRandevular.filter(r => randevuBugunMu(r)).length;
+      document.getElementById("gosterilenKayit").textContent = filtreliPersoneller.length;
     }
 
-    async function uyeSil(id){
+    async function personelSil(id){
       const onay = confirm("Bu personeli silmek istiyor musun?");
       if(!onay) return;
 
       try{
-        await deleteDoc(doc(db, UYE_COLLECTION, id));
-        tumUyeler = tumUyeler.filter(u => u.id !== id);
+        await deleteDoc(doc(db, PERSONEL_COLLECTION, id));
+        tumPersoneller = tumPersoneller.filter(p => p.id !== id);
         filtrele();
       }catch(error){
         console.error(error);
@@ -400,22 +549,23 @@
     }
 
     function csvIndir(){
-      if(filtreliUyeler.length === 0){
+      if(filtreliPersoneller.length === 0){
         alert("İndirilecek kayıt yok.");
         return;
       }
 
       const satirlar = [
-        ["İsim", "Telefon", "Şifre", "Kayıt Tarihi", "Durum"]
+        ["İsim", "Telefon", "Kayıt Tarihi", "Son Randevu", "Toplam Randevu", "Durum"]
       ];
 
-      filtreliUyeler.forEach(u => {
+      filtreliPersoneller.forEach(p => {
         satirlar.push([
-          u.isim,
-          u.telefon,
-          u.sifre,
-          tarihYaz(u.createdAt),
-          u.aktif ? "Aktif" : "Pasif"
+          p.isim,
+          p.telefon,
+          tarihYaz(p.createdAt),
+          p.sonRandevu ? tarihYaz(p.sonRandevu) : "-",
+          p.toplamRandevu,
+          p.aktif ? "Aktif" : "Pasif"
         ]);
       });
 
@@ -430,7 +580,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "personel-listesi.csv";
+      a.download = "personel-uye-listesi.csv";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -439,11 +589,11 @@
 
     aramaInput.addEventListener("input", filtrele);
 
-    window.uyeleriGetir = uyeleriGetir;
-    window.uyeSil = uyeSil;
+    window.verileriGetir = verileriGetir;
+    window.personelSil = personelSil;
     window.csvIndir = csvIndir;
 
-    uyeleriGetir();
+    verileriGetir();
   </script>
 
 </body>
