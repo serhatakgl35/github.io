@@ -250,27 +250,84 @@ window.tumKartlari = function(){
   renderKartlar(sonData);
 }
 
+function whatsappAcIphoneUyumlu(url){
+  // iPhone Safari/Chrome için WhatsApp açma işlemi kullanıcı tıklaması içinde kalmalı.
+  // Bu yüzden önce linki açıyoruz, Firestore silmeyi sonra yapıyoruz.
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 window.sil = async function(id){
-  if(!confirm("Randevu silinsin mi?")) return;
-  await deleteDoc(doc(db,"randevular",id));
-  await yukle();
+  const r = sonData.find(x=>x.id===id);
+  const bilgi = r ? `${tarihFormatla(r.tarih)} ${r.saat} - ${r.ad}` : "Bu randevu";
+
+  const onay = confirm(`${bilgi} silinsin mi?\n\nBu işlem geri alınamaz.`);
+  if(!onay) return;
+
+  try{
+    durum.style.display = "block";
+    durum.innerText = "Randevu siliniyor...";
+    await deleteDoc(doc(db,"randevular",id));
+    await yukle();
+    durum.innerText = "Randevu silindi.";
+  }catch(e){
+    console.error(e);
+    alert("Randevu silinirken hata oluştu.");
+  }
 }
 
 window.silMesaj = async function(id){
   const r = sonData.find(x=>x.id===id);
-  if(!r){ alert("Kayıt bulunamadı."); return; }
-
-  await deleteDoc(doc(db,"randevular",id));
-
-  const tel = waTel(r.telefon);
-  if(!tel || tel.length<12){
-    alert("Telefon geçersiz, sadece silindi.");
-    await yukle();
+  if(!r){
+    alert("Kayıt bulunamadı.");
     return;
   }
 
-  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mesaj(r))}`,"_blank");
-  await yukle();
+  const tel = waTel(r.telefon);
+  if(!tel || tel.length < 12){
+    const sadeceSil = confirm("Telefon numarası geçersiz. WhatsApp açılamaz. Sadece randevu silinsin mi?");
+    if(!sadeceSil) return;
+
+    try{
+      durum.style.display = "block";
+      durum.innerText = "Randevu siliniyor...";
+      await deleteDoc(doc(db,"randevular",id));
+      await yukle();
+      durum.innerText = "Randevu silindi.";
+    }catch(e){
+      console.error(e);
+      alert("Randevu silinirken hata oluştu.");
+    }
+    return;
+  }
+
+  const onay = confirm(
+    `${r.ad} adlı müşterinin ${tarihFormatla(r.tarih)} ${r.saat} randevusu silinecek ve WhatsApp mesajı açılacak.\n\nDevam edilsin mi?`
+  );
+  if(!onay) return;
+
+  const waUrl = `https://wa.me/${tel}?text=${encodeURIComponent(mesaj(r))}`;
+
+  // ÖNEMLİ: iPhone'da önce WhatsApp açılır.
+  // await/deleteDoc işlemi window.open'dan önce olursa iPhone popup'ı engelleyebilir.
+  whatsappAcIphoneUyumlu(waUrl);
+
+  try{
+    durum.style.display = "block";
+    durum.innerText = "WhatsApp açıldı. Randevu siliniyor...";
+    await deleteDoc(doc(db,"randevular",id));
+    await yukle();
+    durum.innerText = "Randevu silindi. WhatsApp mesajı açıldı.";
+  }catch(e){
+    console.error(e);
+    alert("WhatsApp açıldı ama randevu silinirken hata oluştu.");
+  }
 }
 
 window.cikis = function(){
