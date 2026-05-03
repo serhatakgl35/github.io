@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kantin10 Admin Paneli</title>
+  <style>
+    *{box-sizing:border-box}
+    html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+    body{margin:0;background:#f5f5f7;color:#111;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;padding:18px}
+    .wrap{max-width:1180px;margin:0 auto}
+    .topbar{background:#111;color:white;border-radius:22px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 12px 34px rgba(0,0,0,.14);margin-bottom:18px}
+    .brand{font-weight:950;font-size:18px;letter-spacing:-.2px}
+    .top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .email{font-size:13px;color:#ddd;font-weight:700}
+    .card{background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:24px;padding:22px;box-shadow:0 14px 38px rgba(0,0,0,.08);backdrop-filter:blur(14px);margin-bottom:18px}
+    h1{margin:0 0 8px;font-size:30px;letter-spacing:-.7px}
+    h2{margin:0 0 14px;font-size:20px}
+    .muted{color:#666;font-size:14px;line-height:1.45}
+    input,button{width:100%;padding:14px;border-radius:15px;border:1px solid #ddd;font-size:15px;margin:7px 0}
+    button{background:#111;color:white;font-weight:900;cursor:pointer;border:0}
+    button.light{background:#eee;color:#111;width:auto;margin:0;padding:11px 14px}
+    .hidden{display:none!important}
+    .status{margin-top:10px;padding:12px;border-radius:15px;background:#eee;font-weight:800;white-space:pre-wrap}
+    .status.err{background:#ffe8e8;color:#a40000}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:18px}
+    .stat{background:#f5f5f7;border:1px solid #eee;border-radius:20px;padding:16px}
+    .stat b{display:block;font-size:30px;margin-bottom:4px}
+    .stat span{color:#555;font-size:14px;font-weight:800}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+    .menu-card{display:block;text-decoration:none;color:#111;background:white;border:1px solid #eee;border-radius:24px;padding:20px;box-shadow:0 10px 28px rgba(0,0,0,.07);transition:.18s ease}
+    .menu-card:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(0,0,0,.1)}
+    .icon{width:44px;height:44px;border-radius:16px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px}
+    .menu-card h3{margin:0 0 6px;font-size:20px;letter-spacing:-.3px}
+    .menu-card p{margin:0;color:#666;font-size:14px;line-height:1.45}
+    .warn{background:#fff7e6;border:1px solid #ffe0a3;color:#6b4400}
+    @media(max-width:700px){body{padding:12px}.topbar{align-items:flex-start;flex-direction:column;border-radius:18px}.grid{grid-template-columns:1fr}h1{font-size:25px}button.light{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar hidden" id="topbar">
+      <div class="brand">Kantin10 Admin Paneli</div>
+      <div class="top-actions">
+        <span class="email" id="adminEmail"></span>
+        <button class="light" id="logoutBtn">Çıkış Yap</button>
+      </div>
+    </div>
+
+    <div class="card" id="loginCard">
+      <h1>Admin Girişi</h1>
+      <div class="muted">Bu sayfa tüm admin sayfalarının giriş kapısıdır. Giriş yapılmadan üye listesi, gün kapatma ve haftalık takvim açılmaz.</div>
+      <input id="email" type="email" placeholder="Admin e-posta" autocomplete="username" />
+      <input id="password" type="password" placeholder="Şifre" autocomplete="current-password" />
+      <button id="loginBtn">Giriş Yap</button>
+      <div id="loginStatus" class="status err hidden"></div>
+    </div>
+
+    <div id="panel" class="hidden">
+      <div class="card">
+        <h1>Yönetim Merkezi</h1>
+        <div class="muted">Bütün dağınık admin sayfaları buradan açılır. Sayfalara direkt linkten girilirse de admin girişi kontrol edilir.</div>
+        <div class="stats">
+          <div class="stat"><b id="personelSayisi">0</b><span>Toplam Personel</span></div>
+          <div class="stat"><b id="bugunKayit">0</b><span>Bugün Kayıt Olan</span></div>
+          <div class="stat"><b id="aktifRandevu">0</b><span>Aktif Randevu</span></div>
+          <div class="stat"><b id="gecmisRandevu">0</b><span>Geçmiş Randevu</span></div>
+          <div class="stat"><b>☕</b><span>Ödeme Paneli Aktif</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Sayfalar</h2>
+        <div class="grid">
+          <a class="menu-card" href="uyelistesi.html"><div class="icon">👥</div><h3>Üye Listesi</h3><p>Personeller, son randevu zamanı, toplam randevu sayısı ve CSV indirme.</p></a>
+          <a class="menu-card" href="berbergunkapat.html"><div class="icon">⛔</div><h3>Gün / Saat Kapat</h3><p>Berberin veya adminin günleri ve saatleri açıp kapatacağı panel.</p></a>
+          <a class="menu-card" href="adminhaftaliktakvim.html"><div class="icon">📅</div><h3>Haftalık Takvim</h3><p>Admin haftalık randevu takvimi. Dolu, müsait, kapalı ve geçmiş slotlar.</p></a>
+          <a class="menu-card" href="admin.html"><div class="icon">📋</div><h3>Randevu Yönetimi</h3><p>Mevcut admin randevu listesi, geçmiş randevular ve basit gün/saat kapatma.</p></a>
+          <a class="menu-card" href="odeme-admin.html"><div class="icon">☕</div><h3>Ödeme Paneli</h3><p>Çay aidatı, ödeme durumu, borç/fazla bakiye ve CSV raporu.</p></a>
+        </div>
+      </div>
+
+      <div class="card warn">
+        <strong>Not:</strong> Dosya adlarını sunucuya şu şekilde yükle: <b>adminpanel.html</b>, <b>uyelistesi.html</b>, <b>berbergunkapat.html</b>, <b>adminhaftaliktakvim.html</b>, <b>admin.html</b>, <b>odeme-admin.html</b>.
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+      authDomain: "berber-randevu-14f7f.firebaseapp.com",
+      projectId: "berber-randevu-14f7f",
+      storageBucket: "berber-randevu-14f7f.firebasestorage.app",
+      messagingSenderId: "280530860977",
+      appId: "1:280530860977:web:52c0df04c228896f211b90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const topbar = document.getElementById("topbar");
+    const loginCard = document.getElementById("loginCard");
+    const panel = document.getElementById("panel");
+    const loginStatus = document.getElementById("loginStatus");
+    const adminEmail = document.getElementById("adminEmail");
+
+    function hataYaz(metin){ loginStatus.textContent = metin; loginStatus.classList.remove("hidden"); }
+    function bugunMu(v){
+      if(!v) return false;
+      let d; try{ d = v.toDate ? v.toDate() : new Date(v); }catch(e){ return false; }
+      if(isNaN(d.getTime())) return false;
+      const n = new Date();
+      return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate();
+    }
+    async function adminMi(user){
+      const snap = await getDoc(doc(db,"admins",user.uid));
+      if(!snap.exists()) return false;
+      const d = snap.data() || {};
+      return d.aktif === true && (!d.role || d.role === "admin");
+    }
+    async function sayiYukle(){
+      async function say(k){ try{ const s = await getDocs(collection(db,k)); return s.size; }catch(e){ return 0; } }
+      async function bugunKayitSay(){
+        try{ const s = await getDocs(collection(db,"personeller")); let c=0; s.forEach(x=>{const d=x.data()||{}; if(bugunMu(d.createdAt||d.kayitTarihi||d.tarih)) c++;}); return c; }catch(e){ return 0; }
+      }
+      document.getElementById("personelSayisi").textContent = await say("personeller");
+      document.getElementById("bugunKayit").textContent = await bugunKayitSay();
+      document.getElementById("aktifRandevu").textContent = await say("randevular");
+      document.getElementById("gecmisRandevu").textContent = await say("randevu_gecmisi");
+    }
+    document.getElementById("loginBtn").addEventListener("click", async()=>{
+      loginStatus.classList.add("hidden");
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if(!email || !password) return hataYaz("E-posta ve şifre gir.");
+      try{ await signInWithEmailAndPassword(auth,email,password); }catch(err){ hataYaz("Giriş başarısız: " + err.message); }
+    });
+    document.getElementById("logoutBtn").addEventListener("click", async()=>{
+      localStorage.removeItem("adminGiris"); localStorage.removeItem("adminLogin");
+      await signOut(auth);
+    });
+    onAuthStateChanged(auth, async(user)=>{
+      if(!user){ topbar.classList.add("hidden"); panel.classList.add("hidden"); loginCard.classList.remove("hidden"); return; }
+      const ok = await adminMi(user);
+      if(!ok){ await signOut(auth); hataYaz("Bu kullanıcı admin değil. Firestore admins/{UID} içinde aktif:true olmalı."); return; }
+      localStorage.setItem("adminGiris","true"); localStorage.setItem("adminLogin","true");
+      adminEmail.textContent = user.email || "Admin";
+      loginCard.classList.add("hidden"); topbar.classList.remove("hidden"); panel.classList.remove("hidden");
+      await sayiYukle();
+    });
+  </script>
+</body>
+</html>
