@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ödeme Admin Paneli</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f5f5f7;
+  --text:#111;
+  --muted:#666;
+  --card:#fff;
+  --dark:#111;
+  --shadow:0 18px 55px rgba(0,0,0,.10);
+  --soft:0 8px 25px rgba(0,0,0,.08);
+  --r:26px;
+}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.95), transparent 32%),
+    radial-gradient(circle at 80% 0%, rgba(225,229,238,.9), transparent 35%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+}
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:rgba(17,17,17,.94);
+  color:white;
+  padding:14px 18px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  box-shadow:0 4px 18px rgba(0,0,0,.18);
+  backdrop-filter:blur(16px);
+}
+.topbar a,.topbar button{
+  background:white;color:#111;text-decoration:none;border:0;
+  border-radius:999px;padding:9px 15px;font-weight:900;cursor:pointer;
+}
+.wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
+.centerWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{
+  background:rgba(255,255,255,.88);
+  border-radius:var(--r);
+  padding:24px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  margin-bottom:18px;
+}
+.loginCard{width:100%;max-width:430px}
+.logo{
+  width:62px;height:62px;border-radius:20px;background:#111;color:white;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  margin:0 auto 16px;
+}
+h1{font-size:30px;margin:0 0 10px;font-weight:950;letter-spacing:-.5px}
+h2,h3{margin-top:0}
+p{color:var(--muted);line-height:1.45}
+label{font-weight:800;font-size:14px;display:block;margin:0 0 6px}
+input,select{
+  width:100%;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(0,0,0,.10);
+  margin-bottom:14px;
+  font-size:16px;
+  background:#f0f2f6;
+  outline:none;
+}
+input:focus,select:focus{border-color:#111;background:white}
+button.main,.btnMain{
+  width:100%;
+  display:block;
+  text-align:center;
+  background:#111;
+  color:white;
+  border:0;
+  border-radius:17px;
+  padding:15px 16px;
+  font-weight:950;
+  font-size:16px;
+  cursor:pointer;
+  text-decoration:none;
+}
+button.main:disabled{opacity:.55;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.menuCard{
+  background:white;border-radius:28px;padding:26px;text-decoration:none;color:#111;
+  box-shadow:var(--shadow);transition:.18s transform,.18s box-shadow;
+}
+.menuCard:hover{transform:translateY(-3px);box-shadow:0 22px 65px rgba(0,0,0,.13)}
+.menuIcon{
+  width:58px;height:58px;border-radius:20px;background:#111;color:white;
+  display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;
+}
+.muted{color:var(--muted);font-size:14px}
+.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
+.iban{
+  background:#f5f5f7;
+  border-radius:18px;
+  padding:16px;
+  font-size:18px;
+  font-weight:950;
+  word-break:break-word;
+}
+.status{display:inline-block;padding:8px 13px;border-radius:999px;font-weight:950;font-size:13px;white-space:nowrap}
+.odendi{background:#dcfce7;color:#166534}
+.bekliyor{background:#fef3c7;color:#92400e}
+.reddedildi{background:#fee2e2;color:#991b1b}
+.tableWrap{overflow:auto;border-radius:18px}
+table{width:100%;border-collapse:collapse;background:white}
+th,td{padding:13px 14px;border-bottom:1px solid #eee;text-align:left;font-size:14px;vertical-align:middle}
+th{background:#f8f8f8;font-weight:950}
+.small{
+  background:#111;color:white;border:0;border-radius:12px;
+  padding:9px 11px;font-weight:900;cursor:pointer;margin:2px;
+}
+.green{background:#15803d}.red{background:#b91c1c}.gray{background:#4b5563}
+.tutarInput{width:95px!important;padding:8px!important;border-radius:10px!important;margin:0!important}
+.hide{display:none!important}
+@media(max-width:720px){
+  h1{font-size:25px}
+  .wrap{padding:0 10px}
+  .card{padding:18px;border-radius:22px}
+  th,td{font-size:13px;padding:10px}
+}
+</style>
+</head>
+<body>
+
+<div id="adminLogin" class="centerWrap">
+  <div class="card loginCard">
+    <div class="logo">☕</div>
+    <h1 style="text-align:center">Ödeme Admin</h1>
+    <p style="text-align:center">Çay ocağı ödeme takibi</p>
+
+    <label>Admin Kullanıcı</label>
+    <input id="adminUser" placeholder="admin">
+
+    <label>Şifre</label>
+    <input id="adminPass" type="password">
+
+    <button class="main" onclick="adminLogin()">Giriş Yap</button>
+    <div id="loginMsg" class="msg"></div>
+  </div>
+</div>
+
+<div id="adminPanel" class="hide">
+  <div class="topbar">
+    <button onclick="adminLogout()">Çıkış</button>
+    <a href="index.html">Personel Giriş</a>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Admin Ödeme Takibi</h1>
+      <p>Personeller A-Z sıralanır. Tutar boş bırakılırsa 300 TL kabul edilir.</p>
+
+      <div class="grid">
+        <div>
+          <label>Ay Seç</label>
+          <input id="adminAy" type="month">
+        </div>
+        <div>
+          <label>Filtre</label>
+          <select id="adminFiltre" onchange="adminListele()">
+            <option value="hepsi">Hepsi</option>
+            <option value="odendi">Ödendi</option>
+            <option value="odeme_bekliyor">Ödeme Bekliyor</option>
+            <option value="reddedildi">Reddedildi</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="main" onclick="adminListele()">Listeyi Yenile</button>
+    </div>
+
+    <div class="card">
+      <h3>Özet</h3>
+      <div id="adminOzet" class="grid"></div>
+    </div>
+
+    <div class="card">
+      <h3>Personel Listesi</h3>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Personel</th>
+              <th>Telefon</th>
+              <th>Ay</th>
+              <th>Tutar</th>
+              <th>Durum</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody id="adminTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, getDocs, query, where,
+  addDoc, updateDoc, doc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain:"berber-randevu-14f7f.firebaseapp.com",
+  projectId:"berber-randevu-14f7f"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const PERSONEL_COLLECTION = "personeller";
+const ODEME_COLLECTION = "cay_odemeler";
+
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "123456";
+
+const AYLIK_AIDAT = 300;
+
+function mevcutAy(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+}
+
+function temizTelefon(tel){
+  tel = String(tel || "").replace(/\D/g,"");
+  if(tel.startsWith("90")) tel = "0" + tel.slice(2);
+  if(tel && !tel.startsWith("0")) tel = "0" + tel;
+  return tel;
+}
+
+function getAd(p){
+  return p.isim || p.adSoyad || p.ad || p.name || p.fullName || "İsimsiz Personel";
+}
+
+function getTelefonFromDoc(id,p){
+  return temizTelefon(p.telefon || p.phone || p.tel || p.gsm || id || "");
+}
+
+function getAktif(p){
+  if(p.aktif === false) return false;
+  if(p.active === false) return false;
+  if(p.durum === "pasif") return false;
+  return true;
+}
+
+function durumText(durum){
+  if(durum === "odendi") return "Ödendi";
+  if(durum === "reddedildi") return "Reddedildi";
+  return "Ödeme Bekliyor";
+}
+
+function durumClass(durum){
+  if(durum === "odendi") return "odendi";
+  if(durum === "reddedildi") return "reddedildi";
+  return "bekliyor";
+}
+
+window.adminLogin = function(){
+  const u = document.getElementById("adminUser").value.trim();
+  const p = document.getElementById("adminPass").value.trim();
+
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    localStorage.setItem("cay_admin_login","true");
+    adminAc();
+  }else{
+    document.getElementById("loginMsg").textContent = "Admin bilgileri hatalı";
+  }
+};
+
+window.adminLogout = function(){
+  localStorage.removeItem("cay_admin_login");
+  location.reload();
+};
+
+function adminAc(){
+  document.getElementById("adminLogin").classList.add("hide");
+  document.getElementById("adminPanel").classList.remove("hide");
+  document.getElementById("adminAy").value = mevcutAy();
+  adminListele();
+}
+
+window.adminListele = async function(){
+  const ay = document.getElementById("adminAy").value || mevcutAy();
+  const filtre = document.getElementById("adminFiltre").value;
+
+  const personelSnap = await getDocs(collection(db, PERSONEL_COLLECTION));
+  const odemeQ = query(collection(db, ODEME_COLLECTION), where("ay", "==", ay));
+  const odemeSnap = await getDocs(odemeQ);
+
+  const odemeler = {};
+  odemeSnap.forEach(d=>{
+    const o = { id:d.id, ...d.data() };
+    odemeler[o.personelId] = o;
+    if(o.telefon) odemeler[o.telefon] = o;
+  });
+
+  let personeller = [];
+  personelSnap.forEach(pdoc=>{
+    const personel = { id:pdoc.id, ...pdoc.data() };
+    if(!getAktif(personel)) return;
+    personeller.push(personel);
+  });
+
+  personeller.sort((a,b)=>getAd(a).localeCompare(getAd(b),"tr",{sensitivity:"base"}));
+
+  let rows = "";
+  let say = { odendi:0, odeme_bekliyor:0, reddedildi:0 };
+  let toplamOnayliTutar = 0;
+
+  personeller.forEach(personel=>{
+    const tel = getTelefonFromDoc(personel.id, personel);
+    const ad = getAd(personel);
+    const odeme = odemeler[personel.id] || odemeler[tel];
+    const durum = odeme ? (odeme.durum || "odeme_bekliyor") : "odeme_bekliyor";
+    const tutar = odeme?.tutar || AYLIK_AIDAT;
+
+    say[durum] = (say[durum] || 0) + 1;
+    if(durum === "odendi") toplamOnayliTutar += Number(tutar || 0);
+
+    if(filtre !== "hepsi" && filtre !== durum) return;
+
+    const inputId = "tutar_" + tel;
+
+    rows += `
+      <tr>
+        <td>${ad}</td>
+        <td>${tel}</td>
+        <td>${ay}</td>
+        <td><input id="${inputId}" class="tutarInput" type="number" min="0" value="${tutar}" placeholder="300"> TL</td>
+        <td><span class="status ${durumClass(durum)}">${durumText(durum)}</span></td>
+        <td>
+          <button class="small green" onclick="durumDegistir('${personel.id}','${ad.replaceAll("'","\\'")}','${tel}','odendi','${inputId}')">Ödendi</button>
+          <button class="small gray" onclick="durumDegistir('${personel.id}','${ad.replaceAll("'","\\'")}','${tel}','odeme_bekliyor','${inputId}')">Bekliyor</button>
+          <button class="small red" onclick="reddet('${personel.id}','${ad.replaceAll("'","\\'")}','${tel}','${inputId}')">Reddet</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("adminTable").innerHTML = rows || `<tr><td colspan="6">Kayıt yok.</td></tr>`;
+
+  document.getElementById("adminOzet").innerHTML = `
+    <div class="card"><h3>Ödendi</h3><h1>${say.odendi}</h1></div>
+    <div class="card"><h3>Ödeme Bekliyor</h3><h1>${say.odeme_bekliyor}</h1></div>
+    <div class="card"><h3>Reddedildi</h3><h1>${say.reddedildi}</h1></div>
+    <div class="card"><h3>Onaylanan Toplam</h3><h1>${toplamOnayliTutar} TL</h1></div>
+  `;
+};
+
+window.durumDegistir = async function(personelId, adSoyad, telefon, yeniDurum, inputId){
+  const ay = document.getElementById("adminAy").value || mevcutAy();
+  let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
+  if(!girilenTutar || girilenTutar <= 0) girilenTutar = AYLIK_AIDAT;
+
+  const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", ay));
+  const snap = await getDocs(q);
+
+  const veri = {
+    personelId, adSoyad, telefon, ay,
+    tutar: girilenTutar,
+    durum: yeniDurum,
+    adminNot: "",
+    updatedAt: serverTimestamp()
+  };
+
+  if(snap.empty){
+    veri.createdAt = serverTimestamp();
+    await addDoc(collection(db, ODEME_COLLECTION), veri);
+  }else{
+    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
+  }
+
+  adminListele();
+};
+
+window.reddet = async function(personelId, adSoyad, telefon, inputId){
+  const sebep = prompt("Reddetme sebebi:", "Ödeme görünmedi");
+  const ay = document.getElementById("adminAy").value || mevcutAy();
+  let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
+  if(!girilenTutar || girilenTutar <= 0) girilenTutar = AYLIK_AIDAT;
+
+  const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", ay));
+  const snap = await getDocs(q);
+
+  const veri = {
+    personelId, adSoyad, telefon, ay,
+    tutar: girilenTutar,
+    durum: "reddedildi",
+    adminNot: sebep || "Reddedildi",
+    updatedAt: serverTimestamp()
+  };
+
+  if(snap.empty){
+    veri.createdAt = serverTimestamp();
+    await addDoc(collection(db, ODEME_COLLECTION), veri);
+  }else{
+    await updateDoc(doc(db, ODEME_COLLECTION, snap.docs[0].id), veri);
+  }
+
+  adminListele();
+};
+
+if(localStorage.getItem("cay_admin_login") === "true") adminAc();
+</script>
+</body>
+</html>
