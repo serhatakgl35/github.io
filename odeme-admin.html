@@ -123,6 +123,7 @@ th{background:#f8f8f8;font-weight:950}
 }
 .green{background:#15803d}.red{background:#b91c1c}.gray{background:#4b5563}
 .tutarInput{width:95px!important;padding:8px!important;border-radius:10px!important;margin:0!important}
+.aidatSaved{color:#166534;font-weight:900;min-height:20px;margin-top:8px}
 .hide{display:none!important}
 @media(max-width:720px){
   h1{font-size:25px}
@@ -160,12 +161,12 @@ th{background:#f8f8f8;font-weight:950}
   <div class="wrap">
     <div class="card">
       <h1>Admin Ödeme Takibi</h1>
-      <p>Personeller A-Z sıralanır. Tutar boş bırakılırsa 300 TL kabul edilir.</p>
+      <p>Personeller A-Z sıralanır. Bu ay toplanacak tutarı elle belirleyebilirsin. Personel satırında tutar boşsa bu ayın tutarı otomatik kullanılır.</p>
 
       <div class="grid">
         <div>
           <label>Ay Seç</label>
-          <input id="adminAy" type="month">
+          <input id="adminAy" type="month" onchange="adminListele()">
         </div>
         <div>
           <label>Filtre</label>
@@ -175,6 +176,13 @@ th{background:#f8f8f8;font-weight:950}
             <option value="odeme_bekliyor">Ödeme Bekliyor</option>
             <option value="reddedildi">Reddedildi</option>
           </select>
+        </div>
+
+        <div>
+          <label>Bu Ay Toplanacak Tutar</label>
+          <input id="aylikAidatInput" type="number" min="0" placeholder="300">
+          <button class="small green" onclick="aidatKaydet()">Tutarı Kaydet</button>
+          <div id="aidatSaved" class="aidatSaved"></div>
         </div>
       </div>
 
@@ -211,7 +219,7 @@ th{background:#f8f8f8;font-weight:950}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, collection, getDocs, query, where,
-  addDoc, updateDoc, doc, serverTimestamp
+  addDoc, updateDoc, doc, getDoc, setDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
@@ -232,11 +240,63 @@ const ADMIN_USER = "admin";
 const ADMIN_PASS = "123456";
 
 const AYLIK_AIDAT = 300;
+let aktifAidat = AYLIK_AIDAT;
 
 function mevcutAy(){
   const d = new Date();
   return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
 }
+
+function aidatDocId(ay){
+  return "aidat_" + ay;
+}
+
+async function aidatYukle(ay){
+  try{
+    const ref = doc(db, "cay_ayarlari", aidatDocId(ay));
+    const snap = await getDoc(ref);
+
+    if(snap.exists()){
+      aktifAidat = Number(snap.data().tutar || AYLIK_AIDAT);
+    }else{
+      aktifAidat = AYLIK_AIDAT;
+    }
+
+    const input = document.getElementById("aylikAidatInput");
+    if(input) input.value = aktifAidat;
+  }catch(e){
+    console.warn("Aidat ayarı okunamadı:", e);
+    aktifAidat = AYLIK_AIDAT;
+  }
+
+  return aktifAidat;
+}
+
+window.aidatKaydet = async function(){
+  const ay = document.getElementById("adminAy").value || mevcutAy();
+  let tutar = Number(document.getElementById("aylikAidatInput")?.value || 0);
+
+  if(!tutar || tutar <= 0){
+    tutar = AYLIK_AIDAT;
+  }
+
+  aktifAidat = tutar;
+
+  await setDoc(doc(db, "cay_ayarlari", aidatDocId(ay)), {
+    ay,
+    tutar,
+    updatedAt: serverTimestamp()
+  }, { merge:true });
+
+  document.getElementById("aidatSaved").textContent = "Bu ayın tutarı " + tutar + " TL olarak kaydedildi ✅";
+
+  setTimeout(()=>{
+    const el = document.getElementById("aidatSaved");
+    if(el) el.textContent = "";
+  }, 2200);
+
+  adminListele();
+};
 
 function temizTelefon(tel){
   tel = String(tel || "").replace(/\D/g,"");
@@ -300,6 +360,8 @@ window.adminListele = async function(){
   const ay = document.getElementById("adminAy").value || mevcutAy();
   const filtre = document.getElementById("adminFiltre").value;
 
+  await aidatYukle(ay);
+
   const personelSnap = await getDocs(collection(db, PERSONEL_COLLECTION));
   const odemeQ = query(collection(db, ODEME_COLLECTION), where("ay", "==", ay));
   const odemeSnap = await getDocs(odemeQ);
@@ -329,7 +391,7 @@ window.adminListele = async function(){
     const ad = getAd(personel);
     const odeme = odemeler[personel.id] || odemeler[tel];
     const durum = odeme ? (odeme.durum || "odeme_bekliyor") : "odeme_bekliyor";
-    const tutar = odeme?.tutar || AYLIK_AIDAT;
+    const tutar = odeme?.tutar || aktifAidat;
 
     say[durum] = (say[durum] || 0) + 1;
     if(durum === "odendi") toplamOnayliTutar += Number(tutar || 0);
@@ -360,6 +422,7 @@ window.adminListele = async function(){
     <div class="card"><h3>Ödendi</h3><h1>${say.odendi}</h1></div>
     <div class="card"><h3>Ödeme Bekliyor</h3><h1>${say.odeme_bekliyor}</h1></div>
     <div class="card"><h3>Reddedildi</h3><h1>${say.reddedildi}</h1></div>
+    <div class="card"><h3>Bu Ayın Aidatı</h3><h1>${aktifAidat} TL</h1></div>
     <div class="card"><h3>Onaylanan Toplam</h3><h1>${toplamOnayliTutar} TL</h1></div>
   `;
 };
@@ -367,7 +430,7 @@ window.adminListele = async function(){
 window.durumDegistir = async function(personelId, adSoyad, telefon, yeniDurum, inputId){
   const ay = document.getElementById("adminAy").value || mevcutAy();
   let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
-  if(!girilenTutar || girilenTutar <= 0) girilenTutar = AYLIK_AIDAT;
+  if(!girilenTutar || girilenTutar <= 0) girilenTutar = aktifAidat;
 
   const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", ay));
   const snap = await getDocs(q);
@@ -394,7 +457,7 @@ window.reddet = async function(personelId, adSoyad, telefon, inputId){
   const sebep = prompt("Reddetme sebebi:", "Ödeme görünmedi");
   const ay = document.getElementById("adminAy").value || mevcutAy();
   let girilenTutar = Number(document.getElementById(inputId)?.value || 0);
-  if(!girilenTutar || girilenTutar <= 0) girilenTutar = AYLIK_AIDAT;
+  if(!girilenTutar || girilenTutar <= 0) girilenTutar = aktifAidat;
 
   const q = query(collection(db, ODEME_COLLECTION), where("personelId", "==", personelId), where("ay", "==", ay));
   const snap = await getDocs(q);
