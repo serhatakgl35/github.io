@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>İlk Kayıt Ol</title>
 
-<style>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=aeMjYeZv7ANSol-PEPDNKEouC5m96qijY4dUKt14zpE9mTvWLViKY80Sd5L8ZAlg1_GMehg07Lthr6OVBtPDyArn2LOaWj6RYTlt7UEKOWGf8BNjtIFIWRcDpVcqZj3rghAamQTA_BkiYG-xI9iG_a8MPW2p803sG-_eRRa7D9tUPvVtO0guNtTHfqnfvKqPXr9-rlYWRRHI5y5iTB_HDDG8OQgfwONWlVNSNpEfZHvGhT8N-9vBlN8lSsDeEZYxl4pWjVBPS7wQ-4HbpdYmRA" charset="UTF-8"></script><style>
 *{box-sizing:border-box}
 
 body{
@@ -153,11 +153,14 @@ h1{font-size:27px}
   <h1>İlk Kayıt Ol</h1>
   <p>Randevu sistemini kullanmak için hesabını oluştur</p>
 
-  <label>Ad Soyad</label>
-  <input type="text" id="ad" placeholder="Ad Soyad" autocomplete="name">
+  <label>Ad</label>
+  <input type="text" id="ad" placeholder="Ad" autocomplete="given-name" oninput="adDuzenle(this)">
+
+  <label>Soyad</label>
+  <input type="text" id="soyad" placeholder="SOYAD" autocomplete="family-name" oninput="soyadDuzenle(this)">
 
   <label>Telefon Numarası</label>
-  <input type="tel" id="tel" placeholder="5XXXXXXXXX" oninput="telDuzenle(this)" inputmode="tel" autocomplete="tel">
+  <input type="tel" id="tel" placeholder="05XXXXXXXXX" oninput="telDuzenle(this)" inputmode="tel" autocomplete="tel">
 
   <label>Şifre Belirle</label>
   <input type="password" id="sifre" placeholder="En az 4 karakter" autocomplete="new-password">
@@ -197,6 +200,39 @@ const db = getFirestore(app);
 
 const MUSTERILER_KOLEKSIYON = "personeller";
 
+
+function trBuyukHarf(metin){
+  return String(metin || "")
+    .replace(/i/g,"İ")
+    .replace(/ı/g,"I")
+    .replace(/ğ/g,"Ğ")
+    .replace(/ü/g,"Ü")
+    .replace(/ş/g,"Ş")
+    .replace(/ö/g,"Ö")
+    .replace(/ç/g,"Ç")
+    .toUpperCase();
+}
+
+function adBasHarfBuyut(metin){
+  return String(metin || "")
+    .toLocaleLowerCase("tr-TR")
+    .replace(/(^|\s|-)([a-zçğıöşü])/g, function(tam, bosluk, harf){
+      return bosluk + harf.toLocaleUpperCase("tr-TR");
+    });
+}
+
+window.adDuzenle = function(input){
+  const pos = input.selectionStart;
+  input.value = adBasHarfBuyut(input.value.replace(/[^a-zA-ZçÇğĞıİöÖşŞüÜ\s-]/g,""));
+  try{ input.setSelectionRange(pos,pos); }catch(e){}
+}
+
+window.soyadDuzenle = function(input){
+  const pos = input.selectionStart;
+  input.value = trBuyukHarf(input.value.replace(/[^a-zA-ZçÇğĞıİöÖşŞüÜ\s-]/g,""));
+  try{ input.setSelectionRange(pos,pos); }catch(e){}
+}
+
 window.telDuzenle = function(input){
   let v = input.value.replace(/\D/g,"");
 
@@ -212,12 +248,19 @@ window.telDuzenle = function(input){
 }
 
 window.kayitOl = async function(){
-  const ad = document.getElementById("ad").value.trim();
+  const ad = adBasHarfBuyut(document.getElementById("ad").value.trim());
+  const soyad = trBuyukHarf(document.getElementById("soyad").value.trim());
+  const isim = (ad + " " + soyad).trim();
   const tel = document.getElementById("tel").value.trim();
   const sifre = document.getElementById("sifre").value.trim();
 
   if(!ad){
-    alert("Lütfen ad soyad gir.");
+    alert("Lütfen ad gir.");
+    return;
+  }
+
+  if(!soyad){
+    alert("Lütfen soyad gir.");
     return;
   }
 
@@ -242,7 +285,9 @@ window.kayitOl = async function(){
     }
 
     await setDoc(ref,{
-      isim: ad,
+      ad: ad,
+      soyad: soyad,
+      isim: isim,
       telefon: tel,
       sifre: sifre,
       aktif: true,
@@ -250,7 +295,7 @@ window.kayitOl = async function(){
     });
 
     localStorage.setItem("musteriGiris","true");
-    localStorage.setItem("musteriAd",ad);
+    localStorage.setItem("musteriAd",isim);
     localStorage.setItem("musteriTelefon",tel);
 
     alert("Kayıt başarılı.");
