@@ -279,6 +279,9 @@ const firebaseConfig = {
   appId:"1:280530860977:web:52c0df04c228896f211b90"
 };
 
+const TELEGRAM_BOT_TOKEN = "8635739693:AAFYGCIgGW7WTwvMIhh5Yvy_wXttPR2kC28";
+const TELEGRAM_CHAT_ID = "-1003670319520";
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -308,6 +311,27 @@ function bildirim(metin){
   toast.classList.add("show");
   clearTimeout(window.toastTimer);
   window.toastTimer = setTimeout(()=>toast.classList.remove("show"),3000);
+}
+
+async function telegramMesaj(metin){
+  if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID || TELEGRAM_BOT_TOKEN === "BURAYA_BOT_TOKEN") return;
+
+  try{
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: metin
+      })
+    });
+  }catch(e){
+    console.warn("Telegram mesajı gönderilemedi:", e);
+  }
+}
+
+function islemYapan(){
+  return localStorage.getItem("berberAdSoyad") || "Berber Personel";
 }
 
 function iki(n){return String(n).padStart(2,"0")}
@@ -538,6 +562,10 @@ window.gunToggle = async function(tarih){
       await deleteDoc(doc(db,"kapali_gunler",tarih));
       durum.innerText = tarihFormatla(tarih) + " günü açıldı.";
       bildirim("✅ " + tarihFormatla(tarih) + " günü açıldı.");
+      await telegramMesaj(`✅ Gün açıldı
+
+📅 ${tarihFormatla(tarih)}
+👤 ${islemYapan()}`);
     }else{
       await setDoc(doc(db,"kapali_gunler",tarih),{
         tarih,
@@ -547,6 +575,10 @@ window.gunToggle = async function(tarih){
       });
       durum.innerText = tarihFormatla(tarih) + " günü kapatıldı.";
       bildirim("⛔ " + tarihFormatla(tarih) + " günü kapatıldı.");
+      await telegramMesaj(`⛔ Gün kapatıldı
+
+📅 ${tarihFormatla(tarih)}
+👤 ${islemYapan()}`);
     }
 
     await takvimYukle();
@@ -569,6 +601,11 @@ window.tekSaatToggle = async function(tarih,saat){
       await deleteDoc(doc(db,"kapali_saatler",kapaliSaatler[key]));
       durum.innerText = tarihFormatla(tarih) + " " + saat + " açıldı.";
       bildirim("✅ " + tarihFormatla(tarih) + " " + saat + " açıldı.");
+      await telegramMesaj(`✅ Saat açıldı
+
+📅 ${tarihFormatla(tarih)}
+⏰ ${saat}
+👤 ${islemYapan()}`);
     }else{
       await setDoc(doc(db,"kapali_saatler",id),{
         tarih,
@@ -579,6 +616,11 @@ window.tekSaatToggle = async function(tarih,saat){
       });
       durum.innerText = tarihFormatla(tarih) + " " + saat + " kapatıldı.";
       bildirim("⛔ " + tarihFormatla(tarih) + " " + saat + " kapatıldı.");
+      await telegramMesaj(`⛔ Saat kapatıldı
+
+📅 ${tarihFormatla(tarih)}
+⏰ ${saat}
+👤 ${islemYapan()}`);
     }
 
     await takvimYukle();
@@ -611,6 +653,11 @@ window.saatToggle = async function(saat){
       }
       durum.innerText = saat + " bu hafta açıldı.";
       bildirim("✅ " + saat + " saati bu hafta açıldı.");
+      await telegramMesaj(`✅ Haftalık saat açıldı
+
+⏰ ${saat}
+📅 ${tarihGoster(gunler[0])} - ${tarihGoster(gunler[4])}
+👤 ${islemYapan()}`);
     }else{
       for(const g of gunler){
         const t = tarihKey(g);
@@ -629,6 +676,11 @@ window.saatToggle = async function(saat){
       }
       durum.innerText = saat + " bu hafta kapatıldı.";
       bildirim("⛔ " + saat + " saati bu hafta kapatıldı.");
+      await telegramMesaj(`⛔ Haftalık saat kapatıldı
+
+⏰ ${saat}
+📅 ${tarihGoster(gunler[0])} - ${tarihGoster(gunler[4])}
+👤 ${islemYapan()}`);
     }
 
     await takvimYukle();
