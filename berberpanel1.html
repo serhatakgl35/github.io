@@ -28,6 +28,9 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Seg
 .delete{background:#c62828;color:#fff}
 .wa{background:#128c7e;color:#fff}
 .closehour{background:#424242;color:#fff}
+.call{background:#111;color:#fff}
+.call.called{background:#2e7d32;color:#fff}
+.badge.called-badge{background:#dff3df;color:#146214}
 .empty{background:#fff;border-radius:22px;padding:24px;text-align:center;color:#666;box-shadow:0 10px 28px rgba(0,0,0,.07)}
 .calendar-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .hafta-yazi{background:#f3f3f3;border:1px solid #ddd;border-radius:12px;padding:10px;text-align:center;font-weight:900;margin-bottom:12px}
@@ -207,7 +210,10 @@ function normalize(d,id){
     telefon: d.phone || d.telefon || d.kayitTelefon || "",
     hizmet: d.service || d.hizmet || d.kayitHizmet || "",
     durum: d.durum || d.status || "",
-    iptalEden: d.iptalEden || ""
+    iptalEden: d.iptalEden || "",
+    cagirildi: d.cagirildi === true || d.cagrildi === true || d.cagirildiMi === true,
+    cagirildiAt: d.cagirildiAt || d.cagrildiAt || "",
+    cagirildiEden: d.cagirildiEden || d.cagrildiEden || ""
   };
 }
 
@@ -301,10 +307,12 @@ function renderKartlar(data){
         <div><b>Hizmet:</b> ${esc(r.hizmet || "-")}</div>
       </div>
       <span class="badge">${gecmisMi(r.tarih,r.saat) ? "SAATİ GEÇTİ" : "AKTİF"}</span>
+      ${r.cagirildi ? `<span class="badge called-badge">✅ ÇAĞRILDI</span>` : ""}
       <div class="actions">
         <button class="btn delete" onclick="sil('${r.id}')">Randevuyu Sil</button>
         <button class="btn wa" onclick="silMesaj('${r.id}')">Sil ve Personele Mesaj At</button>
         <button class="btn closehour" onclick="silSaatKapat('${r.id}')">Sil ve Saati Kapat</button>
+        <button class="btn call ${r.cagirildi ? "called" : ""}" onclick="musteriyiCagir('${r.id}')">${r.cagirildi ? "✅ Tekrar Çağır" : "🔔 Müşteriyi Çağır"}</button>
       </div>
     `;
     liste.appendChild(div);
@@ -444,6 +452,107 @@ window.silSaatKapat = async function(id){
   }catch(e){
     console.error(e);
     alert("Randevu silinirken veya saat kapatılırken hata oluştu.");
+  }
+}
+
+
+function cagirmaMesaji(r){
+return `✂️ J.Uzm.Çvş.Bünyamin ÖDEMİŞ
+👨‍🔧 Berber Görevlisi
+
+📌 Sayın ${r.ad},
+📅 ${tarihFormatla(r.tarih)} ⏰ ${r.saat} randevunuz için sıranız gelmiştir.
+
+Müsaitseniz berber bölümüne gelebilirsiniz.
+
+Arz / Rica Ederim.`;
+}
+
+async function telegramCagirmaBildirimi(r){
+  if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID || TELEGRAM_BOT_TOKEN === "BURAYA_BOT_TOKEN") return;
+
+  const berberAd = localStorage.getItem("berberAdSoyad") || "Berber Personel";
+  const text = `🔔 Müşteri çağrıldı
+
+`+
+`👤 Çağıran: ${berberAd}
+`+
+`👥 Müşteri: ${r?.ad || "-"}
+`+
+`📞 Telefon: ${r?.telefon || "-"}
+`+
+`📅 Tarih: ${tarihFormatla(r?.tarih || "")}
+`+
+`⏰ Saat: ${r?.saat || "-"}
+`+
+`💈 Hizmet: ${r?.hizmet || "-"}`;
+
+  try{
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: text
+      })
+    });
+  }catch(e){
+    console.warn("Telegram çağırma mesajı gönderilemedi:", e);
+  }
+}
+
+async function cagirildiIsaretle(r){
+  await updateDoc(doc(db,"randevular",r.id), {
+    cagirildi: true,
+    cagirildiAt: serverTimestamp(),
+    cagirildiEden: localStorage.getItem("berberAdSoyad") || "Berber Personel",
+    updatedAt: serverTimestamp()
+  });
+}
+
+window.musteriyiCagir = async function(id){
+  const r = sonData.find(x=>x.id===id);
+
+  if(!r){
+    alert("Kayıt bulunamadı.");
+    return;
+  }
+
+  const tel = waTel(r.telefon);
+
+  if(!tel || tel.length < 12){
+    alert("Telefon numarası geçersiz. WhatsApp açılamaz.");
+    return;
+  }
+
+  const onay = confirm(
+    `${r.ad} adlı müşteriye WhatsApp çağırma mesajı açılsın mı?
+
+${tarihFormatla(r.tarih)} ${r.saat}`
+  );
+
+  if(!onay) return;
+
+  const waUrl = `https://wa.me/${tel}?text=${encodeURIComponent(cagirmaMesaji(r))}`;
+
+  // iPhone uyumlu: WhatsApp doğrudan kullanıcı tıklaması içinde açılır.
+  whatsappAcIphoneUyumlu(waUrl);
+
+  try{
+    durum.style.display = "block";
+    durum.innerText = "WhatsApp açıldı. Çağrıldı etiketi kaydediliyor ve Telegram mesajı gönderiliyor...";
+
+    await cagirildiIsaretle(r);
+    await telegramCagirmaBildirimi(r);
+
+    sonData = sonData.map(x => x.id === r.id ? {...x, cagirildi:true} : x);
+    renderKartlar(sonData);
+
+    durum.style.display = "block";
+    durum.innerText = `${r.ad} çağrıldı. Kartta çağrıldı etiketi gösterildi ve Telegram grubuna bilgi gönderildi.`;
+  }catch(e){
+    console.error(e);
+    alert("WhatsApp açıldı ama çağrıldı etiketi veya Telegram bildirimi sırasında hata oluştu.");
   }
 }
 
