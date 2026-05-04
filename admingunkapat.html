@@ -362,7 +362,9 @@ function normalize(d,id){
     saat: d.time || d.saat || d.zaman || d.kayitSaat || "",
     ad: d.name || d.isim || d.adSoyad || d.kayitAd || "",
     telefon: d.phone || d.telefon || d.kayitTelefon || "",
-    hizmet: d.service || d.hizmet || d.kayitHizmet || ""
+    hizmet: d.service || d.hizmet || d.kayitHizmet || "",
+    durum: String(d.durum || d.status || "").toLowerCase(),
+    iptalEden: d.iptalEden || ""
   };
 }
 
@@ -382,6 +384,12 @@ async function verileriAl(){
   const rSnap = await getDocs(collection(db,"randevular"));
   rSnap.forEach(x=>{
     const r = normalize(x.data(),x.id);
+
+    // İptal edilen randevular takvimde DOLU sayılmaz.
+    // Böylece berber/admin tarafından silinen randevular tekrar MÜSAİT görünür.
+    // Eğer "Sil ve Saati Kapat" yapıldıysa kapali_saatler kaydı olduğu için yine KAPALI görünür.
+    if(r.durum === "iptal" || r.durum === "cancelled" || r.durum === "canceled") return;
+
     if(r.tarih && r.saat && r.ad && r.telefon){
       randevular.push(r);
     }
