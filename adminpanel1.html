@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kantin10 Ultra Pro Admin Panel</title>
+
+  <style>
+    *{box-sizing:border-box}
+    html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+    body{
+      margin:0;
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+      background:#f5f5f7;
+      color:#111;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+      padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+    }
+    .wrap{max-width:1240px;margin:0 auto}
+    .hidden{display:none!important}
+
+    .topbar{
+      position:sticky;
+      top:10px;
+      z-index:50;
+      background:rgba(17,17,17,.94);
+      color:white;
+      border-radius:24px;
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      box-shadow:0 16px 40px rgba(0,0,0,.18);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      margin-bottom:16px;
+    }
+    .brand{font-weight:950;font-size:18px;letter-spacing:-.3px;white-space:nowrap}
+    .top-actions{display:flex;align-items:center;gap:10px;min-width:0}
+    .email{font-size:13px;color:#ddd;font-weight:800;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    .card{
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.07);
+      border-radius:26px;
+      padding:22px;
+      box-shadow:0 16px 44px rgba(0,0,0,.08);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      margin-bottom:16px;
+    }
+    h1{margin:0 0 8px;font-size:31px;letter-spacing:-.75px;line-height:1.1}
+    h2{margin:0 0 12px;font-size:21px;letter-spacing:-.3px}
+    .muted{color:#666;font-size:14px;line-height:1.45}
+
+    input,button{
+      width:100%;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid #ddd;
+      font-size:15px;
+      margin:7px 0;
+      font-family:inherit;
+    }
+    button{
+      background:#111;
+      color:white;
+      font-weight:950;
+      cursor:pointer;
+      border:0;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+    }
+    button.light{background:#eee;color:#111;width:auto;margin:0;padding:11px 14px;white-space:nowrap}
+    button.soft{background:#f1f1f4;color:#111;border:1px solid #e2e2e7}
+    .status{margin-top:10px;padding:12px;border-radius:15px;background:#eee;font-weight:850;white-space:pre-wrap}
+    .status.err{background:#ffe8e8;color:#a40000}
+
+    .login-card{max-width:470px;margin:8vh auto 0}
+    .login-logo{width:58px;height:58px;border-radius:20px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:14px;box-shadow:0 10px 26px rgba(0,0,0,.18)}
+
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px;margin-top:18px}
+    .stat{background:#f5f5f7;border:1px solid #eee;border-radius:22px;padding:16px}
+    .stat b{display:block;font-size:30px;margin-bottom:4px;letter-spacing:-.4px}
+    .stat span{color:#555;font-size:14px;font-weight:850}
+
+    .tabs-card{padding:12px;position:sticky;top:92px;z-index:40}
+    .tabs{
+      display:flex;
+      gap:10px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      padding:2px;
+    }
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{
+      border:0;
+      margin:0;
+      width:auto;
+      flex:0 0 auto;
+      border-radius:999px;
+      padding:12px 15px;
+      background:#f1f1f4;
+      color:#111;
+      font-size:14px;
+      font-weight:950;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:none;
+    }
+    .tab.active{background:#111;color:white}
+
+    .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .panel-title{min-width:0}
+    .panel-title h2{margin-bottom:4px}
+    .panel-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .panel-actions button{width:auto;margin:0;padding:10px 13px;border-radius:14px;font-size:13px}
+
+    .frame-wrap{
+      width:100%;
+      height:calc(100vh - 205px);
+      min-height:620px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid #e7e7e7;
+      background:white;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
+    }
+    iframe{width:100%;height:100%;border:0;background:white;display:block}
+
+    .dashboard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+    .dash-card{display:block;text-decoration:none;color:#111;background:white;border:1px solid #eee;border-radius:24px;padding:20px;box-shadow:0 10px 28px rgba(0,0,0,.07);transition:.18s ease;cursor:pointer}
+    .dash-card:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(0,0,0,.1)}
+    .icon{width:44px;height:44px;border-radius:16px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px}
+    .dash-card h3{margin:0 0 6px;font-size:20px;letter-spacing:-.3px}
+    .dash-card p{margin:0;color:#666;font-size:14px;line-height:1.45}
+
+    .maintenance-card{margin-top:16px;background:linear-gradient(180deg,#fff,#fbfbfd);border:1px solid #eee;border-radius:24px;padding:20px;box-shadow:0 10px 28px rgba(0,0,0,.07)}
+    .maintenance-card h3{margin:0 0 6px;font-size:20px;letter-spacing:-.3px}
+    .maintenance-card p{margin:0 0 14px;color:#666;font-size:14px;line-height:1.45}
+    .maintenance-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .maintenance-actions button{width:auto;margin:0;padding:12px 15px;border-radius:15px}
+    .maintenance-actions button.danger{background:#b91c1c;color:white}
+    .maintenance-status{margin-top:12px;padding:12px 14px;border-radius:16px;background:#f1f1f4;color:#111;font-weight:850;line-height:1.45;white-space:pre-wrap}
+
+    @media(max-width:820px){
+      body{padding:10px;background:#f5f5f7}
+      .topbar{top:8px;border-radius:20px;align-items:flex-start;flex-direction:column;padding:14px}
+      .top-actions{width:100%;justify-content:space-between}
+      .email{max-width:calc(100vw - 160px)}
+      .card{border-radius:22px;padding:18px}
+      h1{font-size:26px}
+      .tabs-card{top:112px;border-radius:22px;padding:10px}
+      .tab{padding:11px 13px;font-size:13px}
+      .dashboard-grid{grid-template-columns:1fr}
+      .maintenance-actions button{width:100%}
+      .panel-head{flex-direction:column}
+      .panel-actions{width:100%;justify-content:stretch}
+      .panel-actions button{flex:1}
+      .frame-wrap{height:calc(100vh - 245px);min-height:560px;border-radius:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar hidden" id="topbar">
+      <div class="brand">Kantin10 Ultra Pro Admin</div>
+      <div class="top-actions">
+        <span class="email" id="adminEmail"></span>
+        <button class="light" id="logoutBtn">Çıkış Yap</button>
+      </div>
+    </div>
+
+    <div class="card login-card" id="loginCard">
+      <div class="login-logo">🔐</div>
+      <h1>Admin Girişi</h1>
+      <div class="muted">Tüm admin sayfaları bu panelin içinde sekmeli olarak açılır. Giriş yapılmadan içerikler görünmez.</div>
+      <input id="email" type="email" placeholder="Admin e-posta" autocomplete="username" />
+      <input id="password" type="password" placeholder="Şifre" autocomplete="current-password" />
+      <button id="loginBtn">Giriş Yap</button>
+      <div id="loginStatus" class="status err hidden"></div>
+    </div>
+
+    <div id="panel" class="hidden">
+      <div class="card">
+        <h1>Yönetim Merkezi</h1>
+        <div class="muted">Bütün sayfalar artık panel içinde açılır. iPhone’da yatay kaydırmalı sekmeler ve geniş iframe alanı ile kullanılır.</div>
+        <div class="stats">
+          <div class="stat"><b id="personelSayisi">0</b><span>Toplam Personel</span></div>
+          <div class="stat"><b id="bugunKayit">0</b><span>Bugün Kayıt Olan</span></div>
+          <div class="stat"><b id="aktifRandevu">0</b><span>Aktif Randevu</span></div>
+          <div class="stat"><b id="gecmisRandevu">0</b><span>Geçmiş Randevu</span></div>
+          <div class="stat"><b>☕</b><span>Ödeme Paneli Aktif</span></div>
+        </div>
+      </div>
+
+      <div class="card tabs-card">
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-key="dashboard">🏠 Ana Panel</button>
+          <button class="tab" data-key="uyeler">👥 Üye Listesi</button>
+          <button class="tab" data-key="adminliste">📋 Admin Liste</button>
+          <button class="tab" data-key="gunkapat">⛔ Gün/Saat</button>
+          <button class="tab" data-key="takvim">📅 Haftalık</button>
+          <button class="tab" data-key="randevuyonetim">🛠️ Randevu Yönetimi</button>
+          <button class="tab" data-key="odeme">☕ Ödeme</button>
+        </div>
+      </div>
+
+      <div class="card" id="dashboardPanel">
+        <h2>Sayfalar</h2>
+        <div class="dashboard-grid">
+          <div class="dash-card" onclick="sekmeAc('uyeler')"><div class="icon">👥</div><h3>Üye Listesi</h3><p>Personeller, son randevu zamanı, toplam randevu sayısı, Top 10 ve CSV indirme.</p></div>
+          <div class="dash-card" onclick="sekmeAc('adminliste')"><div class="icon">📋</div><h3>Admin Liste</h3><p>Bugün, yarın ve aylık randevu listesi panel içinde açılır.</p></div>
+          <div class="dash-card" onclick="sekmeAc('gunkapat')"><div class="icon">⛔</div><h3>Gün / Saat Kapat</h3><p>Admin günleri ve saatleri açıp kapatır.</p></div>
+          <div class="dash-card" onclick="sekmeAc('takvim')"><div class="icon">📅</div><h3>Haftalık Takvim</h3><p>Dolu, müsait, kapalı ve geçmiş slotları haftalık görüntüler.</p></div>
+          <div class="dash-card" onclick="sekmeAc('randevuyonetim')"><div class="icon">🛠️</div><h3>Randevu Yönetimi</h3><p>Mevcut admin randevu yönetim sayfası panel içinde açılır.</p></div>
+          <div class="dash-card" onclick="sekmeAc('odeme')"><div class="icon">☕</div><h3>Ödeme Paneli</h3><p>Çay aidatı, borç/fazla bakiye ve CSV raporu.</p></div>
+        </div>
+
+        <div class="maintenance-card">
+          <h3>🧹 Geçmiş Randevu Bakımı</h3>
+          <p>Sadece sen bastığında çalışır. Süresi geçen aktif randevuları <strong>randevu_gecmisi</strong> koleksiyonuna taşır, aktif listeden siler ve günlük istatistiği günceller.</p>
+          <div class="maintenance-actions">
+            <button class="danger" id="gecmiseTasiBtn" type="button">Süresi Geçenleri Geçmişe Taşı</button>
+            <button class="soft" id="sayiYenileBtn" type="button">Sayaçları Yenile</button>
+          </div>
+          <div id="gecmisTasimaStatus" class="maintenance-status hidden"></div>
+        </div>
+      </div>
+
+      <div class="card hidden" id="iframeCard">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="frameTitle">Panel</h2>
+            <div class="muted" id="frameDesc">Seçili sayfa burada açılır.</div>
+          </div>
+          <div class="panel-actions">
+            <button class="soft" id="refreshFrameBtn">Yenile</button>
+            <button id="openNewBtn">Yeni Sekmede Aç</button>
+          </div>
+        </div>
+        <div class="frame-wrap">
+          <iframe id="panelFrame" title="Admin iç panel"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, writeBatch, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+      authDomain: "berber-randevu-14f7f.firebaseapp.com",
+      projectId: "berber-randevu-14f7f",
+      storageBucket: "berber-randevu-14f7f.firebasestorage.app",
+      messagingSenderId: "280530860977",
+      appId: "1:280530860977:web:52c0df04c228896f211b90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const topbar = document.getElementById("topbar");
+    const loginCard = document.getElementById("loginCard");
+    const panel = document.getElementById("panel");
+    const loginStatus = document.getElementById("loginStatus");
+    const adminEmail = document.getElementById("adminEmail");
+    const dashboardPanel = document.getElementById("dashboardPanel");
+    const iframeCard = document.getElementById("iframeCard");
+    const panelFrame = document.getElementById("panelFrame");
+    const frameTitle = document.getElementById("frameTitle");
+    const frameDesc = document.getElementById("frameDesc");
+    const refreshFrameBtn = document.getElementById("refreshFrameBtn");
+    const openNewBtn = document.getElementById("openNewBtn");
+    const gecmiseTasiBtn = document.getElementById("gecmiseTasiBtn");
+    const sayiYenileBtn = document.getElementById("sayiYenileBtn");
+    const gecmisTasimaStatus = document.getElementById("gecmisTasimaStatus");
+
+    const SAYFALAR = {
+      dashboard: { title:"Ana Panel", desc:"Yönetim kısayolları.", url:"" },
+      uyeler: { title:"Üye Listesi", desc:"Personel kayıtları ve randevu istatistikleri.", url:"uyelistesi.html" },
+      adminliste: { title:"Admin Liste", desc:"Bugün, yarın ve aylık randevu listesi.", url:"adminliste.html" },
+      gunkapat: { title:"Gün / Saat Kapat", desc:"Admin gün ve saat kapatma paneli.", url:"admingunkapat.html" },
+      takvim: { title:"Haftalık Takvim", desc:"Haftalık randevu takvimi.", url:"adminhaftaliktakvim.html" },
+      randevuyonetim: { title:"Randevu Yönetimi", desc:"Mevcut admin randevu yönetim ekranı.", url:"admin.html" },
+      odeme: { title:"Ödeme Paneli", desc:"Çay aidatı ve ödeme takibi.", url:"odeme-admin.html" }
+    };
+
+    let aktifKey = "dashboard";
+
+    function hataYaz(metin){ loginStatus.textContent = metin; loginStatus.classList.remove("hidden"); }
+
+    function bugunMu(v){
+      if(!v) return false;
+      let d;
+      try{ d = v.toDate ? v.toDate() : new Date(v); }catch(e){ return false; }
+      if(isNaN(d.getTime())) return false;
+      const n = new Date();
+      return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate();
+    }
+
+    async function adminMi(user){
+      const snap = await getDoc(doc(db,"admins",user.uid));
+      if(!snap.exists()) return false;
+      const d = snap.data() || {};
+      return d.aktif === true && (!d.role || d.role === "admin");
+    }
+
+    async function sayiYukle(){
+      async function say(k){
+        try{ const s = await getDocs(collection(db,k)); return s.size; }
+        catch(e){ return 0; }
+      }
+      async function bugunKayitSay(){
+        try{
+          const s = await getDocs(collection(db,"personeller"));
+          let c=0;
+          s.forEach(x=>{ const d=x.data()||{}; if(bugunMu(d.createdAt||d.kayitTarihi||d.tarih)) c++; });
+          return c;
+        }catch(e){ return 0; }
+      }
+      document.getElementById("personelSayisi").textContent = await say("personeller");
+      document.getElementById("bugunKayit").textContent = await bugunKayitSay();
+      document.getElementById("aktifRandevu").textContent = await say("randevular");
+      document.getElementById("gecmisRandevu").textContent = await say("randevu_gecmisi");
+    }
+
+    function tabAktifYap(key){
+      document.querySelectorAll(".tab").forEach(btn=>{
+        btn.classList.toggle("active", btn.dataset.key === key);
+      });
+    }
+
+    window.sekmeAc = function(key){
+      aktifKey = key;
+      tabAktifYap(key);
+      const bilgi = SAYFALAR[key] || SAYFALAR.dashboard;
+
+      if(key === "dashboard"){
+        dashboardPanel.classList.remove("hidden");
+        iframeCard.classList.add("hidden");
+        panelFrame.removeAttribute("src");
+        history.replaceState(null,"","#dashboard");
+        return;
+      }
+
+      dashboardPanel.classList.add("hidden");
+      iframeCard.classList.remove("hidden");
+      frameTitle.textContent = bilgi.title;
+      frameDesc.textContent = bilgi.desc;
+      panelFrame.src = bilgi.url;
+      history.replaceState(null,"","#" + key);
+      setTimeout(()=>iframeCard.scrollIntoView({behavior:"smooth", block:"start"}), 80);
+    };
+
+
+    function iki(n){ return String(n).padStart(2,"0"); }
+
+    function tarihSaatOku(data){
+      const tarih = String(data.date || data.tarih || data.kayitTarih || "").trim();
+      const saat = String(data.time || data.saat || data.zaman || data.kayitSaat || "").trim().slice(0,5);
+      return { tarih, saat };
+    }
+
+    function randevuTarihSaat(tarih, saat){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(tarih) || !/^\d{2}:\d{2}$/.test(saat)) return null;
+      const [y,m,d] = tarih.split("-").map(Number);
+      const [hh,mm] = saat.split(":").map(Number);
+      const dt = new Date(y, m - 1, d, hh, mm, 0, 0);
+      return isNaN(dt.getTime()) ? null : dt;
+    }
+
+    function suresiGectiMi(tarih, saat){
+      const dt = randevuTarihSaat(tarih, saat);
+      if(!dt) return false;
+      const limit = new Date(dt);
+      limit.setMinutes(limit.getMinutes() + 1);
+      return new Date() >= limit;
+    }
+
+    function tasimaDurumuYaz(metin, hata=false){
+      gecmisTasimaStatus.textContent = metin;
+      gecmisTasimaStatus.classList.remove("hidden");
+      gecmisTasimaStatus.style.background = hata ? "#ffe8e8" : "#f1f1f4";
+      gecmisTasimaStatus.style.color = hata ? "#a40000" : "#111";
+    }
+
+    async function suresiGecenleriGecmiseTasi(){
+      if(!confirm("Süresi geçen aktif randevular geçmişe taşınsın mı?")) return;
+
+      gecmiseTasiBtn.disabled = true;
+      tasimaDurumuYaz("Kontrol ediliyor...");
+
+      try{
+        const snap = await getDocs(collection(db,"randevular"));
+        const batch = writeBatch(db);
+        const gunlukSayac = {};
+        let tasinacak = 0;
+        let zatenGecmiste = 0;
+        let atlanan = 0;
+
+        for(const x of snap.docs){
+          const data = x.data() || {};
+          const { tarih, saat } = tarihSaatOku(data);
+
+          if(!tarih || !saat || !suresiGectiMi(tarih, saat)){
+            atlanan++;
+            continue;
+          }
+
+          const aktifRef = doc(db,"randevular",x.id);
+          const gecmisRef = doc(db,"randevu_gecmisi",x.id);
+          const gecmisSnap = await getDoc(gecmisRef);
+
+          if(gecmisSnap.exists()){
+            batch.delete(aktifRef);
+            zatenGecmiste++;
+            continue;
+          }
+
+          batch.set(gecmisRef, {
+            ...data,
+            date: data.date || tarih,
+            time: data.time || saat,
+            tarih,
+            saat,
+            movedAt: new Date().toISOString(),
+            archivedAt: new Date().toISOString(),
+            archiveReason: "manual_admin_panel_expired"
+          }, { merge:true });
+
+          batch.delete(aktifRef);
+          gunlukSayac[tarih] = (gunlukSayac[tarih] || 0) + 1;
+          tasinacak++;
+        }
+
+        Object.keys(gunlukSayac).forEach(tarih=>{
+          const statRef = doc(db,"istatistikler",tarih);
+          batch.set(statRef, {
+            tarih,
+            toplam: increment(gunlukSayac[tarih]),
+            updatedAt: new Date().toISOString(),
+            kaynak: "adminpanel_manual_move"
+          }, { merge:true });
+        });
+
+        if(tasinacak === 0 && zatenGecmiste === 0){
+          tasimaDurumuYaz("Taşınacak süresi geçmiş randevu bulunamadı.
+Aktif kayıt kontrolü: " + snap.size);
+          return;
+        }
+
+        await batch.commit();
+        await sayiYukle();
+
+        if(aktifKey !== "dashboard"){
+          const bilgi = SAYFALAR[aktifKey];
+          if(bilgi?.url) panelFrame.src = bilgi.url + "?t=" + Date.now();
+        }
+
+        tasimaDurumuYaz(
+          "✅ İşlem tamamlandı.
+" +
+          "Geçmişe taşınan: " + tasinacak + "
+" +
+          "Zaten geçmişte olup aktiften temizlenen: " + zatenGecmiste + "
+" +
+          "Taşınmayan aktif/uygun olmayan kayıt: " + atlanan
+        );
+      }catch(err){
+        console.error(err);
+        tasimaDurumuYaz("İşlem başarısız: " + err.message, true);
+      }finally{
+        gecmiseTasiBtn.disabled = false;
+      }
+    }
+
+    document.getElementById("tabs").addEventListener("click", e=>{
+      const btn = e.target.closest(".tab");
+      if(!btn) return;
+      window.sekmeAc(btn.dataset.key);
+    });
+
+    refreshFrameBtn.addEventListener("click", ()=>{
+      if(aktifKey === "dashboard") return;
+      const bilgi = SAYFALAR[aktifKey];
+      if(bilgi?.url) panelFrame.src = bilgi.url + "?t=" + Date.now();
+    });
+
+    openNewBtn.addEventListener("click", ()=>{
+      if(aktifKey === "dashboard") return;
+      const bilgi = SAYFALAR[aktifKey];
+      if(bilgi?.url) window.open(bilgi.url, "_blank");
+    });
+
+    gecmiseTasiBtn.addEventListener("click", suresiGecenleriGecmiseTasi);
+    sayiYenileBtn.addEventListener("click", async()=>{
+      sayiYenileBtn.disabled = true;
+      try{
+        await sayiYukle();
+        tasimaDurumuYaz("Sayaçlar yenilendi.");
+      }finally{
+        sayiYenileBtn.disabled = false;
+      }
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", async()=>{
+      loginStatus.classList.add("hidden");
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if(!email || !password) return hataYaz("E-posta ve şifre gir.");
+      try{ await signInWithEmailAndPassword(auth,email,password); }
+      catch(err){ hataYaz("Giriş başarısız: " + err.message); }
+    });
+
+    document.getElementById("password").addEventListener("keydown", e=>{
+      if(e.key === "Enter") document.getElementById("loginBtn").click();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async()=>{
+      localStorage.removeItem("adminGiris");
+      localStorage.removeItem("adminLogin");
+      panelFrame.removeAttribute("src");
+      await signOut(auth);
+    });
+
+    onAuthStateChanged(auth, async(user)=>{
+      if(!user){
+        topbar.classList.add("hidden");
+        panel.classList.add("hidden");
+        loginCard.classList.remove("hidden");
+        return;
+      }
+
+      const ok = await adminMi(user);
+      if(!ok){
+        await signOut(auth);
+        hataYaz("Bu kullanıcı admin değil. Firestore admins/{UID} içinde aktif:true olmalı.");
+        return;
+      }
+
+      localStorage.setItem("adminGiris","true");
+      localStorage.setItem("adminLogin","true");
+      adminEmail.textContent = user.email || "Admin";
+      loginCard.classList.add("hidden");
+      topbar.classList.remove("hidden");
+      panel.classList.remove("hidden");
+      await sayiYukle();
+
+      const hash = (location.hash || "#dashboard").replace("#","");
+      window.sekmeAc(SAYFALAR[hash] ? hash : "dashboard");
+    });
+  </script>
+</body>
+</html>
