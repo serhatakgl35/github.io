@@ -7,16 +7,9 @@
 
   <style>
     :root{
-      --bg:#f5f5f7;
-      --card:#ffffff;
-      --text:#111111;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --black:#111111;
-      --green:#16a34a;
-      --red:#dc2626;
-      --blue:#2563eb;
-      --orange:#f97316;
+      --bg:#f5f5f7; --card:#fff; --text:#111; --muted:#6b7280;
+      --line:#e5e7eb; --green:#16a34a; --red:#dc2626;
+      --blue:#2563eb; --orange:#f97316;
       --shadow:0 14px 35px rgba(0,0,0,.08);
       --radius:22px;
     }
@@ -24,163 +17,99 @@
     *{box-sizing:border-box}
 
     body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
+      margin:0;background:var(--bg);color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
     }
 
     .topbar{
-      position:sticky;
-      top:0;
-      z-index:10;
+      position:sticky;top:0;z-index:10;
       background:rgba(245,245,247,.88);
       backdrop-filter:blur(18px);
       border-bottom:1px solid rgba(229,231,235,.8);
     }
 
     .nav{
-      max-width:1180px;
-      margin:auto;
-      padding:14px 16px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
+      max-width:1220px;margin:auto;padding:14px 16px;
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
     }
 
-    .brand{
-      font-weight:900;
-      letter-spacing:-.4px;
-      font-size:18px;
-    }
+    .brand{font-weight:950;letter-spacing:-.4px;font-size:18px}
 
     .nav a{
-      background:#111;
-      color:#fff;
-      text-decoration:none;
-      padding:10px 14px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:800;
-      box-shadow:0 8px 18px rgba(0,0,0,.12);
+      background:#111;color:#fff;text-decoration:none;
+      padding:10px 14px;border-radius:999px;font-size:13px;
+      font-weight:850;box-shadow:0 8px 18px rgba(0,0,0,.12);
     }
 
-    .wrap{
-      max-width:1180px;
-      margin:24px auto;
-      padding:0 16px 40px;
-    }
+    .wrap{max-width:1220px;margin:24px auto;padding:0 16px 40px}
 
     .hero{
       background:linear-gradient(135deg,#111,#2b2b2b);
-      color:#fff;
-      border-radius:28px;
-      padding:24px;
-      box-shadow:var(--shadow);
-      margin-bottom:18px;
+      color:#fff;border-radius:28px;padding:24px;
+      box-shadow:var(--shadow);margin-bottom:18px;
     }
 
-    .hero h1{
-      margin:0 0 8px;
-      font-size:28px;
-      letter-spacing:-.8px;
-    }
-
-    .hero p{
-      margin:0;
-      color:#d1d5db;
-      font-size:14px;
-    }
+    .hero h1{margin:0 0 8px;font-size:28px;letter-spacing:-.8px}
+    .hero p{margin:0;color:#d1d5db;font-size:14px;line-height:1.5}
 
     .panel{
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:18px;
-      margin-bottom:18px;
+      background:var(--card);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:18px;margin-bottom:18px;
       border:1px solid rgba(255,255,255,.8);
     }
 
     .form-grid{
       display:grid;
-      grid-template-columns:repeat(4,1fr);
+      grid-template-columns:repeat(5,1fr);
       gap:12px;
     }
 
     label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      margin-bottom:6px;
+      display:block;font-size:12px;color:var(--muted);
+      font-weight:850;margin-bottom:6px;
     }
 
     input,select{
-      width:100%;
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:14px;
-      padding:13px 12px;
-      font-size:15px;
-      outline:none;
-      font-weight:700;
+      width:100%;border:1px solid var(--line);background:#fff;
+      border-radius:14px;padding:13px 12px;font-size:15px;
+      outline:none;font-weight:750;
     }
 
     input:focus,select:focus{
-      border-color:#111;
-      box-shadow:0 0 0 4px rgba(0,0,0,.06);
+      border-color:#111;box-shadow:0 0 0 4px rgba(0,0,0,.06);
     }
 
     .btn{
-      border:0;
-      background:#111;
-      color:#fff;
-      padding:13px 16px;
-      border-radius:14px;
-      font-weight:900;
-      cursor:pointer;
+      border:0;background:#111;color:#fff;padding:13px 16px;
+      border-radius:14px;font-weight:950;cursor:pointer;
       box-shadow:0 10px 20px rgba(0,0,0,.12);
     }
 
     .btn.secondary{
-      background:#f3f4f6;
-      color:#111;
-      box-shadow:none;
+      background:#f3f4f6;color:#111;box-shadow:none;
       border:1px solid var(--line);
     }
 
-    .btn.danger{
-      background:#dc2626;
-    }
+    .btn.danger{background:#dc2626}
 
     .summary{
       display:grid;
-      grid-template-columns:repeat(7,1fr);
-      gap:12px;
-      margin-bottom:18px;
+      grid-template-columns:repeat(8,1fr);
+      gap:12px;margin-bottom:18px;
     }
 
     .card{
-      background:#fff;
-      border-radius:20px;
-      padding:16px;
-      box-shadow:var(--shadow);
-      border:1px solid rgba(229,231,235,.75);
+      background:#fff;border-radius:20px;padding:16px;
+      box-shadow:var(--shadow);border:1px solid rgba(229,231,235,.75);
       min-height:105px;
     }
 
     .card .title{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:900;
-      margin-bottom:10px;
+      font-size:12px;color:var(--muted);font-weight:950;margin-bottom:10px;
     }
 
     .card .value{
-      font-size:23px;
-      font-weight:950;
-      letter-spacing:-.7px;
+      font-size:21px;font-weight:950;letter-spacing:-.7px;
     }
 
     .green{color:var(--green)}
@@ -189,88 +118,58 @@
     .orange{color:var(--orange)}
 
     .section-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;margin-bottom:14px;
     }
 
-    .section-head h2{
-      margin:0;
-      font-size:20px;
-      letter-spacing:-.5px;
-    }
+    .section-head h2{margin:0;font-size:20px;letter-spacing:-.5px}
 
     .expense-form{
       display:grid;
-      grid-template-columns:160px 180px 1fr 140px 120px;
-      gap:10px;
-      margin-bottom:14px;
+      grid-template-columns:135px 170px 1fr 125px 105px 105px 120px;
+      gap:9px;margin-bottom:14px;
     }
 
     .table-wrap{
-      overflow:auto;
-      border:1px solid var(--line);
-      border-radius:18px;
+      overflow:auto;border:1px solid var(--line);
+      border-radius:18px;background:#fff;
     }
 
     table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:760px;
-      background:#fff;
+      width:100%;border-collapse:collapse;min-width:980px;background:#fff;
     }
 
     th,td{
-      padding:13px 12px;
-      border-bottom:1px solid var(--line);
-      text-align:left;
-      font-size:14px;
+      padding:11px 9px;border-bottom:1px solid var(--line);
+      text-align:left;font-size:13px;
     }
 
     th{
-      background:#f9fafb;
-      color:#374151;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.4px;
-      font-weight:950;
-      position:sticky;
-      top:0;
+      background:#f9fafb;color:#374151;font-size:11px;
+      text-transform:uppercase;letter-spacing:.3px;font-weight:950;
+      position:sticky;top:0;
     }
 
-    td{
-      font-weight:700;
-    }
+    td{font-weight:750}
 
-    .money{
-      text-align:right;
-      white-space:nowrap;
-    }
+    .money{text-align:right;white-space:nowrap}
 
     .total-row td{
-      background:#111;
-      color:#fff;
-      font-size:15px;
-      font-weight:950;
+      background:#111;color:#fff;font-size:14px;font-weight:950;
     }
 
     .empty{
-      text-align:center;
-      padding:24px;
-      color:var(--muted);
-      font-weight:800;
+      text-align:center;padding:24px;color:var(--muted);font-weight:850;
     }
 
     .mini{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:10px;
-      font-weight:700;
+      font-size:12px;color:var(--muted);margin-top:10px;
+      font-weight:750;line-height:1.5;
     }
 
-    @media(max-width:1000px){
+    .ozet-table table{min-width:760px}
+
+    @media(max-width:1100px){
       .summary{grid-template-columns:repeat(2,1fr)}
       .form-grid{grid-template-columns:repeat(2,1fr)}
       .expense-form{grid-template-columns:1fr 1fr}
@@ -278,14 +177,87 @@
     }
 
     @media(max-width:560px){
-      .nav{align-items:flex-start;flex-direction:column}
+      .wrap{margin:16px auto;padding:0 10px 30px}
+      .nav{align-items:flex-start;flex-direction:column;padding:12px 10px}
       .nav a{width:100%;text-align:center}
-      .hero h1{font-size:23px}
-      .summary{grid-template-columns:1fr}
-      .form-grid{grid-template-columns:1fr}
-      .expense-form{grid-template-columns:1fr}
-      .expense-form .full{grid-column:auto}
-      .card{min-height:auto}
+
+      .hero{padding:18px;border-radius:22px}
+      .hero h1{font-size:22px}
+
+      .panel{padding:13px;border-radius:20px}
+
+      .summary{grid-template-columns:1fr 1fr;gap:8px}
+
+      .card{
+        padding:12px;min-height:82px;border-radius:17px;
+      }
+
+      .card .title{font-size:10px;margin-bottom:6px}
+      .card .value{font-size:16px;letter-spacing:-.3px}
+
+      .form-grid{grid-template-columns:1fr;gap:9px}
+
+      .expense-form{
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+      }
+
+      .expense-form .full{grid-column:1/-1}
+
+      input,select{
+        padding:11px 10px;font-size:14px;border-radius:12px;
+      }
+
+      .btn{
+        padding:11px 12px;font-size:13px;border-radius:12px;
+      }
+
+      .section-head{
+        align-items:flex-start;flex-direction:column;
+      }
+
+      .section-head .btn{width:100%}
+
+      .table-wrap{overflow:visible;border-radius:14px}
+
+      table{
+        min-width:0;
+        table-layout:fixed;
+      }
+
+      th,td{
+        padding:7px 3px;
+        font-size:10px;
+        line-height:1.15;
+        word-break:break-word;
+      }
+
+      th{
+        font-size:8px;
+        letter-spacing:0;
+      }
+
+      .money{
+        text-align:right;
+        white-space:normal;
+      }
+
+      .sil-btn{
+        padding:6px 5px !important;
+        font-size:9px !important;
+        border-radius:8px !important;
+      }
+
+      .total-row td{font-size:10px}
+
+      .gider-table th:nth-child(1),.gider-table td:nth-child(1){width:16%}
+      .gider-table th:nth-child(2),.gider-table td:nth-child(2){width:18%}
+      .gider-table th:nth-child(3),.gider-table td:nth-child(3){width:20%}
+      .gider-table th:nth-child(4),.gider-table td:nth-child(4){width:12%}
+      .gider-table th:nth-child(5),.gider-table td:nth-child(5){width:11%}
+      .gider-table th:nth-child(6),.gider-table td:nth-child(6){width:9%}
+      .gider-table th:nth-child(7),.gider-table td:nth-child(7){width:11%}
+      .gider-table th:nth-child(8),.gider-table td:nth-child(8){width:3%}
     }
   </style>
 </head>
@@ -304,20 +276,23 @@
   <main class="wrap">
 
     <section class="hero">
-      <h1>Çay Ocağı Aylık Bilanço Paneli</h1>
-      <p>Personel sayısı, kişi başı toplanan miktar, ödeyen/ödemeyen durumu, giderler ve kalan kasa otomatik hesaplanır.</p>
+      <h1>Çay Ocağı Dönem Bilanço Paneli</h1>
+      <p>
+        Bilanço dönemi her ayın 15’inde başlar, sonraki ayın 14’ünde biter.
+        Gider kalemleri, ürün özeti, önceki devir ve gelecek aya devir otomatik hesaplanır.
+      </p>
     </section>
 
     <section class="panel">
       <div class="form-grid">
         <div>
-          <label>Ay</label>
-          <input type="month" id="aySec">
+          <label>Dönem</label>
+          <input type="month" id="donemSec">
         </div>
 
         <div>
           <label>Personel Sayısı</label>
-          <input type="number" id="personelSayisi" placeholder="Örn: 45">
+          <input type="number" id="personelSayisi" placeholder="Örn: 101">
         </div>
 
         <div>
@@ -327,7 +302,12 @@
 
         <div>
           <label>Ödeyenler</label>
-          <input type="number" id="odeyenler" placeholder="Örn: 38">
+          <input type="number" id="odeyenler" placeholder="Örn: 96">
+        </div>
+
+        <div>
+          <label>Önceki Aydan Devir</label>
+          <input type="number" id="oncekiDevir" placeholder="Örn: 1569">
         </div>
       </div>
 
@@ -336,8 +316,8 @@
         <button class="btn secondary" onclick="verileriYukle()">Yenile</button>
       </div>
 
-      <div class="mini">
-        Ödemeyenler otomatik hesaplanır: Personel Sayısı - Ödeyenler
+      <div class="mini" id="donemBilgi">
+        Dönem bilgisi yükleniyor...
       </div>
     </section>
 
@@ -348,12 +328,12 @@
       </div>
 
       <div class="card">
-        <div class="title">Kişi Başı Toplanan</div>
+        <div class="title">Kişi Başı</div>
         <div class="value blue" id="ozetKisiBasi">₺0</div>
       </div>
 
       <div class="card">
-        <div class="title">Toplam Miktar</div>
+        <div class="title">Toplanan</div>
         <div class="value green" id="ozetToplam">₺0</div>
       </div>
 
@@ -368,12 +348,17 @@
       </div>
 
       <div class="card">
+        <div class="title">Önceki Devir</div>
+        <div class="value blue" id="ozetDevir">₺0</div>
+      </div>
+
+      <div class="card">
         <div class="title">Giderler</div>
         <div class="value orange" id="ozetGider">₺0</div>
       </div>
 
       <div class="card">
-        <div class="title">Kalan Miktar</div>
+        <div class="title">Gelecek Aya Devir</div>
         <div class="value" id="ozetKalan">₺0</div>
       </div>
     </section>
@@ -391,26 +376,35 @@
         </div>
 
         <div>
-          <label>Gider Kalemi</label>
-          <select id="giderKalem">
-            <option value="Çay">Çay</option>
-            <option value="Şeker">Şeker</option>
-            <option value="Kahve">Kahve</option>
-            <option value="Bardak">Bardak</option>
-            <option value="Tüp / Elektrik">Tüp / Elektrik</option>
-            <option value="Temizlik">Temizlik</option>
-            <option value="Diğer">Diğer</option>
-          </select>
+          <label>Ürün Cinsi</label>
+          <input type="text" id="urunCinsi" placeholder="KÜP ŞEKER">
         </div>
 
         <div class="full">
-          <label>Açıklama</label>
-          <input type="text" id="giderAciklama" placeholder="Örn: 5 kg çay alındı">
+          <label>Markası / Açıklama</label>
+          <input type="text" id="marka" placeholder="BALKÜPÜ / 30 KG">
         </div>
 
         <div>
-          <label>Tutar</label>
-          <input type="number" id="giderTutar" placeholder="₺">
+          <label>Birim Fiyat</label>
+          <input type="number" id="birimFiyat" placeholder="₺">
+        </div>
+
+        <div>
+          <label>Miktar</label>
+          <input type="number" id="miktar" placeholder="30">
+        </div>
+
+        <div>
+          <label>Ölçü</label>
+          <select id="olcuBirimi">
+            <option value="KG">KG</option>
+            <option value="ADET">ADET</option>
+            <option value="LT">LT</option>
+            <option value="PAKET">PAKET</option>
+            <option value="KUTU">KUTU</option>
+            <option value="-">-</option>
+          </select>
         </div>
 
         <div style="display:flex;align-items:end">
@@ -419,25 +413,65 @@
       </div>
 
       <div class="table-wrap">
-        <table>
+        <table class="gider-table">
           <thead>
             <tr>
               <th>Tarih</th>
-              <th>Gider Kalemi</th>
-              <th>Açıklama</th>
-              <th class="money">Tutar</th>
-              <th>İşlem</th>
+              <th>Ürün</th>
+              <th>Marka / Açıklama</th>
+              <th class="money">Birim</th>
+              <th class="money">Miktar</th>
+              <th>Ölçü</th>
+              <th class="money">Toplam</th>
+              <th>Sil</th>
             </tr>
           </thead>
+
           <tbody id="giderBody">
             <tr>
-              <td colspan="5" class="empty">Henüz gider eklenmedi.</td>
+              <td colspan="8" class="empty">Henüz gider eklenmedi.</td>
             </tr>
           </tbody>
+
           <tfoot>
             <tr class="total-row">
-              <td colspan="3">Toplam Gider</td>
+              <td colspan="6">Bu Ay Yapılan Harcamaların Toplamı</td>
               <td class="money" id="tabloToplamGider">₺0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel ozet-table">
+      <div class="section-head">
+        <h2>Toplam Alınan Ürünler</h2>
+        <button class="btn secondary" onclick="urunOzetiniGuncelle()">Özeti Güncelle</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ürün</th>
+              <th class="money">Toplam Miktar</th>
+              <th>Ölçü</th>
+              <th class="money">Toplam Ödenen</th>
+              <th class="money">Ortalama Birim Fiyat</th>
+            </tr>
+          </thead>
+
+          <tbody id="urunOzetBody">
+            <tr>
+              <td colspan="5" class="empty">Ürün özeti için gider ekleyin.</td>
+            </tr>
+          </tbody>
+
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="3">Genel Toplam</td>
+              <td class="money" id="urunOzetToplam">₺0</td>
               <td></td>
             </tr>
           </tfoot>
@@ -465,36 +499,64 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-  authDomain: "berber-randevu-14f7f.firebaseapp.com",
-  projectId: "berber-randevu-14f7f",
-  storageBucket: "berber-randevu-14f7f.firebasestorage.app",
-  messagingSenderId: "280530860977",
-  appId: "1:280530860977:web:52c0df04c228896f211b90"
+      authDomain: "berber-randevu-14f7f.firebaseapp.com",
+      projectId: "berber-randevu-14f7f",
+      storageBucket: "berber-randevu-14f7f.firebasestorage.app",
+      messagingSenderId: "280530860977",
+      appId: "1:280530860977:web:52c0df04c228896f211b90"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     let giderler = [];
-    let aktifAy = "";
+    let aktifDonem = "";
+
     let ayar = {
       personelSayisi: 0,
       kisiBasiMiktar: 0,
-      odeyenler: 0
+      odeyenler: 0,
+      oncekiDevir: 0
     };
 
     const tl = new Intl.NumberFormat("tr-TR", {
       style: "currency",
       currency: "TRY",
-      maximumFractionDigits: 0
+      maximumFractionDigits: 2
     });
 
     function bugunISO(){
       return new Date().toISOString().slice(0,10);
     }
 
-    function ayISO(){
-      return new Date().toISOString().slice(0,7);
+    function ikiHane(n){
+      return String(n).padStart(2,"0");
+    }
+
+    function donemISO(){
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth() + 1;
+      const d = now.getDate();
+
+      if(d >= 15){
+        return `${y}-${ikiHane(m)}`;
+      }
+
+      const onceki = new Date(y, m - 2, 1);
+      return `${onceki.getFullYear()}-${ikiHane(onceki.getMonth() + 1)}`;
+    }
+
+    function donemAraligi(donem){
+      const [y,m] = donem.split("-").map(Number);
+
+      const baslangic = new Date(y, m - 1, 15);
+      const bitis = new Date(y, m, 14);
+
+      return {
+        baslangicTR: `${ikiHane(baslangic.getDate())}.${ikiHane(baslangic.getMonth()+1)}.${baslangic.getFullYear()}`,
+        bitisTR: `${ikiHane(bitis.getDate())}.${ikiHane(bitis.getMonth()+1)}.${bitis.getFullYear()}`
+      };
     }
 
     function formatTarih(tarih){
@@ -511,17 +573,34 @@
       return Number(document.getElementById(id).value || 0);
     }
 
+    function metin(id){
+      return String(document.getElementById(id).value || "").trim();
+    }
+
     function temizleGiderForm(){
-      document.getElementById("giderAciklama").value = "";
-      document.getElementById("giderTutar").value = "";
-      document.getElementById("giderKalem").value = "Çay";
+      document.getElementById("urunCinsi").value = "";
+      document.getElementById("marka").value = "";
+      document.getElementById("birimFiyat").value = "";
+      document.getElementById("miktar").value = "";
+      document.getElementById("olcuBirimi").value = "KG";
       document.getElementById("giderTarih").value = bugunISO();
     }
 
-    async function verileriYukle(){
-      aktifAy = document.getElementById("aySec").value || ayISO();
+    function donemBilgiYaz(){
+      aktifDonem = document.getElementById("donemSec").value || donemISO();
+      const aralik = donemAraligi(aktifDonem);
 
-      const ayRef = doc(db, "cay_aylar", aktifAy);
+      document.getElementById("donemBilgi").innerHTML =
+        `Seçili dönem: <b>${aralik.baslangicTR}</b> - <b>${aralik.bitisTR}</b><br>
+         Toplanan = Ödeyenler × Kişi Başı Toplanan Miktar<br>
+         Gelecek Aya Devir = Önceki Devir + Toplanan - Giderler`;
+    }
+
+    async function verileriYukle(){
+      aktifDonem = document.getElementById("donemSec").value || donemISO();
+      donemBilgiYaz();
+
+      const ayRef = doc(db, "cay_aylar", aktifDonem);
       const aySnap = await getDoc(ayRef);
 
       if(aySnap.exists()){
@@ -530,17 +609,19 @@
         ayar = {
           personelSayisi: 0,
           kisiBasiMiktar: 0,
-          odeyenler: 0
+          odeyenler: 0,
+          oncekiDevir: 0
         };
       }
 
       document.getElementById("personelSayisi").value = ayar.personelSayisi || "";
       document.getElementById("kisiBasiMiktar").value = ayar.kisiBasiMiktar || "";
       document.getElementById("odeyenler").value = ayar.odeyenler || "";
+      document.getElementById("oncekiDevir").value = ayar.oncekiDevir || "";
 
       const q = query(
         collection(db, "cay_giderler"),
-        where("ay", "==", aktifAy)
+        where("donem", "==", aktifDonem)
       );
 
       const snap = await getDocs(q);
@@ -559,44 +640,71 @@
     }
 
     async function ayarlariKaydet(){
-      aktifAy = document.getElementById("aySec").value || ayISO();
+      aktifDonem = document.getElementById("donemSec").value || donemISO();
 
       ayar = {
         personelSayisi: sayi("personelSayisi"),
         kisiBasiMiktar: sayi("kisiBasiMiktar"),
         odeyenler: sayi("odeyenler"),
+        oncekiDevir: sayi("oncekiDevir"),
         updatedAt: serverTimestamp()
       };
 
-      await setDoc(doc(db, "cay_aylar", aktifAy), ayar, { merge:true });
+      await setDoc(doc(db, "cay_aylar", aktifDonem), ayar, { merge:true });
       hesaplaVeCiz();
       alert("Bilanço bilgileri kaydedildi.");
     }
 
     async function giderEkle(){
-      aktifAy = document.getElementById("aySec").value || ayISO();
+      aktifDonem = document.getElementById("donemSec").value || donemISO();
 
       const tarih = document.getElementById("giderTarih").value;
-      const kalem = document.getElementById("giderKalem").value;
-      const aciklama = document.getElementById("giderAciklama").value.trim();
-      const tutar = Number(document.getElementById("giderTutar").value || 0);
+      const urunCinsi = metin("urunCinsi").toLocaleUpperCase("tr-TR");
+      const marka = metin("marka").toLocaleUpperCase("tr-TR");
+      const birimFiyat = sayi("birimFiyat");
+      const miktar = sayi("miktar");
+      const olcuBirimi = document.getElementById("olcuBirimi").value;
 
       if(!tarih){
         alert("Tarih seç.");
         return;
       }
 
-      if(!tutar || tutar <= 0){
-        alert("Geçerli bir tutar yaz.");
+      if(!urunCinsi){
+        alert("Ürün cinsi yaz.");
         return;
       }
 
+      if(!miktar || miktar <= 0){
+        alert("Geçerli miktar yaz.");
+        return;
+      }
+
+      let toplamFiyat = birimFiyat * miktar;
+
+      if(!birimFiyat || birimFiyat <= 0){
+        const manuel = prompt("Birim fiyat boş. Toplam fiyatı elle yaz:", "");
+        toplamFiyat = Number(String(manuel || "").replace(",", "."));
+
+        if(!toplamFiyat || toplamFiyat <= 0){
+          alert("Geçerli toplam fiyat girilmedi.");
+          return;
+        }
+      }
+
       await addDoc(collection(db, "cay_giderler"), {
-        ay: aktifAy,
+        donem: aktifDonem,
+        ay: aktifDonem,
         tarih,
-        kalem,
-        aciklama,
-        tutar,
+        urunCinsi,
+        kalem: urunCinsi,
+        marka,
+        aciklama: marka,
+        birimFiyat,
+        miktar,
+        olcuBirimi,
+        toplamFiyat,
+        tutar: toplamFiyat,
         createdAt: serverTimestamp()
       });
 
@@ -614,17 +722,19 @@
       const personelSayisi = Number(ayar.personelSayisi || 0);
       const kisiBasiMiktar = Number(ayar.kisiBasiMiktar || 0);
       const odeyenler = Number(ayar.odeyenler || 0);
-      const odemeyenler = Math.max(personelSayisi - odeyenler, 0);
+      const oncekiDevir = Number(ayar.oncekiDevir || 0);
 
+      const odemeyenler = Math.max(personelSayisi - odeyenler, 0);
       const toplamMiktar = odeyenler * kisiBasiMiktar;
-      const toplamGider = giderler.reduce((t,g) => t + Number(g.tutar || 0), 0);
-      const kalan = toplamMiktar - toplamGider;
+      const toplamGider = giderler.reduce((t,g) => t + Number(g.toplamFiyat || g.tutar || 0), 0);
+      const kalan = oncekiDevir + toplamMiktar - toplamGider;
 
       document.getElementById("ozetPersonel").textContent = personelSayisi;
       document.getElementById("ozetKisiBasi").textContent = para(kisiBasiMiktar);
       document.getElementById("ozetToplam").textContent = para(toplamMiktar);
       document.getElementById("ozetOdeyen").textContent = odeyenler;
       document.getElementById("ozetOdemeyen").textContent = odemeyenler;
+      document.getElementById("ozetDevir").textContent = para(oncekiDevir);
       document.getElementById("ozetGider").textContent = para(toplamGider);
       document.getElementById("ozetKalan").textContent = para(kalan);
       document.getElementById("tabloToplamGider").textContent = para(toplamGider);
@@ -632,6 +742,7 @@
       document.getElementById("ozetKalan").className = kalan >= 0 ? "value green" : "value red";
 
       tabloCiz();
+      urunOzetiniGuncelle();
     }
 
     function tabloCiz(){
@@ -640,7 +751,7 @@
       if(!giderler.length){
         body.innerHTML = `
           <tr>
-            <td colspan="5" class="empty">Henüz gider eklenmedi.</td>
+            <td colspan="8" class="empty">Henüz gider eklenmedi.</td>
           </tr>
         `;
         return;
@@ -649,11 +760,14 @@
       body.innerHTML = giderler.map(g => `
         <tr>
           <td>${formatTarih(g.tarih)}</td>
-          <td>${g.kalem || "-"}</td>
-          <td>${g.aciklama || "-"}</td>
-          <td class="money">${para(g.tutar)}</td>
+          <td>${g.urunCinsi || g.kalem || "-"}</td>
+          <td>${g.marka || g.aciklama || "-"}</td>
+          <td class="money">${Number(g.birimFiyat || 0) > 0 ? para(g.birimFiyat) : "-"}</td>
+          <td class="money">${Number(g.miktar || 0)}</td>
+          <td>${g.olcuBirimi || "-"}</td>
+          <td class="money">${para(g.toplamFiyat || g.tutar)}</td>
           <td>
-            <button class="btn danger" style="padding:8px 11px;border-radius:10px;font-size:12px" onclick="giderSil('${g.id}')">
+            <button class="btn danger sil-btn" onclick="giderSil('${g.id}')">
               Sil
             </button>
           </td>
@@ -661,28 +775,111 @@
       `).join("");
     }
 
-    function csvIndir(){
-      aktifAy = document.getElementById("aySec").value || ayISO();
+    function urunOzetiniGuncelle(){
+      const body = document.getElementById("urunOzetBody");
+      const toplamEl = document.getElementById("urunOzetToplam");
 
-      const toplamGider = giderler.reduce((t,g) => t + Number(g.tutar || 0), 0);
+      if(!giderler.length){
+        body.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty">Ürün özeti için gider ekleyin.</td>
+          </tr>
+        `;
+        toplamEl.textContent = para(0);
+        return;
+      }
+
+      const map = {};
+
+      giderler.forEach(g => {
+        const urun = String(g.urunCinsi || g.kalem || "DİĞER").toLocaleUpperCase("tr-TR");
+        const olcu = String(g.olcuBirimi || "-").toLocaleUpperCase("tr-TR");
+        const key = `${urun}__${olcu}`;
+
+        if(!map[key]){
+          map[key] = {
+            urun,
+            olcu,
+            miktar: 0,
+            toplam: 0
+          };
+        }
+
+        map[key].miktar += Number(g.miktar || 0);
+        map[key].toplam += Number(g.toplamFiyat || g.tutar || 0);
+      });
+
+      const arr = Object.values(map).sort((a,b) => a.urun.localeCompare(b.urun, "tr"));
+
+      const genelToplam = arr.reduce((t,x) => t + x.toplam, 0);
+
+      body.innerHTML = arr.map(x => {
+        const ort = x.miktar > 0 ? x.toplam / x.miktar : 0;
+
+        return `
+          <tr>
+            <td>${x.urun}</td>
+            <td class="money">${x.miktar}</td>
+            <td>${x.olcu}</td>
+            <td class="money">${para(x.toplam)}</td>
+            <td class="money">${para(ort)}</td>
+          </tr>
+        `;
+      }).join("");
+
+      toplamEl.textContent = para(genelToplam);
+    }
+
+    function csvIndir(){
+      aktifDonem = document.getElementById("donemSec").value || donemISO();
+
+      const aralik = donemAraligi(aktifDonem);
+
+      const toplamGider = giderler.reduce((t,g) => t + Number(g.toplamFiyat || g.tutar || 0), 0);
       const toplamMiktar = Number(ayar.odeyenler || 0) * Number(ayar.kisiBasiMiktar || 0);
-      const kalan = toplamMiktar - toplamGider;
+      const oncekiDevir = Number(ayar.oncekiDevir || 0);
+      const kalan = oncekiDevir + toplamMiktar - toplamGider;
 
       let csv = "\uFEFF";
       csv += "ÇAY OCAĞI BİLANÇO RAPORU\n";
-      csv += `Ay;${aktifAy}\n`;
+      csv += `Dönem;${aralik.baslangicTR} - ${aralik.bitisTR}\n`;
       csv += `Personel Sayısı;${ayar.personelSayisi || 0}\n`;
       csv += `Kişi Başı Toplanan Miktar;${ayar.kisiBasiMiktar || 0}\n`;
       csv += `Ödeyenler;${ayar.odeyenler || 0}\n`;
       csv += `Ödemeyenler;${Math.max((ayar.personelSayisi || 0) - (ayar.odeyenler || 0), 0)}\n`;
-      csv += `Toplam Miktar;${toplamMiktar}\n`;
-      csv += `Toplam Gider;${toplamGider}\n`;
-      csv += `Kalan Miktar;${kalan}\n\n`;
+      csv += `Önceki Aydan Devir;${oncekiDevir}\n`;
+      csv += `Toplanan Miktar;${toplamMiktar}\n`;
+      csv += `Bu Ay Harcamalar Toplamı;${toplamGider}\n`;
+      csv += `Gelecek Aya Devir;${kalan}\n\n`;
 
-      csv += "Tarih;Gider Kalemi;Açıklama;Tutar\n";
+      csv += "GİDER KALEMLERİ\n";
+      csv += "Tarih;Ürün Cinsi;Marka/Açıklama;Birim Fiyat;Miktar;Ölçü;Toplam Fiyat\n";
 
       giderler.forEach(g => {
-        csv += `${formatTarih(g.tarih)};${g.kalem || ""};${g.aciklama || ""};${g.tutar || 0}\n`;
+        csv += `${formatTarih(g.tarih)};${g.urunCinsi || g.kalem || ""};${g.marka || g.aciklama || ""};${g.birimFiyat || ""};${g.miktar || ""};${g.olcuBirimi || ""};${g.toplamFiyat || g.tutar || 0}\n`;
+      });
+
+      csv += "\nÜRÜN ÖZETİ\n";
+      csv += "Ürün;Toplam Miktar;Ölçü;Toplam Ödenen;Ortalama Birim Fiyat\n";
+
+      const map = {};
+
+      giderler.forEach(g => {
+        const urun = String(g.urunCinsi || g.kalem || "DİĞER").toLocaleUpperCase("tr-TR");
+        const olcu = String(g.olcuBirimi || "-").toLocaleUpperCase("tr-TR");
+        const key = `${urun}__${olcu}`;
+
+        if(!map[key]){
+          map[key] = { urun, olcu, miktar:0, toplam:0 };
+        }
+
+        map[key].miktar += Number(g.miktar || 0);
+        map[key].toplam += Number(g.toplamFiyat || g.tutar || 0);
+      });
+
+      Object.values(map).forEach(x => {
+        const ort = x.miktar > 0 ? x.toplam / x.miktar : 0;
+        csv += `${x.urun};${x.miktar};${x.olcu};${x.toplam};${ort}\n`;
       });
 
       const blob = new Blob([csv], { type:"text/csv;charset=utf-8;" });
@@ -690,7 +887,7 @@
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = `cay-bilanco-${aktifAy}.csv`;
+      a.download = `cay-bilanco-${aktifDonem}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -703,11 +900,12 @@
     window.giderEkle = giderEkle;
     window.giderSil = giderSil;
     window.csvIndir = csvIndir;
+    window.urunOzetiniGuncelle = urunOzetiniGuncelle;
 
-    document.getElementById("aySec").value = ayISO();
+    document.getElementById("donemSec").value = donemISO();
     document.getElementById("giderTarih").value = bugunISO();
 
-    document.getElementById("aySec").addEventListener("change", verileriYukle);
+    document.getElementById("donemSec").addEventListener("change", verileriYukle);
 
     verileriYukle();
   </script>
