@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Çay Ocağı Bilanço Paneli</title>
+
+  <style>
+    :root{
+      --bg:#f5f5f7;
+      --card:#ffffff;
+      --text:#111111;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --black:#111111;
+      --green:#16a34a;
+      --red:#dc2626;
+      --blue:#2563eb;
+      --orange:#f97316;
+      --shadow:0 14px 35px rgba(0,0,0,.08);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(245,245,247,.88);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(229,231,235,.8);
+    }
+
+    .nav{
+      max-width:1180px;
+      margin:auto;
+      padding:14px 16px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .brand{
+      font-weight:900;
+      letter-spacing:-.4px;
+      font-size:18px;
+    }
+
+    .nav a{
+      background:#111;
+      color:#fff;
+      text-decoration:none;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      box-shadow:0 8px 18px rgba(0,0,0,.12);
+    }
+
+    .wrap{
+      max-width:1180px;
+      margin:24px auto;
+      padding:0 16px 40px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#111,#2b2b2b);
+      color:#fff;
+      border-radius:28px;
+      padding:24px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      margin:0 0 8px;
+      font-size:28px;
+      letter-spacing:-.8px;
+    }
+
+    .hero p{
+      margin:0;
+      color:#d1d5db;
+      font-size:14px;
+    }
+
+    .panel{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+      margin-bottom:18px;
+      border:1px solid rgba(255,255,255,.8);
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    input,select{
+      width:100%;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      padding:13px 12px;
+      font-size:15px;
+      outline:none;
+      font-weight:700;
+    }
+
+    input:focus,select:focus{
+      border-color:#111;
+      box-shadow:0 0 0 4px rgba(0,0,0,.06);
+    }
+
+    .btn{
+      border:0;
+      background:#111;
+      color:#fff;
+      padding:13px 16px;
+      border-radius:14px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 10px 20px rgba(0,0,0,.12);
+    }
+
+    .btn.secondary{
+      background:#f3f4f6;
+      color:#111;
+      box-shadow:none;
+      border:1px solid var(--line);
+    }
+
+    .btn.danger{
+      background:#dc2626;
+    }
+
+    .summary{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .card{
+      background:#fff;
+      border-radius:20px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(229,231,235,.75);
+      min-height:105px;
+    }
+
+    .card .title{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .card .value{
+      font-size:23px;
+      font-weight:950;
+      letter-spacing:-.7px;
+    }
+
+    .green{color:var(--green)}
+    .red{color:var(--red)}
+    .blue{color:var(--blue)}
+    .orange{color:var(--orange)}
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:20px;
+      letter-spacing:-.5px;
+    }
+
+    .expense-form{
+      display:grid;
+      grid-template-columns:160px 180px 1fr 140px 120px;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:18px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+      background:#fff;
+    }
+
+    th,td{
+      padding:13px 12px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      font-size:14px;
+    }
+
+    th{
+      background:#f9fafb;
+      color:#374151;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      font-weight:950;
+      position:sticky;
+      top:0;
+    }
+
+    td{
+      font-weight:700;
+    }
+
+    .money{
+      text-align:right;
+      white-space:nowrap;
+    }
+
+    .total-row td{
+      background:#111;
+      color:#fff;
+      font-size:15px;
+      font-weight:950;
+    }
+
+    .empty{
+      text-align:center;
+      padding:24px;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:10px;
+      font-weight:700;
+    }
+
+    @media(max-width:1000px){
+      .summary{grid-template-columns:repeat(2,1fr)}
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+      .expense-form{grid-template-columns:1fr 1fr}
+      .expense-form .full{grid-column:1/-1}
+    }
+
+    @media(max-width:560px){
+      .nav{align-items:flex-start;flex-direction:column}
+      .nav a{width:100%;text-align:center}
+      .hero h1{font-size:23px}
+      .summary{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:1fr}
+      .expense-form{grid-template-columns:1fr}
+      .expense-form .full{grid-column:auto}
+      .card{min-height:auto}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">☕ Çay Ocağı Bilanço</div>
+      <div>
+        <a href="adminpanel.html">Admin Panel</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap">
+
+    <section class="hero">
+      <h1>Çay Ocağı Aylık Bilanço Paneli</h1>
+      <p>Personel sayısı, kişi başı toplanan miktar, ödeyen/ödemeyen durumu, giderler ve kalan kasa otomatik hesaplanır.</p>
+    </section>
+
+    <section class="panel">
+      <div class="form-grid">
+        <div>
+          <label>Ay</label>
+          <input type="month" id="aySec">
+        </div>
+
+        <div>
+          <label>Personel Sayısı</label>
+          <input type="number" id="personelSayisi" placeholder="Örn: 45">
+        </div>
+
+        <div>
+          <label>Kişi Başı Toplanan Miktar</label>
+          <input type="number" id="kisiBasiMiktar" placeholder="Örn: 300">
+        </div>
+
+        <div>
+          <label>Ödeyenler</label>
+          <input type="number" id="odeyenler" placeholder="Örn: 38">
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn" onclick="ayarlariKaydet()">Bilgileri Kaydet</button>
+        <button class="btn secondary" onclick="verileriYukle()">Yenile</button>
+      </div>
+
+      <div class="mini">
+        Ödemeyenler otomatik hesaplanır: Personel Sayısı - Ödeyenler
+      </div>
+    </section>
+
+    <section class="summary">
+      <div class="card">
+        <div class="title">Personel Sayısı</div>
+        <div class="value" id="ozetPersonel">0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Kişi Başı Toplanan</div>
+        <div class="value blue" id="ozetKisiBasi">₺0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Toplam Miktar</div>
+        <div class="value green" id="ozetToplam">₺0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Ödeyenler</div>
+        <div class="value green" id="ozetOdeyen">0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Ödemeyenler</div>
+        <div class="value red" id="ozetOdemeyen">0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Giderler</div>
+        <div class="value orange" id="ozetGider">₺0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Kalan Miktar</div>
+        <div class="value" id="ozetKalan">₺0</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <h2>Gider Kalemleri</h2>
+        <button class="btn secondary" onclick="csvIndir()">Excel Tablosu İndir</button>
+      </div>
+
+      <div class="expense-form">
+        <div>
+          <label>Tarih</label>
+          <input type="date" id="giderTarih">
+        </div>
+
+        <div>
+          <label>Gider Kalemi</label>
+          <select id="giderKalem">
+            <option value="Çay">Çay</option>
+            <option value="Şeker">Şeker</option>
+            <option value="Kahve">Kahve</option>
+            <option value="Bardak">Bardak</option>
+            <option value="Tüp / Elektrik">Tüp / Elektrik</option>
+            <option value="Temizlik">Temizlik</option>
+            <option value="Diğer">Diğer</option>
+          </select>
+        </div>
+
+        <div class="full">
+          <label>Açıklama</label>
+          <input type="text" id="giderAciklama" placeholder="Örn: 5 kg çay alındı">
+        </div>
+
+        <div>
+          <label>Tutar</label>
+          <input type="number" id="giderTutar" placeholder="₺">
+        </div>
+
+        <div style="display:flex;align-items:end">
+          <button class="btn" style="width:100%" onclick="giderEkle()">Ekle</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tarih</th>
+              <th>Gider Kalemi</th>
+              <th>Açıklama</th>
+              <th class="money">Tutar</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody id="giderBody">
+            <tr>
+              <td colspan="5" class="empty">Henüz gider eklenmedi.</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="3">Toplam Gider</td>
+              <td class="money" id="tabloToplamGider">₺0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      collection,
+      addDoc,
+      deleteDoc,
+      query,
+      where,
+      getDocs,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "BURAYA_YAZ",
+      authDomain: "BURAYA_YAZ",
+      projectId: "BURAYA_YAZ",
+      storageBucket: "BURAYA_YAZ",
+      messagingSenderId: "BURAYA_YAZ",
+      appId: "BURAYA_YAZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let giderler = [];
+    let aktifAy = "";
+    let ayar = {
+      personelSayisi: 0,
+      kisiBasiMiktar: 0,
+      odeyenler: 0
+    };
+
+    const tl = new Intl.NumberFormat("tr-TR", {
+      style: "currency",
+      currency: "TRY",
+      maximumFractionDigits: 0
+    });
+
+    function bugunISO(){
+      return new Date().toISOString().slice(0,10);
+    }
+
+    function ayISO(){
+      return new Date().toISOString().slice(0,7);
+    }
+
+    function formatTarih(tarih){
+      if(!tarih) return "-";
+      const [y,m,d] = tarih.split("-");
+      return `${d}.${m}.${y}`;
+    }
+
+    function para(n){
+      return tl.format(Number(n || 0));
+    }
+
+    function sayi(id){
+      return Number(document.getElementById(id).value || 0);
+    }
+
+    function temizleGiderForm(){
+      document.getElementById("giderAciklama").value = "";
+      document.getElementById("giderTutar").value = "";
+      document.getElementById("giderKalem").value = "Çay";
+      document.getElementById("giderTarih").value = bugunISO();
+    }
+
+    async function verileriYukle(){
+      aktifAy = document.getElementById("aySec").value || ayISO();
+
+      const ayRef = doc(db, "cay_aylar", aktifAy);
+      const aySnap = await getDoc(ayRef);
+
+      if(aySnap.exists()){
+        ayar = aySnap.data();
+      }else{
+        ayar = {
+          personelSayisi: 0,
+          kisiBasiMiktar: 0,
+          odeyenler: 0
+        };
+      }
+
+      document.getElementById("personelSayisi").value = ayar.personelSayisi || "";
+      document.getElementById("kisiBasiMiktar").value = ayar.kisiBasiMiktar || "";
+      document.getElementById("odeyenler").value = ayar.odeyenler || "";
+
+      const q = query(
+        collection(db, "cay_giderler"),
+        where("ay", "==", aktifAy)
+      );
+
+      const snap = await getDocs(q);
+      giderler = [];
+
+      snap.forEach(d => {
+        giderler.push({
+          id: d.id,
+          ...d.data()
+        });
+      });
+
+      giderler.sort((a,b) => String(a.tarih || "").localeCompare(String(b.tarih || "")));
+
+      hesaplaVeCiz();
+    }
+
+    async function ayarlariKaydet(){
+      aktifAy = document.getElementById("aySec").value || ayISO();
+
+      ayar = {
+        personelSayisi: sayi("personelSayisi"),
+        kisiBasiMiktar: sayi("kisiBasiMiktar"),
+        odeyenler: sayi("odeyenler"),
+        updatedAt: serverTimestamp()
+      };
+
+      await setDoc(doc(db, "cay_aylar", aktifAy), ayar, { merge:true });
+      hesaplaVeCiz();
+      alert("Bilanço bilgileri kaydedildi.");
+    }
+
+    async function giderEkle(){
+      aktifAy = document.getElementById("aySec").value || ayISO();
+
+      const tarih = document.getElementById("giderTarih").value;
+      const kalem = document.getElementById("giderKalem").value;
+      const aciklama = document.getElementById("giderAciklama").value.trim();
+      const tutar = Number(document.getElementById("giderTutar").value || 0);
+
+      if(!tarih){
+        alert("Tarih seç.");
+        return;
+      }
+
+      if(!tutar || tutar <= 0){
+        alert("Geçerli bir tutar yaz.");
+        return;
+      }
+
+      await addDoc(collection(db, "cay_giderler"), {
+        ay: aktifAy,
+        tarih,
+        kalem,
+        aciklama,
+        tutar,
+        createdAt: serverTimestamp()
+      });
+
+      temizleGiderForm();
+      await verileriYukle();
+    }
+
+    async function giderSil(id){
+      if(!confirm("Bu gider kalemi silinsin mi?")) return;
+      await deleteDoc(doc(db, "cay_giderler", id));
+      await verileriYukle();
+    }
+
+    function hesaplaVeCiz(){
+      const personelSayisi = Number(ayar.personelSayisi || 0);
+      const kisiBasiMiktar = Number(ayar.kisiBasiMiktar || 0);
+      const odeyenler = Number(ayar.odeyenler || 0);
+      const odemeyenler = Math.max(personelSayisi - odeyenler, 0);
+
+      const toplamMiktar = odeyenler * kisiBasiMiktar;
+      const toplamGider = giderler.reduce((t,g) => t + Number(g.tutar || 0), 0);
+      const kalan = toplamMiktar - toplamGider;
+
+      document.getElementById("ozetPersonel").textContent = personelSayisi;
+      document.getElementById("ozetKisiBasi").textContent = para(kisiBasiMiktar);
+      document.getElementById("ozetToplam").textContent = para(toplamMiktar);
+      document.getElementById("ozetOdeyen").textContent = odeyenler;
+      document.getElementById("ozetOdemeyen").textContent = odemeyenler;
+      document.getElementById("ozetGider").textContent = para(toplamGider);
+      document.getElementById("ozetKalan").textContent = para(kalan);
+      document.getElementById("tabloToplamGider").textContent = para(toplamGider);
+
+      document.getElementById("ozetKalan").className = kalan >= 0 ? "value green" : "value red";
+
+      tabloCiz();
+    }
+
+    function tabloCiz(){
+      const body = document.getElementById("giderBody");
+
+      if(!giderler.length){
+        body.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty">Henüz gider eklenmedi.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      body.innerHTML = giderler.map(g => `
+        <tr>
+          <td>${formatTarih(g.tarih)}</td>
+          <td>${g.kalem || "-"}</td>
+          <td>${g.aciklama || "-"}</td>
+          <td class="money">${para(g.tutar)}</td>
+          <td>
+            <button class="btn danger" style="padding:8px 11px;border-radius:10px;font-size:12px" onclick="giderSil('${g.id}')">
+              Sil
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function csvIndir(){
+      aktifAy = document.getElementById("aySec").value || ayISO();
+
+      const toplamGider = giderler.reduce((t,g) => t + Number(g.tutar || 0), 0);
+      const toplamMiktar = Number(ayar.odeyenler || 0) * Number(ayar.kisiBasiMiktar || 0);
+      const kalan = toplamMiktar - toplamGider;
+
+      let csv = "\uFEFF";
+      csv += "ÇAY OCAĞI BİLANÇO RAPORU\n";
+      csv += `Ay;${aktifAy}\n`;
+      csv += `Personel Sayısı;${ayar.personelSayisi || 0}\n`;
+      csv += `Kişi Başı Toplanan Miktar;${ayar.kisiBasiMiktar || 0}\n`;
+      csv += `Ödeyenler;${ayar.odeyenler || 0}\n`;
+      csv += `Ödemeyenler;${Math.max((ayar.personelSayisi || 0) - (ayar.odeyenler || 0), 0)}\n`;
+      csv += `Toplam Miktar;${toplamMiktar}\n`;
+      csv += `Toplam Gider;${toplamGider}\n`;
+      csv += `Kalan Miktar;${kalan}\n\n`;
+
+      csv += "Tarih;Gider Kalemi;Açıklama;Tutar\n";
+
+      giderler.forEach(g => {
+        csv += `${formatTarih(g.tarih)};${g.kalem || ""};${g.aciklama || ""};${g.tutar || 0}\n`;
+      });
+
+      const blob = new Blob([csv], { type:"text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `cay-bilanco-${aktifAy}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      URL.revokeObjectURL(url);
+    }
+
+    window.verileriYukle = verileriYukle;
+    window.ayarlariKaydet = ayarlariKaydet;
+    window.giderEkle = giderEkle;
+    window.giderSil = giderSil;
+    window.csvIndir = csvIndir;
+
+    document.getElementById("aySec").value = ayISO();
+    document.getElementById("giderTarih").value = bugunISO();
+
+    document.getElementById("aySec").addEventListener("change", verileriYukle);
+
+    verileriYukle();
+  </script>
+
+</body>
+</html>
