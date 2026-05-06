@@ -293,6 +293,11 @@
       font-weight:950;
     }
 
+    th:nth-child(1),td:nth-child(1){width:16%}
+    th:nth-child(2),td:nth-child(2){width:30%}
+    th:nth-child(3),td:nth-child(3){width:36%}
+    th:nth-child(4),td:nth-child(4){width:18%}
+
     .money{text-align:right;white-space:nowrap}
 
     tfoot td{
@@ -394,9 +399,9 @@
         letter-spacing:0;
       }
 
-      th:nth-child(1),td:nth-child(1){width:24%}
-      th:nth-child(2),td:nth-child(2){width:25%}
-      th:nth-child(3),td:nth-child(3){width:33%}
+      th:nth-child(1),td:nth-child(1){width:18%}
+      th:nth-child(2),td:nth-child(2){width:27%}
+      th:nth-child(3),td:nth-child(3){width:37%}
       th:nth-child(4),td:nth-child(4){width:18%}
 
       .money{
@@ -592,6 +597,17 @@
       };
     }
 
+    function kullaniciAdiGetir(k){
+      return (
+        k?.adSoyad ||
+        k?.adSoyisim ||
+        k?.isim ||
+        `${k?.ad || ""} ${k?.soyad || ""}`.trim() ||
+        k?.ad ||
+        "Personel"
+      );
+    }
+
     function para(n){
       return tl.format(Number(n || 0));
     }
@@ -665,7 +681,7 @@
 
         localStorage.setItem("cayBilancoLogin", JSON.stringify({
           telefon: aktifKullanici.telefon,
-          adSoyad: aktifKullanici.adSoyad || aktifKullanici.ad || "Personel"
+          adSoyad: kullaniciAdiGetir(aktifKullanici)
         }));
 
         ekranAc();
@@ -686,7 +702,7 @@
       document.getElementById("panelBox").style.display = "block";
       document.getElementById("logoutBtn").style.display = "inline-block";
 
-      const ad = aktifKullanici?.adSoyad || aktifKullanici?.ad || "Personel";
+      const ad = kullaniciAdiGetir(aktifKullanici);
       const donem = document.getElementById("aySec").value || donemISO();
       const aralik = donemAraligi(donem);
 
@@ -704,7 +720,7 @@
       const aralik = donemAraligi(donem);
 
       if(aktifKullanici){
-        const ad = aktifKullanici?.adSoyad || aktifKullanici?.ad || "Personel";
+        const ad = kullaniciAdiGetir(aktifKullanici);
         document.getElementById("welcomeText").textContent =
           `Hoş geldiniz ${ad}. Seçili dönem: ${aralik.baslangicTR} - ${aralik.bitisTR}. Bu sayfa sadece görüntüleme amaçlıdır.`;
       }
