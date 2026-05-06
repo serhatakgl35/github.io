@@ -201,7 +201,7 @@
 
     .summary{
       display:none;
-      grid-template-columns:repeat(6,1fr);
+      grid-template-columns:repeat(8,1fr);
       gap:12px;
       margin-bottom:18px;
     }
@@ -451,9 +451,20 @@
     </section>
 
     <section class="summary" id="summaryBox">
+
       <div class="card">
         <div class="title">Personel Sayısı</div>
         <div class="value" id="ozetPersonel">0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Ödeyenler</div>
+        <div class="value green" id="ozetOdeyen">0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Ödemeyenler</div>
+        <div class="value red" id="ozetOdemeyen">0</div>
       </div>
 
       <div class="card">
@@ -480,6 +491,7 @@
         <div class="title">Kalan Miktar</div>
         <div class="value" id="ozetKalan">₺0</div>
       </div>
+
     </section>
 
     <section class="panel" id="panelBox">
@@ -732,11 +744,14 @@
       const odeyenler = Number(ayar.odeyenler || 0);
       const oncekiDevir = Number(ayar.oncekiDevir || 0);
 
+      const odemeyenler = Math.max(personelSayisi - odeyenler, 0);
       const toplamToplanan = odeyenler * kisiBasiMiktar;
       const toplamGider = giderler.reduce((t,g) => t + Number(g.tutar || 0), 0);
       const kalan = oncekiDevir + toplamToplanan - toplamGider;
 
       document.getElementById("ozetPersonel").textContent = personelSayisi;
+      document.getElementById("ozetOdeyen").textContent = odeyenler;
+      document.getElementById("ozetOdemeyen").textContent = odemeyenler;
       document.getElementById("ozetKisiBasi").textContent = para(kisiBasiMiktar);
       document.getElementById("ozetToplam").textContent = para(toplamToplanan);
       document.getElementById("ozetDevir").textContent = para(oncekiDevir);
