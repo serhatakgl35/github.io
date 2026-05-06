@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Çay Ocağı Bilanço</title>
+
+  <style>
+    :root{
+      --bg:#f5f5f7;
+      --card:#fff;
+      --text:#111;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --green:#16a34a;
+      --red:#dc2626;
+      --orange:#f97316;
+      --blue:#2563eb;
+      --shadow:0 18px 40px rgba(0,0,0,.08);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(245,245,247,.88);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(229,231,235,.8);
+    }
+
+    .nav{
+      max-width:1100px;
+      margin:auto;
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    .brand{
+      font-size:18px;
+      font-weight:950;
+      letter-spacing:-.5px;
+    }
+
+    .logout{
+      display:none;
+      border:0;
+      background:#111;
+      color:#fff;
+      border-radius:999px;
+      padding:10px 15px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:24px auto;
+      padding:0 16px 44px;
+    }
+
+    .login-card{
+      max-width:430px;
+      margin:60px auto;
+      background:#fff;
+      border-radius:30px;
+      padding:24px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.9);
+    }
+
+    .login-card h1{
+      margin:0 0 8px;
+      font-size:28px;
+      letter-spacing:-.8px;
+    }
+
+    .login-card p{
+      margin:0 0 20px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.4;
+    }
+
+    label{
+      display:block;
+      margin:12px 0 6px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      font-size:16px;
+      outline:none;
+      font-weight:800;
+      background:#fff;
+    }
+
+    input:focus{
+      border-color:#111;
+      box-shadow:0 0 0 4px rgba(0,0,0,.06);
+    }
+
+    .btn{
+      width:100%;
+      border:0;
+      margin-top:16px;
+      background:#111;
+      color:#fff;
+      padding:15px;
+      border-radius:16px;
+      font-size:15px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow:0 14px 26px rgba(0,0,0,.15);
+    }
+
+    .msg{
+      margin-top:14px;
+      padding:12px;
+      border-radius:16px;
+      font-size:13px;
+      font-weight:800;
+      display:none;
+    }
+
+    .msg.err{
+      display:block;
+      background:#fee2e2;
+      color:#991b1b;
+    }
+
+    .msg.ok{
+      display:block;
+      background:#dcfce7;
+      color:#166534;
+    }
+
+    .hero{
+      display:none;
+      background:linear-gradient(135deg,#111,#2c2c2c);
+      color:#fff;
+      border-radius:30px;
+      padding:24px;
+      margin-bottom:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero h1{
+      margin:0 0 8px;
+      font-size:28px;
+      letter-spacing:-.8px;
+    }
+
+    .hero p{
+      margin:0;
+      color:#d1d5db;
+      font-size:14px;
+      font-weight:650;
+    }
+
+    .toolbar{
+      display:none;
+      background:#fff;
+      border-radius:22px;
+      padding:16px;
+      margin-bottom:16px;
+      box-shadow:var(--shadow);
+      align-items:end;
+      gap:12px;
+      border:1px solid rgba(229,231,235,.8);
+    }
+
+    .toolbar > div{
+      max-width:220px;
+      width:100%;
+    }
+
+    .small-btn{
+      border:0;
+      background:#111;
+      color:#fff;
+      border-radius:14px;
+      padding:13px 16px;
+      font-weight:950;
+      cursor:pointer;
+      height:46px;
+    }
+
+    .summary{
+      display:none;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .card{
+      background:#fff;
+      border-radius:22px;
+      padding:17px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(229,231,235,.75);
+    }
+
+    .card .title{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:950;
+      margin-bottom:10px;
+    }
+
+    .card .value{
+      font-size:24px;
+      font-weight:950;
+      letter-spacing:-.7px;
+    }
+
+    .green{color:var(--green)}
+    .red{color:var(--red)}
+    .orange{color:var(--orange)}
+    .blue{color:var(--blue)}
+
+    .panel{
+      display:none;
+      background:#fff;
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(229,231,235,.8);
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .panel-head h2{
+      margin:0;
+      font-size:20px;
+      letter-spacing:-.5px;
+    }
+
+    .readonly{
+      background:#f3f4f6;
+      color:#374151;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:18px;
+    }
+
+    table{
+      width:100%;
+      min-width:680px;
+      border-collapse:collapse;
+    }
+
+    th,td{
+      padding:13px 12px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      font-size:14px;
+      font-weight:750;
+    }
+
+    th{
+      background:#f9fafb;
+      color:#374151;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.35px;
+      font-weight:950;
+    }
+
+    .money{text-align:right;white-space:nowrap}
+
+    tfoot td{
+      background:#111;
+      color:#fff;
+      font-weight:950;
+    }
+
+    .empty{
+      text-align:center;
+      padding:24px;
+      color:var(--muted);
+      font-weight:850;
+    }
+
+    @media(max-width:900px){
+      .summary{grid-template-columns:repeat(2,1fr)}
+      .toolbar{align-items:stretch;flex-direction:column}
+      .toolbar > div{max-width:none}
+      .small-btn{width:100%}
+    }
+
+    @media(max-width:520px){
+      .nav{align-items:flex-start;flex-direction:column}
+      .logout{width:100%}
+      .login-card{margin:28px auto}
+      .summary{grid-template-columns:1fr}
+      .hero h1{font-size:23px}
+      .card .value{font-size:22px}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">☕ Çay Ocağı Bilanço</div>
+      <button class="logout" id="logoutBtn" onclick="cikisYap()">Çıkış Yap</button>
+    </div>
+  </div>
+
+  <main class="wrap">
+
+    <section class="login-card" id="loginBox">
+      <h1>Giriş Yap</h1>
+      <p>Telefon numaranız ve şifrenizle giriş yaparak çay ocağı bilançosunu görüntüleyebilirsiniz.</p>
+
+      <label>Telefon Numarası</label>
+      <input id="telefon" inputmode="numeric" placeholder="05xxxxxxxxx" autocomplete="tel">
+
+      <label>Şifre</label>
+      <input id="sifre" type="password" placeholder="Şifrenizi yazın" autocomplete="current-password">
+
+      <button class="btn" onclick="girisYap()">Giriş Yap</button>
+
+      <div class="msg" id="loginMsg"></div>
+    </section>
+
+    <section class="hero" id="heroBox">
+      <h1>Bu Ayın Çay Ocağı Bilançosu</h1>
+      <p id="welcomeText">Hoş geldiniz. Bu sayfa sadece görüntüleme amaçlıdır.</p>
+    </section>
+
+    <section class="toolbar" id="toolbarBox">
+      <div>
+        <label>Ay Seç</label>
+        <input type="month" id="aySec">
+      </div>
+      <button class="small-btn" onclick="verileriYukle()">Bilançoyu Göster</button>
+    </section>
+
+    <section class="summary" id="summaryBox">
+      <div class="card">
+        <div class="title">Personel Sayısı</div>
+        <div class="value" id="ozetPersonel">0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Kişi Başı Toplanan</div>
+        <div class="value blue" id="ozetKisiBasi">₺0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Toplam Toplanan</div>
+        <div class="value green" id="ozetToplam">₺0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Toplam Gider</div>
+        <div class="value orange" id="ozetGider">₺0</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Kalan Miktar</div>
+        <div class="value" id="ozetKalan">₺0</div>
+      </div>
+    </section>
+
+    <section class="panel" id="panelBox">
+      <div class="panel-head">
+        <h2>Gider Kalemleri</h2>
+        <div class="readonly">Sadece Görüntüleme</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tarih</th>
+              <th>Gider Kalemi</th>
+              <th>Açıklama</th>
+              <th class="money">Tutar</th>
+            </tr>
+          </thead>
+
+          <tbody id="giderBody">
+            <tr>
+              <td colspan="4" class="empty">Henüz gider kaydı yok.</td>
+            </tr>
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td colspan="3">Toplam Gider</td>
+              <td class="money" id="tabloToplamGider">₺0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "BURAYA_YAZ",
+      authDomain: "BURAYA_YAZ",
+      projectId: "BURAYA_YAZ",
+      storageBucket: "BURAYA_YAZ",
+      messagingSenderId: "BURAYA_YAZ",
+      appId: "BURAYA_YAZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let aktifKullanici = null;
+    let giderler = [];
+
+    const tl = new Intl.NumberFormat("tr-TR", {
+      style:"currency",
+      currency:"TRY",
+      maximumFractionDigits:0
+    });
+
+    function ayISO(){
+      return new Date().toISOString().slice(0,7);
+    }
+
+    function para(n){
+      return tl.format(Number(n || 0));
+    }
+
+    function formatTarih(tarih){
+      if(!tarih) return "-";
+      const [y,m,d] = String(tarih).split("-");
+      if(!y || !m || !d) return tarih;
+      return `${d}.${m}.${y}`;
+    }
+
+    function temizTelefon(v){
+      let t = String(v || "").replace(/\D/g,"");
+
+      if(t.startsWith("90")){
+        t = t.slice(2);
+      }
+
+      if(t.length > 0 && !t.startsWith("0")){
+        t = "0" + t;
+      }
+
+      return t.slice(0,11);
+    }
+
+    document.getElementById("telefon").addEventListener("input", e => {
+      const eski = e.target.value;
+      const yeni = temizTelefon(eski);
+      e.target.value = yeni;
+    });
+
+    async function girisYap(){
+      const msg = document.getElementById("loginMsg");
+      msg.className = "msg";
+      msg.textContent = "";
+
+      const telefon = temizTelefon(document.getElementById("telefon").value);
+      const sifre = document.getElementById("sifre").value.trim();
+
+      if(!telefon || telefon.length < 11){
+        msg.className = "msg err";
+        msg.textContent = "Telefon numarasını 05xxxxxxxxx şeklinde yaz.";
+        return;
+      }
+
+      if(!sifre){
+        msg.className = "msg err";
+        msg.textContent = "Şifre yazmalısın.";
+        return;
+      }
+
+      try{
+        const q = query(
+          collection(db, "personeller"),
+          where("telefon", "==", telefon),
+          where("sifre", "==", sifre)
+        );
+
+        const snap = await getDocs(q);
+
+        if(snap.empty){
+          msg.className = "msg err";
+          msg.textContent = "Telefon numarası veya şifre hatalı.";
+          return;
+        }
+
+        const d = snap.docs[0];
+
+        aktifKullanici = {
+          id:d.id,
+          ...d.data()
+        };
+
+        localStorage.setItem("cayBilancoLogin", JSON.stringify({
+          telefon: aktifKullanici.telefon,
+          adSoyad: aktifKullanici.adSoyad || aktifKullanici.ad || "Personel"
+        }));
+
+        ekranAc();
+        await verileriYukle();
+
+      }catch(err){
+        console.error(err);
+        msg.className = "msg err";
+        msg.textContent = "Giriş sırasında hata oluştu. Firebase ayarlarını kontrol et.";
+      }
+    }
+
+    function ekranAc(){
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("heroBox").style.display = "block";
+      document.getElementById("toolbarBox").style.display = "flex";
+      document.getElementById("summaryBox").style.display = "grid";
+      document.getElementById("panelBox").style.display = "block";
+      document.getElementById("logoutBtn").style.display = "inline-block";
+
+      const ad = aktifKullanici?.adSoyad || aktifKullanici?.ad || "Personel";
+      document.getElementById("welcomeText").textContent =
+        `Hoş geldiniz ${ad}. Bu sayfa sadece görüntüleme amaçlıdır.`;
+    }
+
+    function cikisYap(){
+      localStorage.removeItem("cayBilancoLogin");
+      location.reload();
+    }
+
+    async function verileriYukle(){
+      const ay = document.getElementById("aySec").value || ayISO();
+
+      const aySnap = await getDoc(doc(db, "cay_aylar", ay));
+
+      const ayar = aySnap.exists() ? aySnap.data() : {
+        personelSayisi:0,
+        kisiBasiMiktar:0,
+        odeyenler:0
+      };
+
+      const q = query(
+        collection(db, "cay_giderler"),
+        where("ay", "==", ay)
+      );
+
+      const giderSnap = await getDocs(q);
+      giderler = [];
+
+      giderSnap.forEach(d => {
+        giderler.push({
+          id:d.id,
+          ...d.data()
+        });
+      });
+
+      giderler.sort((a,b) => String(a.tarih || "").localeCompare(String(b.tarih || "")));
+
+      hesaplaVeCiz(ayar);
+    }
+
+    function hesaplaVeCiz(ayar){
+      const personelSayisi = Number(ayar.personelSayisi || 0);
+      const kisiBasiMiktar = Number(ayar.kisiBasiMiktar || 0);
+      const odeyenler = Number(ayar.odeyenler || 0);
+
+      const toplamToplanan = odeyenler * kisiBasiMiktar;
+      const toplamGider = giderler.reduce((t,g) => t + Number(g.tutar || 0), 0);
+      const kalan = toplamToplanan - toplamGider;
+
+      document.getElementById("ozetPersonel").textContent = personelSayisi;
+      document.getElementById("ozetKisiBasi").textContent = para(kisiBasiMiktar);
+      document.getElementById("ozetToplam").textContent = para(toplamToplanan);
+      document.getElementById("ozetGider").textContent = para(toplamGider);
+      document.getElementById("ozetKalan").textContent = para(kalan);
+      document.getElementById("tabloToplamGider").textContent = para(toplamGider);
+
+      document.getElementById("ozetKalan").className = kalan >= 0 ? "value green" : "value red";
+
+      tabloCiz();
+    }
+
+    function tabloCiz(){
+      const body = document.getElementById("giderBody");
+
+      if(!giderler.length){
+        body.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty">Bu ay için gider kaydı yok.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      body.innerHTML = giderler.map(g => `
+        <tr>
+          <td>${formatTarih(g.tarih)}</td>
+          <td>${g.kalem || "-"}</td>
+          <td>${g.aciklama || "-"}</td>
+          <td class="money">${para(g.tutar)}</td>
+        </tr>
+      `).join("");
+    }
+
+    async function otomatikGirisKontrol(){
+      document.getElementById("aySec").value = ayISO();
+
+      const kayit = localStorage.getItem("cayBilancoLogin");
+
+      if(!kayit) return;
+
+      try{
+        const data = JSON.parse(kayit);
+
+        if(!data.telefon) return;
+
+        aktifKullanici = data;
+        ekranAc();
+        await verileriYukle();
+
+      }catch(e){
+        localStorage.removeItem("cayBilancoLogin");
+      }
+    }
+
+    window.girisYap = girisYap;
+    window.cikisYap = cikisYap;
+    window.verileriYukle = verileriYukle;
+
+    otomatikGirisKontrol();
+  </script>
+
+</body>
+</html>
