@@ -1,452 +1,325 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Ödeme Admin Paneli</title><style>
-*{box-sizing:border-box}
-:root{--bg:#f5f5f7;--text:#111;--muted:#666;--shadow:0 12px 32px rgba(0,0,0,.08);--soft:0 5px 16px rgba(0,0,0,.06);--r:24px}
-body{margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
-.topbar{position:sticky;top:0;z-index:20;background:rgba(17,17,17,.94);padding:14px 18px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;box-shadow:0 3px 12px rgba(0,0,0,.14)}
-.topbar a,.topbar button{background:white;color:#111;text-decoration:none;border:0;border-radius:999px;padding:9px 15px;font-weight:900;cursor:pointer}
-.wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
-.centerWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.card{background:rgba(255,255,255,.90);border-radius:var(--r);padding:24px;box-shadow:var(--soft);margin-bottom:16px}
-.summaryOk{background:#dcfce7!important}.summaryOk h3,.summaryOk h1{color:#166534!important}
-.summaryWait{background:#fef3c7!important}.summaryWait h3,.summaryWait h1{color:#92400e!important}
-.summaryBad{background:#fee2e2!important}.summaryBad h3,.summaryBad h1{color:#991b1b!important}
-.loginCard{width:100%;max-width:430px}.logo{width:62px;height:62px;border-radius:20px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
-h1{font-size:34px;margin:0 0 12px;font-weight:950;letter-spacing:-.5px}h2,h3{margin-top:0}p{color:var(--muted);line-height:1.45}
-label{font-weight:800;font-size:14px;display:block;margin:0 0 6px}
-input,select{width:100%;padding:14px;border-radius:16px;border:1px solid rgba(0,0,0,.10);margin-bottom:14px;font-size:16px;background:#f0f2f6;outline:none}
-input:focus,select:focus{border-color:#111;background:white}
-button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;color:white;border:0;border-radius:17px;padding:15px 16px;font-weight:950;font-size:16px;cursor:pointer;text-decoration:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.muted{color:var(--muted);font-size:14px}.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
-.status{display:inline-block;padding:8px 13px;border-radius:999px;font-weight:950;font-size:13px;white-space:nowrap}.odendi{background:#dcfce7;color:#166534}.bekliyor{background:#fef3c7;color:#92400e}.reddedildi,.gecikti{background:#fee2e2;color:#991b1b}
-.tableWrap{overflow:auto;border-radius:18px}table{width:100%;border-collapse:collapse;background:white}th,td{padding:13px 14px;border-bottom:1px solid #eee;text-align:left;font-size:14px;vertical-align:middle}th{background:#f8f8f8;font-weight:950}
-.small{background:#111;color:white;border:0;border-radius:12px;padding:9px 11px;font-weight:900;cursor:pointer;margin:2px}.green{background:#15803d}.red{background:#b91c1c}.gray{background:#4b5563}
-.tutarInput{width:105px!important;padding:8px!important;border-radius:10px!important;margin:0!important}.ibanBox{display:flex;align-items:center;gap:10px}
-.iban{flex:1;background:#f5f5f7;border-radius:18px;padding:15px;font-size:15px;letter-spacing:.35px;font-weight:950;word-break:break-word}.copyBtn{width:50px;height:50px;border:0;border-radius:17px;background:#111;color:white;font-size:21px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12)}
-.copyMsg{margin-top:8px;font-weight:800;color:#166534;min-height:20px}.historyItem{background:white;border-radius:22px;padding:18px;box-shadow:var(--soft);display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
-.historyLeft{display:flex;flex-direction:column;gap:6px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#666;font-weight:800;line-height:1.6}.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px}
-.fazla,.tamam{display:inline-block;margin-top:6px;color:#166534;background:#dcfce7;padding:6px 10px;border-radius:999px;font-weight:950}
-.borc{display:inline-block;margin-top:6px;color:#991b1b;background:#fee2e2;padding:6px 10px;border-radius:999px;font-weight:950}
-.hide{display:none!important}@media(max-width:720px){
-.wrap{padding:0 10px;margin:16px auto}.card{padding:16px;border-radius:20px}h1{font-size:26px}h3{font-size:17px}.topbar{padding:10px 8px}.topbar a,.topbar button{padding:8px 11px;font-size:12px}
-.grid{grid-template-columns:1fr;gap:10px}.tableWrap{overflow:visible;border-radius:0}table,thead,tbody,tr,td{display:block;width:100%}thead{display:none}tr{background:#fff;border-radius:18px;padding:10px;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,.055)}td{border:0;padding:7px 6px;font-size:13px}td::before{content:attr(data-label);display:block;font-size:11px;color:#777;font-weight:950;margin-bottom:3px}.tutarInput{width:92px!important}.small{padding:8px 9px;font-size:12px}.status{font-size:12px;padding:7px 10px}.historyItem{align-items:flex-start;flex-direction:column}.ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:50px}
-}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-</style></head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personel Toplu Aktar</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{--bg:#f5f5f7;--text:#111;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--blue:#2563eb;--shadow:0 14px 35px rgba(0,0,0,.08);--r:24px}
+    body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+    .topbar{position:sticky;top:0;z-index:10;background:rgba(17,17,17,.94);padding:12px 14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;box-shadow:0 4px 14px rgba(0,0,0,.16)}
+    .topbar a,.topbar button{background:#fff;color:#111;text-decoration:none;border:0;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:900;cursor:pointer}
+    .wrap{width:min(1080px,100%);margin:24px auto;padding:0 14px 34px}
+    .card{background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.85);margin-bottom:16px}
+    h1{font-size:32px;margin:0 0 10px;font-weight:950;letter-spacing:-.7px}h2,h3{margin:0 0 12px}.muted,p{color:var(--muted);line-height:1.45}.hero{background:linear-gradient(135deg,#111,#2b2b2b);color:#fff}.hero p{color:#d1d5db;margin-bottom:0}
+    label{display:block;font-size:13px;color:#374151;font-weight:900;margin:0 0 7px}
+    textarea,input{width:100%;border:1px solid var(--line);border-radius:16px;padding:14px;background:#f9fafb;outline:none;font-size:15px;font-weight:700;font-family:inherit}
+    textarea{min-height:240px;resize:vertical;line-height:1.55;white-space:pre}
+    textarea:focus,input:focus{background:#fff;border-color:#111;box-shadow:0 0 0 4px rgba(0,0,0,.06)}
+    .btn{background:#111;color:#fff;border:0;border-radius:16px;padding:14px 16px;font-weight:950;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.12)}
+    .btn.secondary{background:#f3f4f6;color:#111;border:1px solid var(--line);box-shadow:none}.btn.green{background:#15803d}.btn.red{background:#b91c1c}.btn.blue{background:#2563eb}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.actions .btn{flex:1;min-width:180px}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.miniCard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}.miniCard .title{font-size:12px;color:var(--muted);font-weight:900;margin-bottom:8px}.miniCard .value{font-size:24px;font-weight:950}.greenText{color:var(--green)}.redText{color:var(--red)}.orangeText{color:var(--orange)}.blueText{color:var(--blue)}
+    .preview{overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}th{background:#f9fafb;font-size:12px;text-transform:uppercase;letter-spacing:.35px;color:#374151;font-weight:950}.tag{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:950}.ok{background:#dcfce7;color:#166534}.bad{background:#fee2e2;color:#991b1b}.warn{background:#fef3c7;color:#92400e}
+    .loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}.loginCard{width:100%;max-width:430px}.logo{width:62px;height:62px;border-radius:20px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 15px}.hide{display:none!important}.msg{margin-top:12px;font-weight:900;text-align:center;min-height:20px}.err{color:#991b1b}.success{color:#166534}
+    .help{background:#f9fafb;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}.help b{color:#111}.help code{background:#fff;padding:2px 6px;border-radius:8px;border:1px solid var(--line)}
+    @media(max-width:720px){.wrap{margin:16px auto;padding:0 10px 28px}.card{padding:16px;border-radius:20px}h1{font-size:25px}.grid{grid-template-columns:1fr 1fr;gap:8px}.miniCard{padding:12px;border-radius:15px}.miniCard .value{font-size:19px}.actions .btn{min-width:100%;padding:12px}.topbar{padding:9px 8px}.topbar a,.topbar button{font-size:12px;padding:8px 10px}textarea{min-height:230px;font-size:13px}table,thead,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border-bottom:1px solid var(--line);padding:8px}td{border:0;padding:5px 4px;font-size:13px}td::before{content:attr(data-label);display:block;color:#777;font-size:11px;font-weight:950;margin-bottom:2px}.preview{border-radius:14px}}
+  </style>
+</head>
 <body>
-<div id="adminLogin" class="centerWrap">
-  <div class="card loginCard"><div class="logo">☕</div><h1 style="text-align:center">Ödeme Admin</h1><p style="text-align:center">Çay ocağı ödeme takibi</p><label>Admin Kullanıcı</label><input id="adminUser" placeholder="admin"><label>Şifre</label><input id="adminPass" type="password"><button class="main" onclick="adminLogin()">Giriş Yap</button><div id="loginMsg" class="msg"></div></div>
-</div>
-<div id="adminPanel" class="hide">
-  <div class="topbar"><a href="adminpanel.html">Yönetim Merkezi</a><button onclick="adminLogout()">Çıkış</button><a href="index.html">Personel Giriş</a></div>
-  <div class="wrap">
-    <div class="card">
-      <h1>Admin Ödeme Takibi</h1><p>Ödeme dönemi ayın 15'inden sonraki ayın 14'üne kadardır. Yeni dönem her ayın 15'inde başlar.</p>
-      <div class="grid">
-        <div><label>Dönem Seç</label><input id="adminAy" type="month" onchange="adminListele()"><p class="muted" id="donemLabelAdmin"></p></div>
-        <div><label>Filtre</label><select id="adminFiltre" onchange="adminListele()"><option value="hepsi">Hepsi</option><option value="odendi">Ödendi</option><option value="odeme_bekliyor">Ödeme Bekliyor</option><option value="reddedildi">Reddedildi</option></select></div>
-        <div><label>Bu Dönem Toplanacak Tutar</label><input id="aylikTutarInput" type="number" min="0" placeholder="Örn: 600"></div>
-        <div><label>Diğer Ödemeler</label><input id="digerOdemeInput" type="number" min="0" placeholder="Üye olmayanlardan gelen toplam"></div>
-      </div>
-      <button class="main" onclick="aylikTutarKaydet()">Bu Dönem Tutarını Kaydet</button>
-      <button class="main" style="margin-top:12px;background:#15803d" onclick="csvIndir()">Tabloyu CSV İndir</button>
-      <p class="muted">CSV dosyası Excel’de açılır. İçinde personel adı, dönem aidatı, ödenen tutar, diğer ödemeler, geçmiş bakiye, bu dönem bakiye ve genel bakiye bulunur. Telefon numarası dışa aktarılmaz.</p>
+  <section id="loginBox" class="loginWrap">
+    <div class="card loginCard">
+      <div class="logo">👥</div>
+      <h1 style="text-align:center">Toplu Personel Aktar</h1>
+      <p style="text-align:center">Sadece admin girişinden sonra çalışır.</p>
+      <label>Admin E-posta</label>
+      <input id="adminEmail" type="email" placeholder="Admin e-posta" autocomplete="username">
+      <label>Şifre</label>
+      <input id="adminPass" type="password" placeholder="Şifre" autocomplete="current-password">
+      <button class="btn" style="width:100%;margin-top:8px" id="loginBtn">Giriş Yap</button>
+      <div id="loginMsg" class="msg"></div>
     </div>
-    <div class="card"><h3>Özet</h3><div id="adminOzet" class="grid"></div></div>
-    <div class="card"><h3>Personel Listesi</h3><div class="tableWrap"><table><thead><tr><th>Personel</th><th>Dönem</th><th>Ödenen Tutar</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="adminTable"></tbody></table></div></div>
-  </div>
-</div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, query, where, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  </section>
 
-const firebaseConfig = {
-  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-  authDomain:"berber-randevu-14f7f.firebaseapp.com",
-  projectId:"berber-randevu-14f7f",
-  storageBucket:"berber-randevu-14f7f.firebasestorage.app",
-  messagingSenderId:"280530860977",
-  appId:"1:280530860977:web:52c0df04c228896f211b90"
-};
+  <section id="panel" class="hide">
+    <div class="topbar">
+      <a href="adminpanel.html">Admin Panel</a>
+      <a href="odeme-admin.html">Ödeme Admin</a>
+      <button id="logoutBtn">Çıkış</button>
+    </div>
 
-const app=initializeApp(firebaseConfig); const db=getFirestore(app); const auth=getAuth(app);
+    <main class="wrap">
+      <section class="card hero">
+        <h1>Personel Toplu Aktarma</h1>
+        <p>Excel, Google Sheets veya WhatsApp listesinden kopyala-yapıştır yap. Sistem telefon numarasını bulur, adı otomatik ayırır ve Firestore’daki <b>personeller</b> koleksiyonuna kaydeder.</p>
+      </section>
 
-const ODEME_COLLECTION="cay_odemeler";
-const AYAR_COLLECTION="cay_ayarlar";
-const PERSONEL_COLLECTION="personeller";
-const VARSAYILAN_AIDAT=300;
+      <section class="card">
+        <h3>Listeyi Buraya Yapıştır</h3>
+        <p class="muted">Her satırda bir personel olsun. Virgül, tab veya boşluk fark etmez. Telefonu satırın sonunda ya da içinde olabilir.</p>
+        <textarea id="bulkText" placeholder="Örnek:\nAhmet Yılmaz 05551234567\nMehmet Kaya, 0544 123 12 12\nAli Demir\t0533 988 77 66"></textarea>
+        <div class="actions">
+          <button class="btn blue" onclick="onizle()">Önizle / Kontrol Et</button>
+          <button class="btn green" onclick="aktar()">Firestore'a Aktar</button>
+          <button class="btn secondary" onclick="ornekDoldur()">Örnek Doldur</button>
+          <button class="btn red" onclick="temizle()">Temizle</button>
+        </div>
+        <div class="help">
+          <b>Kolay kullanım:</b> Excel’de <code>Ad Soyad</code> ve <code>Telefon</code> sütunlarını seçip kopyala, buraya yapıştır. Önce “Önizle”ye bas, sonra “Aktar”a bas.
+        </div>
+      </section>
 
-function temizTelefon(tel){
-  tel=String(tel||"").replace(/\D/g,"");
-  if(tel.startsWith("90")) tel="0"+tel.slice(2);
-  if(tel && !tel.startsWith("0")) tel="0"+tel;
-  return tel.slice(0,11);
-}
-function aylarTR(){return ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];}
-function ayAdi(key){const m=Number(String(key||"").split("-")[1]);return aylarTR()[m-1]||key;}
-function addMonthsKey(key,delta){const [y,m]=String(key).split("-").map(Number);const d=new Date(y,m-1+delta,1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
-function donemKey(date=new Date()){
-  const y=date.getFullYear(), m=date.getMonth()+1;
-  if(date.getDate()>=15) return y+"-"+String(m).padStart(2,"0");
-  const d=new Date(y,m-2,1);
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
-}
-function donemLabel(key){const next=addMonthsKey(key,1);return `15 ${ayAdi(key)} - 14 ${ayAdi(next)}`;}
-function donemGectiMi(key){return String(key)<donemKey(new Date());}
-function durumText(durum,key){
-  if(durum==="odendi") return "Ödendi";
-  if(durum==="reddedildi") return "Reddedildi";
-  if(donemGectiMi(key)) return "ÖDEME GEÇTİ - Dönem: "+ayAdi(key);
-  return "Ödeme Bekliyor";
-}
-function durumClass(durum,key){
-  if(durum==="odendi") return "odendi";
-  if(durum==="reddedildi") return "reddedildi";
-  if(donemGectiMi(key)) return "gecikti";
-  return "bekliyor";
-}
-function odemeDocId(key,tel){return key+"_"+temizTelefon(tel);}
-async function donemTutariGetir(db,key,fallback=VARSAYILAN_AIDAT){
-  try{
-    const snap=await getDoc(doc(db,AYAR_COLLECTION,key));
-    if(snap.exists()){
-      const t=Number(snap.data().aylikTutar||0);
-      if(t>0) return t;
-    }
-  }catch(e){console.warn(e);}
-  return fallback;
-}
-function borcFazlaHtml(donemTutar, odenenTutar){
-  const fark = Number(odenenTutar || 0) - Number(donemTutar || 0);
-  if(fark > 0) return `<span class="fazla">Fazla Ödeme: ${fark} TL</span>`;
-  if(fark < 0) return `<span class="borc">Güncel Borç: ${Math.abs(fark)} TL</span>`;
-  return `<span class="tamam">Borç Yok</span>`;
-}
+      <section class="grid" style="margin-bottom:16px">
+        <div class="miniCard"><div class="title">Toplam Satır</div><div class="value" id="sToplam">0</div></div>
+        <div class="miniCard"><div class="title">Aktarılabilir</div><div class="value greenText" id="sOk">0</div></div>
+        <div class="miniCard"><div class="title">Hatalı</div><div class="value redText" id="sHata">0</div></div>
+        <div class="miniCard"><div class="title">Tekrarlı</div><div class="value orangeText" id="sTekrar">0</div></div>
+      </section>
 
-function hesaplananOdenenTutar(durum, tutar){
-  if(durum === "odeme_bekliyor") return 0;
-  return Number(tutar || 0);
-}
+      <section class="card">
+        <h3>Önizleme</h3>
+        <div class="preview">
+          <table>
+            <thead>
+              <tr><th>Ad Soyad</th><th>Telefon</th><th>Durum</th><th>Orijinal Satır</th></tr>
+            </thead>
+            <tbody id="previewBody">
+              <tr><td colspan="4" style="text-align:center;color:#777;font-weight:900;padding:20px">Henüz önizleme yapılmadı.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" id="aktarMsg"></p>
+      </section>
+    </main>
+  </section>
 
-function bakiyeText(net){
-  net = Number(net || 0);
-  if(net > 0) return net + " TL Fazla";
-  if(net < 0) return Math.abs(net) + " TL Borç";
-  return "0 TL";
-}
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function csvEscape(v){
-  v = String(v ?? "");
-  if(v.includes('"') || v.includes(";") || v.includes("\n")){
-    return '"' + v.replaceAll('"','""') + '"';
-  }
-  return v;
-}
+    const firebaseConfig = {
+      apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+      authDomain:"berber-randevu-14f7f.firebaseapp.com",
+      projectId:"berber-randevu-14f7f",
+      storageBucket:"berber-randevu-14f7f.firebasestorage.app",
+      messagingSenderId:"280530860977",
+      appId:"1:280530860977:web:52c0df04c228896f211b90"
+    };
 
-function csvSatir(arr){
-  return arr.map(csvEscape).join(";");
-}
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-let sonRaporSatirlari = [];
-let sonRaporOzet = null;
+    let sonListe = [];
 
-let aktifDonemTutari=VARSAYILAN_AIDAT;
+    const loginBox = document.getElementById("loginBox");
+    const panel = document.getElementById("panel");
+    const loginMsg = document.getElementById("loginMsg");
+    const aktarMsg = document.getElementById("aktarMsg");
 
-async function adminMi(user){
-  try{
-    const snap = await getDoc(doc(db,"admins",user.uid));
-    if(!snap.exists()) return false;
-    const d = snap.data() || {};
-    return d.aktif === true && (!d.role || d.role === "admin");
-  }catch(e){
-    console.error("Admin kontrol hatası", e);
-    return false;
-  }
-}
-
-function getAd(p){return p.isim||p.adSoyad||p.ad||p.name||p.fullName||"İsimsiz Personel";}
-function getTelefonFromDoc(id,p){return temizTelefon(p.telefon||p.phone||p.tel||p.gsm||id||"");}
-function getAktif(p){if(p.aktif===false) return false;if(p.active===false) return false;if(p.durum==="pasif") return false;return true;}
-
-window.adminLogin=function(){
-  location.href = "adminpanel.html";
-};
-
-window.adminLogout=async function(){
-  localStorage.removeItem("adminLogin");
-  localStorage.removeItem("adminGiris");
-  localStorage.removeItem("cay_admin_login");
-  await signOut(auth);
-  location.href = "adminpanel.html";
-};
-
-function adminAc(){
-  document.getElementById("adminLogin").classList.add("hide");
-  document.getElementById("adminPanel").classList.remove("hide");
-  document.getElementById("adminAy").value=donemKey();
-  adminListele();
-}
-
-window.aylikTutarKaydet=async function(){
-  const key=document.getElementById("adminAy").value||donemKey();
-  const tutar=Number(document.getElementById("aylikTutarInput").value||0);
-  const digerOdeme=Number(document.getElementById("digerOdemeInput")?.value||0);
-  if(!tutar||tutar<=0) return alert("Geçerli bir tutar gir.");
-  if(digerOdeme<0) return alert("Diğer ödeme tutarı negatif olamaz.");
-  await setDoc(doc(db,AYAR_COLLECTION,key),{aylikTutar:tutar,digerOdeme:digerOdeme,donem:key,donemEtiketi:donemLabel(key),updatedAt:serverTimestamp()},{merge:true});
-  alert("Dönem tutarı ve diğer ödemeler kaydedildi.");
-  adminListele();
-};
-
-window.adminListele=async function(){
-  const key=document.getElementById("adminAy").value||donemKey();
-  const filtre=document.getElementById("adminFiltre").value;
-  document.getElementById("donemLabelAdmin").textContent="Dönem: "+donemLabel(key);
-
-  aktifDonemTutari=await donemTutariGetir(db,key,VARSAYILAN_AIDAT);
-  document.getElementById("aylikTutarInput").value=aktifDonemTutari;
-
-  let digerOdeme=0;
-  try{
-    const ayarSnap=await getDoc(doc(db,AYAR_COLLECTION,key));
-    digerOdeme=Number(ayarSnap.data()?.digerOdeme||0);
-  }catch(e){
-    console.warn("Diğer ödeme okunamadı",e);
-  }
-  const digerInput=document.getElementById("digerOdemeInput");
-  if(digerInput) digerInput.value=digerOdeme;
-
-  const personelSnap=await getDocs(collection(db,PERSONEL_COLLECTION));
-  const tumOdemeSnap=await getDocs(collection(db,ODEME_COLLECTION));
-
-  const tumOdemeler={};
-  tumOdemeSnap.forEach(d=>{
-    const o={id:d.id,...d.data()};
-    const telKey=temizTelefon(o.telefon || o.personelId || "");
-    if(!telKey) return;
-    if(!tumOdemeler[telKey]) tumOdemeler[telKey]=[];
-    tumOdemeler[telKey].push(o);
-  });
-
-  let personeller=[];
-  personelSnap.forEach(pdoc=>{
-    const p={id:pdoc.id,...pdoc.data()};
-    if(getAktif(p)) personeller.push(p);
-  });
-  personeller.sort((a,b)=>getAd(a).localeCompare(getAd(b),"tr",{sensitivity:"base"}));
-
-  let rows="";
-  let say={odendi:0,odeme_bekliyor:0,reddedildi:0};
-  let toplamOnayliTutar=0;
-  let toplamBeklenen=0;
-  let toplamOdenen=0;
-  let toplamGecmisNet=0;
-  let toplamBuDonemNet=0;
-  let toplamGenelNet=0;
-
-  sonRaporSatirlari=[];
-
-  for(const personel of personeller){
-    const tel=getTelefonFromDoc(personel.id,personel);
-    const ad=getAd(personel);
-    const kayitlar=(tumOdemeler[tel]||[]).filter(o=>o.ay && String(o.ay).includes("-"));
-
-    const buDonemKayit=kayitlar.find(o=>o.ay===key);
-    const durum=buDonemKayit ? (buDonemKayit.durum||"odeme_bekliyor") : "odeme_bekliyor";
-    const tutar=Number(buDonemKayit?.tutar||aktifDonemTutari||VARSAYILAN_AIDAT);
-    const buDonemOdenen=hesaplananOdenenTutar(durum,tutar);
-    const buDonemNet=buDonemOdenen-aktifDonemTutari;
-
-    let gecmisNet=0;
-
-    for(const o of kayitlar){
-      const oKey=o.ay;
-      if(oKey >= key) continue;
-      const oDurum=o.durum||"odeme_bekliyor";
-      const oDonemTutar=await donemTutariGetir(db,oKey,VARSAYILAN_AIDAT);
-      const oOdenen=hesaplananOdenenTutar(oDurum,o.tutar);
-      gecmisNet += (oOdenen-oDonemTutar);
+    function temizTelefon(v){
+      let tel = String(v || "").replace(/\D/g, "");
+      if(tel.startsWith("90")) tel = "0" + tel.slice(2);
+      if(tel.length === 10 && tel.startsWith("5")) tel = "0" + tel;
+      if(tel && !tel.startsWith("0") && tel.length >= 10) tel = "0" + tel;
+      return tel.slice(0,11);
     }
 
-    const genelNet=gecmisNet+buDonemNet;
+    function telefonBul(satir){
+      const temiz = String(satir || "");
+      const adaylar = temiz.match(/(?:\+?90\s*)?0?5[0-9\s().-]{8,18}/g) || [];
+      if(!adaylar.length) return "";
+      return temizTelefon(adaylar[adaylar.length - 1]);
+    }
 
-    say[durum]=(say[durum]||0)+1;
-    if(durum==="odendi") toplamOnayliTutar+=Number(tutar||0);
+    function adBul(satir, tel){
+      let ad = String(satir || "");
+      ad = ad.replace(/(?:\+?90\s*)?0?5[0-9\s().-]{8,18}/g, " ");
+      ad = ad.replace(/[;,|\t]+/g, " ");
+      ad = ad.replace(/\s+/g, " ").trim();
+      return ad;
+    }
 
-    toplamBeklenen += aktifDonemTutari;
-    toplamOdenen += buDonemOdenen;
-    toplamGecmisNet += gecmisNet;
-    toplamBuDonemNet += buDonemNet;
-    toplamGenelNet += genelNet;
+    function adDuzelt(ad){
+      return String(ad || "")
+        .trim()
+        .replace(/\s+/g," ")
+        .toLocaleUpperCase("tr-TR");
+    }
 
-    sonRaporSatirlari.push({
-      ad,
-      tel,
-      donem:donemLabel(key),
-      donemKey:key,
-      donemAidati:aktifDonemTutari,
-      odenenTutar:buDonemOdenen,
-      gecmisBakiye:bakiyeText(gecmisNet),
-      buDonemBakiye:bakiyeText(buDonemNet),
-      genelBakiye:bakiyeText(genelNet),
-      durum:durumText(durum,key)
+    function satirlariCoz(){
+      const text = document.getElementById("bulkText").value || "";
+      const satirlar = text.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+      const gorulen = new Set();
+
+      return satirlar.map((satir, index) => {
+        const tel = telefonBul(satir);
+        const ad = adDuzelt(adBul(satir, tel));
+        let durum = "ok";
+        let mesaj = "Aktarılabilir";
+
+        if(!tel || tel.length !== 11 || !tel.startsWith("05")){
+          durum = "hata";
+          mesaj = "Telefon hatalı";
+        }else if(!ad || ad.length < 3){
+          durum = "hata";
+          mesaj = "Ad Soyad eksik";
+        }else if(gorulen.has(tel)){
+          durum = "tekrar";
+          mesaj = "Bu listede tekrar var";
+        }
+
+        if(tel) gorulen.add(tel);
+
+        return { index:index+1, adSoyad:ad, telefon:tel, durum, mesaj, satir };
+      });
+    }
+
+    function sayacYaz(liste){
+      document.getElementById("sToplam").textContent = liste.length;
+      document.getElementById("sOk").textContent = liste.filter(x => x.durum === "ok").length;
+      document.getElementById("sHata").textContent = liste.filter(x => x.durum === "hata").length;
+      document.getElementById("sTekrar").textContent = liste.filter(x => x.durum === "tekrar").length;
+    }
+
+    function tagClass(durum){
+      if(durum === "ok") return "tag ok";
+      if(durum === "tekrar") return "tag warn";
+      return "tag bad";
+    }
+
+    function escapeHTML(v){
+      return String(v ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    window.onizle = function(){
+      sonListe = satirlariCoz();
+      sayacYaz(sonListe);
+      aktarMsg.textContent = "";
+
+      const body = document.getElementById("previewBody");
+      if(!sonListe.length){
+        body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#777;font-weight:900;padding:20px">Liste boş.</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = sonListe.map(k => `
+        <tr>
+          <td data-label="Ad Soyad">${escapeHTML(k.adSoyad || "-")}</td>
+          <td data-label="Telefon">${escapeHTML(k.telefon || "-")}</td>
+          <td data-label="Durum"><span class="${tagClass(k.durum)}">${escapeHTML(k.mesaj)}</span></td>
+          <td data-label="Orijinal Satır">${escapeHTML(k.satir)}</td>
+        </tr>
+      `).join("");
+    };
+
+    window.aktar = async function(){
+      if(!sonListe.length) window.onizle();
+      const aktarilacak = sonListe.filter(x => x.durum === "ok");
+      if(!aktarilacak.length){
+        alert("Aktarılabilir kayıt yok. Önce listeyi kontrol et.");
+        return;
+      }
+
+      if(!confirm(`${aktarilacak.length} personel Firestore personeller koleksiyonuna aktarılacak. Onaylıyor musun?`)) return;
+
+      aktarMsg.textContent = "Aktarım başladı...";
+      let yeni = 0, guncel = 0, hata = 0;
+
+      for(const p of aktarilacak){
+        try{
+          const ref = doc(db, "personeller", p.telefon);
+          const eski = await getDoc(ref);
+          await setDoc(ref, {
+            adSoyad: p.adSoyad,
+            isim: p.adSoyad,
+            telefon: p.telefon,
+            aktif: true,
+            uyeMi: eski.exists() ? (eski.data().uyeMi === true) : false,
+            createdByAdmin: true,
+            updatedAt: serverTimestamp(),
+            createdAt: eski.exists() ? (eski.data().createdAt || serverTimestamp()) : serverTimestamp()
+          }, { merge:true });
+
+          if(eski.exists()) guncel++; else yeni++;
+        }catch(e){
+          console.error(e);
+          hata++;
+        }
+      }
+
+      aktarMsg.innerHTML = `✅ Aktarım tamamlandı. Yeni: <b>${yeni}</b>, Güncellenen: <b>${guncel}</b>, Hata: <b>${hata}</b>`;
+      alert("Aktarım tamamlandı.");
+    };
+
+    window.ornekDoldur = function(){
+      document.getElementById("bulkText").value = `Ahmet Yılmaz 05551234567\nMehmet Kaya, 0544 123 12 12\nAli Demir\t0533 988 77 66`;
+      window.onizle();
+    };
+
+    window.temizle = function(){
+      document.getElementById("bulkText").value = "";
+      sonListe = [];
+      sayacYaz([]);
+      document.getElementById("previewBody").innerHTML = `<tr><td colspan="4" style="text-align:center;color:#777;font-weight:900;padding:20px">Henüz önizleme yapılmadı.</td></tr>`;
+      aktarMsg.textContent = "";
+    };
+
+    async function adminMi(user){
+      try{
+        const snap = await getDoc(doc(db,"admins",user.uid));
+        if(!snap.exists()) return false;
+        const d = snap.data() || {};
+        return d.aktif === true && (!d.role || d.role === "admin");
+      }catch(e){
+        console.error(e);
+        return false;
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", async() => {
+      const email = document.getElementById("adminEmail").value.trim();
+      const pass = document.getElementById("adminPass").value;
+      if(!email || !pass){ loginMsg.textContent = "E-posta ve şifre gir."; loginMsg.className = "msg err"; return; }
+      try{
+        loginMsg.textContent = "Giriş kontrol ediliyor...";
+        loginMsg.className = "msg";
+        await signInWithEmailAndPassword(auth,email,pass);
+      }catch(e){
+        console.error(e);
+        loginMsg.textContent = "Giriş başarısız.";
+        loginMsg.className = "msg err";
+      }
     });
 
-    if(filtre!=="hepsi" && filtre!==durum) continue;
+    document.getElementById("adminPass").addEventListener("keydown", e => { if(e.key === "Enter") document.getElementById("loginBtn").click(); });
+    document.getElementById("logoutBtn").addEventListener("click", async() => { await signOut(auth); location.reload(); });
 
-    const inputId="tutar_"+tel;
-    const safeAd=String(ad).replaceAll("'","\\'");
-
-    rows+=`
-      <tr>
-        <td data-label="Personel">${ad}</td>
-        <td data-label="Dönem">${donemLabel(key)}</td>
-        <td data-label="Ödenen Tutar"><input id="${inputId}" class="tutarInput" type="number" min="0" value="${tutar}" placeholder="${aktifDonemTutari}"> TL</td>
-        <td data-label="Durum">
-          <span class="status ${durumClass(durum,key)}">${durumText(durum,key)}</span><br>
-          <span class="${genelNet<0?'borc':genelNet>0?'fazla':'tamam'}" style="margin-top:6px">${bakiyeText(genelNet)}</span>
-        </td>
-        <td data-label="İşlem">
-          <button class="small green" onclick="durumDegistir('${tel}','${safeAd}','odendi','${inputId}')">Ödendi</button>
-          <button class="small gray" onclick="durumDegistir('${tel}','${safeAd}','odeme_bekliyor','${inputId}')">Bekliyor</button>
-          <button class="small red" onclick="reddet('${tel}','${safeAd}','${inputId}')">Reddet</button>
-        </td>
-      </tr>`;
-  }
-
-  toplamOdenen += digerOdeme;
-  toplamGenelNet += digerOdeme;
-
-  sonRaporOzet={
-    donem:donemLabel(key),
-    donemAidati:aktifDonemTutari,
-    toplamBeklenen,
-    toplamOdenen,
-    digerOdeme,
-    gecmisBakiye:bakiyeText(toplamGecmisNet),
-    buDonemBakiye:bakiyeText(toplamBuDonemNet),
-    genelBakiye:bakiyeText(toplamGenelNet),
-    odendi:say.odendi,
-    bekliyor:say.odeme_bekliyor,
-    reddedildi:say.reddedildi
-  };
-
-  document.getElementById("adminTable").innerHTML=rows||`<tr><td colspan="5">Kayıt yok.</td></tr>`;
-  document.getElementById("adminOzet").innerHTML=`
-    <div class="card"><h3>Bu Dönem Aidatı</h3><h1>${aktifDonemTutari} TL</h1></div>
-    <div class="card summaryOk"><h3>Ödendi</h3><h1>${say.odendi}</h1></div>
-    <div class="card summaryWait"><h3>Ödeme Bekliyor</h3><h1>${say.odeme_bekliyor}</h1></div>
-    <div class="card summaryBad"><h3>Reddedildi</h3><h1>${say.reddedildi}</h1></div>
-    <div class="card"><h3>Beklenen Toplam</h3><h1>${toplamBeklenen} TL</h1></div>
-    <div class="card"><h3>Bu Dönem Ödenen</h3><h1>${toplamOdenen} TL</h1><p class="muted" style="margin:6px 0 0">Diğer Ödemeler: ${digerOdeme} TL</p></div>
-    <div class="card"><h3>Geçmiş Bakiye</h3><h1>${bakiyeText(toplamGecmisNet)}</h1></div>
-    <div class="card ${toplamGenelNet>=0?'summaryOk':'summaryBad'}"><h3>Genel Bakiye</h3><h1>${bakiyeText(toplamGenelNet)}</h1></div>`;
-};
-
-window.csvIndir=function(){
-  if(!sonRaporSatirlari.length){
-    alert("Önce listeyi yenile.");
-    return;
-  }
-
-  const key=document.getElementById("adminAy").value||donemKey();
-
-  const rows=[
-    ["Personel Adı","Dönem","Dönem Anahtarı","Dönem Aidatı","Ödenen Tutar","Geçmiş Bakiye","Bu Dönem Bakiye","Genel Bakiye","Durum"]
-  ];
-
-  sonRaporSatirlari.forEach(r=>{
-    rows.push([
-      r.ad,
-      r.donem,
-      r.donemKey,
-      r.donemAidati,
-      r.odenenTutar,
-      r.gecmisBakiye,
-      r.buDonemBakiye,
-      r.genelBakiye,
-      r.durum
-    ]);
-  });
-
-  rows.push([]);
-  rows.push(["ÖZET"]);
-  rows.push(["Dönem",sonRaporOzet.donem]);
-  rows.push(["Dönem Aidatı",sonRaporOzet.donemAidati]);
-  rows.push(["Toplam Beklenen",sonRaporOzet.toplamBeklenen]);
-  rows.push(["Toplam Ödenen",sonRaporOzet.toplamOdenen]);
-  rows.push(["Diğer Ödemeler",sonRaporOzet.digerOdeme || 0]);
-  rows.push(["Geçmiş Bakiye",sonRaporOzet.gecmisBakiye]);
-  rows.push(["Bu Dönem Bakiye",sonRaporOzet.buDonemBakiye]);
-  rows.push(["Genel Bakiye",sonRaporOzet.genelBakiye]);
-  rows.push(["Ödendi",sonRaporOzet.odendi]);
-  rows.push(["Ödeme Bekliyor",sonRaporOzet.bekliyor]);
-  rows.push(["Reddedildi",sonRaporOzet.reddedildi]);
-
-  const csv = "\uFEFF" + rows.map(csvSatir).join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-  const url = URL.createObjectURL(blob);
-
-  const a=document.createElement("a");
-  a.href=url;
-  a.download="cay-odeme-raporu-"+key+".csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-window.durumDegistir=async function(telefon,adSoyad,yeniDurum,inputId){
-  const key=document.getElementById("adminAy").value||donemKey();
-  const tel=temizTelefon(telefon);
-  let girilenTutar=Number(document.getElementById(inputId)?.value||0);
-  if(!girilenTutar||girilenTutar<=0) girilenTutar=aktifDonemTutari||VARSAYILAN_AIDAT;
-
-  const ref=doc(db,ODEME_COLLECTION,odemeDocId(key,tel));
-  await setDoc(ref,{
-    personelId:tel, telefon:tel, adSoyad, ay:key, donemEtiketi:donemLabel(key),
-    tutar:girilenTutar, durum:yeniDurum, adminNot:"", updatedAt:serverTimestamp()
-  },{merge:true});
-  adminListele();
-};
-
-window.reddet=async function(telefon,adSoyad,inputId){
-  const sebep=prompt("Reddetme sebebi:","Ödeme görünmedi");
-  const key=document.getElementById("adminAy").value||donemKey();
-  const tel=temizTelefon(telefon);
-  let girilenTutar=Number(document.getElementById(inputId)?.value||0);
-  if(!girilenTutar||girilenTutar<=0) girilenTutar=aktifDonemTutari||VARSAYILAN_AIDAT;
-
-  const ref=doc(db,ODEME_COLLECTION,odemeDocId(key,tel));
-  await setDoc(ref,{
-    personelId:tel, telefon:tel, adSoyad, ay:key, donemEtiketi:donemLabel(key),
-    tutar:girilenTutar, durum:"reddedildi", adminNot:sebep||"Reddedildi", updatedAt:serverTimestamp()
-  },{merge:true});
-  adminListele();
-};
-
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    localStorage.removeItem("adminLogin");
-    localStorage.removeItem("adminGiris");
-    location.replace("adminpanel.html");
-    return;
-  }
-
-  const ok = await adminMi(user);
-  if(!ok){
-    localStorage.removeItem("adminLogin");
-    localStorage.removeItem("adminGiris");
-    await signOut(auth);
-    location.replace("adminpanel.html");
-    return;
-  }
-
-  localStorage.setItem("adminLogin","true");
-  localStorage.setItem("adminGiris","true");
-  adminAc();
-});
-</script>
-</body></html>
+    onAuthStateChanged(auth, async(user) => {
+      if(!user){
+        loginBox.classList.remove("hide");
+        panel.classList.add("hide");
+        return;
+      }
+      const ok = await adminMi(user);
+      if(!ok){
+        await signOut(auth);
+        loginMsg.textContent = "Bu kullanıcı admin değil.";
+        loginMsg.className = "msg err";
+        loginBox.classList.remove("hide");
+        panel.classList.add("hide");
+        return;
+      }
+      loginBox.classList.add("hide");
+      panel.classList.remove("hide");
+    });
+  </script>
+</body>
+</html>
