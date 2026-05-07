@@ -215,18 +215,17 @@
     }
 
     .card .title{
-  font-size:11px;
-  color:var(--muted);
-  font-weight:900;
-  margin-bottom:8px;
-  line-height:1.2;
-}
+      font-size:11px;
+      color:var(--muted);
+      font-weight:900;
+      margin-bottom:8px;
+      line-height:1.2;
+    }
 
-.card .value{
-  font-size:18px;
-  font-weight:950;
-  letter-spacing:-.4px;
-}
+    .card .value{
+      font-size:18px;
+      font-weight:950;
+      letter-spacing:-.4px;
     }
 
     .green{color:var(--green)}
@@ -313,6 +312,56 @@
       padding:24px;
       color:var(--muted);
       font-weight:850;
+    }
+
+    .arsiv-box{
+      margin-top:18px;
+      background:linear-gradient(135deg,#ffffff,#f9fafb);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 10px 24px rgba(0,0,0,.05);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .arsiv-title{
+      font-size:17px;
+      font-weight:950;
+      letter-spacing:-.4px;
+      margin-bottom:6px;
+    }
+
+    .arsiv-desc{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .arsiv-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      white-space:nowrap;
+      background:#111;
+      color:#fff;
+      text-decoration:none;
+      padding:12px 16px;
+      border-radius:14px;
+      font-size:13px;
+      font-weight:950;
+      box-shadow:0 10px 20px rgba(0,0,0,.12);
+    }
+
+    .arsiv-btn.disabled{
+      background:#f3f4f6;
+      color:#9ca3af;
+      box-shadow:none;
+      pointer-events:none;
+      border:1px solid var(--line);
     }
 
     @media(max-width:1000px){
@@ -413,6 +462,17 @@
 
       tfoot td{
         font-size:11px;
+      }
+
+      .arsiv-box{
+        flex-direction:column;
+        align-items:stretch;
+        padding:14px;
+        border-radius:18px;
+      }
+
+      .arsiv-btn{
+        width:100%;
       }
     }
   </style>
@@ -532,6 +592,18 @@
           </tfoot>
         </table>
       </div>
+
+      <div class="arsiv-box" id="arsivBox">
+        <div>
+          <div class="arsiv-title">📎 Fiş / Fatura Arşivi</div>
+          <div class="arsiv-desc" id="arsivDesc">
+            Bu döneme ait fiş ve faturalar dijital olarak Google Drive klasöründe saklanır.
+          </div>
+        </div>
+        <a href="#" target="_blank" rel="noopener" class="arsiv-btn disabled" id="arsivBtn">
+          Link Eklenmedi
+        </a>
+      </div>
     </section>
 
   </main>
@@ -562,6 +634,7 @@
 
     let aktifKullanici = null;
     let giderler = [];
+    let aktifAyar = {};
 
     const tl = new Intl.NumberFormat("tr-TR", {
       style:"currency",
@@ -621,6 +694,15 @@
       return `${d}.${m}.${y}`;
     }
 
+    function escapeHTML(v){
+      return String(v ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
     function temizTelefon(v){
       let t = String(v || "").replace(/\D/g,"");
 
@@ -633,6 +715,29 @@
       }
 
       return t.slice(0,11);
+    }
+
+    function arsivCiz(ayar){
+      const donem = document.getElementById("aySec").value || donemISO();
+      const aralik = donemAraligi(donem);
+      const link = String(ayar?.driveLink || "").trim();
+
+      const btn = document.getElementById("arsivBtn");
+      const desc = document.getElementById("arsivDesc");
+
+      if(link){
+        btn.href = link;
+        btn.textContent = "Fiş / Faturaları Aç";
+        btn.className = "arsiv-btn";
+        desc.innerHTML =
+          `<b>${aralik.baslangicTR} - ${aralik.bitisTR}</b> dönemine ait fiş ve faturalar dijital olarak Google Drive klasöründe saklanmaktadır.`;
+      }else{
+        btn.href = "#";
+        btn.textContent = "Link Eklenmedi";
+        btn.className = "arsiv-btn disabled";
+        desc.innerHTML =
+          `<b>${aralik.baslangicTR} - ${aralik.bitisTR}</b> dönemi için henüz fiş / fatura arşiv linki eklenmedi.`;
+      }
     }
 
     document.getElementById("telefon").addEventListener("input", e => {
@@ -733,8 +838,11 @@
         personelSayisi:0,
         kisiBasiMiktar:0,
         odeyenler:0,
-        oncekiDevir:0
+        oncekiDevir:0,
+        driveLink:""
       };
+
+      aktifAyar = ayar;
 
       const q = query(
         collection(db, "cay_giderler"),
@@ -780,6 +888,7 @@
       document.getElementById("ozetKalan").className = kalan >= 0 ? "value green" : "value red";
 
       tabloCiz();
+      arsivCiz(ayar);
     }
 
     function tabloCiz(){
@@ -797,8 +906,8 @@
       body.innerHTML = giderler.map(g => `
         <tr>
           <td>${formatTarih(g.tarih)}</td>
-          <td>${g.kalem || "-"}</td>
-          <td>${g.aciklama || "-"}</td>
+          <td>${escapeHTML(g.kalem || "-")}</td>
+          <td>${escapeHTML(g.aciklama || "-")}</td>
           <td class="money">${para(g.tutar)}</td>
         </tr>
       `).join("");
