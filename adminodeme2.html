@@ -1,325 +1,350 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Personel Toplu Aktar</title>
-  <style>
-    *{box-sizing:border-box}
-    :root{--bg:#f5f5f7;--text:#111;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--blue:#2563eb;--shadow:0 14px 35px rgba(0,0,0,.08);--r:24px}
-    body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
-    .topbar{position:sticky;top:0;z-index:10;background:rgba(17,17,17,.94);padding:12px 14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;box-shadow:0 4px 14px rgba(0,0,0,.16)}
-    .topbar a,.topbar button{background:#fff;color:#111;text-decoration:none;border:0;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:900;cursor:pointer}
-    .wrap{width:min(1080px,100%);margin:24px auto;padding:0 14px 34px}
-    .card{background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.85);margin-bottom:16px}
-    h1{font-size:32px;margin:0 0 10px;font-weight:950;letter-spacing:-.7px}h2,h3{margin:0 0 12px}.muted,p{color:var(--muted);line-height:1.45}.hero{background:linear-gradient(135deg,#111,#2b2b2b);color:#fff}.hero p{color:#d1d5db;margin-bottom:0}
-    label{display:block;font-size:13px;color:#374151;font-weight:900;margin:0 0 7px}
-    textarea,input{width:100%;border:1px solid var(--line);border-radius:16px;padding:14px;background:#f9fafb;outline:none;font-size:15px;font-weight:700;font-family:inherit}
-    textarea{min-height:240px;resize:vertical;line-height:1.55;white-space:pre}
-    textarea:focus,input:focus{background:#fff;border-color:#111;box-shadow:0 0 0 4px rgba(0,0,0,.06)}
-    .btn{background:#111;color:#fff;border:0;border-radius:16px;padding:14px 16px;font-weight:950;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.12)}
-    .btn.secondary{background:#f3f4f6;color:#111;border:1px solid var(--line);box-shadow:none}.btn.green{background:#15803d}.btn.red{background:#b91c1c}.btn.blue{background:#2563eb}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.actions .btn{flex:1;min-width:180px}
-    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.miniCard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}.miniCard .title{font-size:12px;color:var(--muted);font-weight:900;margin-bottom:8px}.miniCard .value{font-size:24px;font-weight:950}.greenText{color:var(--green)}.redText{color:var(--red)}.orangeText{color:var(--orange)}.blueText{color:var(--blue)}
-    .preview{overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}th{background:#f9fafb;font-size:12px;text-transform:uppercase;letter-spacing:.35px;color:#374151;font-weight:950}.tag{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:950}.ok{background:#dcfce7;color:#166534}.bad{background:#fee2e2;color:#991b1b}.warn{background:#fef3c7;color:#92400e}
-    .loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}.loginCard{width:100%;max-width:430px}.logo{width:62px;height:62px;border-radius:20px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 15px}.hide{display:none!important}.msg{margin-top:12px;font-weight:900;text-align:center;min-height:20px}.err{color:#991b1b}.success{color:#166534}
-    .help{background:#f9fafb;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}.help b{color:#111}.help code{background:#fff;padding:2px 6px;border-radius:8px;border:1px solid var(--line)}
-    @media(max-width:720px){.wrap{margin:16px auto;padding:0 10px 28px}.card{padding:16px;border-radius:20px}h1{font-size:25px}.grid{grid-template-columns:1fr 1fr;gap:8px}.miniCard{padding:12px;border-radius:15px}.miniCard .value{font-size:19px}.actions .btn{min-width:100%;padding:12px}.topbar{padding:9px 8px}.topbar a,.topbar button{font-size:12px;padding:8px 10px}textarea{min-height:230px;font-size:13px}table,thead,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border-bottom:1px solid var(--line);padding:8px}td{border:0;padding:5px 4px;font-size:13px}td::before{content:attr(data-label);display:block;color:#777;font-size:11px;font-weight:950;margin-bottom:2px}.preview{border-radius:14px}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personel Toplu Aktar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f5f7;color:#111;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+.topbar{background:#111;color:white;padding:14px 16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.topbar a,.topbar button{background:white;color:#111;border:0;border-radius:999px;padding:9px 14px;font-weight:900;text-decoration:none;cursor:pointer}
+.wrap{max-width:980px;margin:24px auto;padding:0 14px}
+.card{background:white;border-radius:24px;padding:22px;box-shadow:0 10px 28px rgba(0,0,0,.08);margin-bottom:16px}
+h1{margin:0 0 10px;font-size:30px;letter-spacing:-.6px}
+p{color:#666;line-height:1.45}
+label{display:block;font-weight:900;margin-bottom:8px}
+textarea{width:100%;min-height:280px;border:1px solid #ddd;border-radius:18px;padding:14px;font-size:15px;line-height:1.45;outline:none;resize:vertical;background:#f8f8fa}
+textarea:focus{border-color:#111;background:white}
+button.main{width:100%;border:0;background:#111;color:white;border-radius:18px;padding:15px;font-size:16px;font-weight:950;cursor:pointer;margin-top:12px}
+.btnGreen{background:#15803d!important}
+.result{white-space:pre-wrap;background:#f3f4f6;border-radius:18px;padding:14px;font-size:14px;font-weight:800;color:#333;line-height:1.5}
+.ok{color:#166534}.err{color:#991b1b}.warn{color:#92400e}
+.example{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:18px;padding:14px;color:#334155;font-weight:800;white-space:pre-wrap}
+.hide{display:none!important}
+@media(max-width:600px){
+  .wrap{margin:14px auto;padding:0 10px}
+  .card{padding:16px;border-radius:20px}
+  h1{font-size:24px}
+  textarea{min-height:240px;font-size:14px}
+  .topbar{padding:10px 8px}
+  .topbar a,.topbar button{font-size:12px;padding:8px 10px}
+}
+</style>
 </head>
 <body>
-  <section id="loginBox" class="loginWrap">
-    <div class="card loginCard">
-      <div class="logo">👥</div>
-      <h1 style="text-align:center">Toplu Personel Aktar</h1>
-      <p style="text-align:center">Sadece admin girişinden sonra çalışır.</p>
-      <label>Admin E-posta</label>
-      <input id="adminEmail" type="email" placeholder="Admin e-posta" autocomplete="username">
-      <label>Şifre</label>
-      <input id="adminPass" type="password" placeholder="Şifre" autocomplete="current-password">
-      <button class="btn" style="width:100%;margin-top:8px" id="loginBtn">Giriş Yap</button>
-      <div id="loginMsg" class="msg"></div>
-    </div>
-  </section>
 
-  <section id="panel" class="hide">
-    <div class="topbar">
-      <a href="adminpanel.html">Admin Panel</a>
-      <a href="odeme-admin.html">Ödeme Admin</a>
-      <button id="logoutBtn">Çıkış</button>
-    </div>
+<div class="topbar">
+  <a href="adminpanel.html">Admin Panel</a>
+  <a href="odeme-admin.html">Ödeme Admin</a>
+  <button onclick="cikisYap()">Çıkış</button>
+</div>
 
-    <main class="wrap">
-      <section class="card hero">
-        <h1>Personel Toplu Aktarma</h1>
-        <p>Excel, Google Sheets veya WhatsApp listesinden kopyala-yapıştır yap. Sistem telefon numarasını bulur, adı otomatik ayırır ve Firestore’daki <b>personeller</b> koleksiyonuna kaydeder.</p>
-      </section>
+<div class="wrap">
+  <div class="card">
+    <h1>Personel Toplu Aktar</h1>
+    <p>
+      Personel listesini aşağıya yapıştır. Sistem telefon numarasını otomatik bulur.
+      İsimleri şu formatta Firestore'a kaydeder:
+      <b>İsim ilk harf büyük</b>, <b>soyisim tamamen büyük</b>.
+    </p>
 
-      <section class="card">
-        <h3>Listeyi Buraya Yapıştır</h3>
-        <p class="muted">Her satırda bir personel olsun. Virgül, tab veya boşluk fark etmez. Telefonu satırın sonunda ya da içinde olabilir.</p>
-        <textarea id="bulkText" placeholder="Örnek:\nAhmet Yılmaz 05551234567\nMehmet Kaya, 0544 123 12 12\nAli Demir\t0533 988 77 66"></textarea>
-        <div class="actions">
-          <button class="btn blue" onclick="onizle()">Önizle / Kontrol Et</button>
-          <button class="btn green" onclick="aktar()">Firestore'a Aktar</button>
-          <button class="btn secondary" onclick="ornekDoldur()">Örnek Doldur</button>
-          <button class="btn red" onclick="temizle()">Temizle</button>
-        </div>
-        <div class="help">
-          <b>Kolay kullanım:</b> Excel’de <code>Ad Soyad</code> ve <code>Telefon</code> sütunlarını seçip kopyala, buraya yapıştır. Önce “Önizle”ye bas, sonra “Aktar”a bas.
-        </div>
-      </section>
+    <div class="example">Örnek:
+ahmet yılmaz 05551234567
+MEHMET kaya 0544 123 12 12
+Ali demir, 05339887766
+veli can doğan - 05001234567</div>
+  </div>
 
-      <section class="grid" style="margin-bottom:16px">
-        <div class="miniCard"><div class="title">Toplam Satır</div><div class="value" id="sToplam">0</div></div>
-        <div class="miniCard"><div class="title">Aktarılabilir</div><div class="value greenText" id="sOk">0</div></div>
-        <div class="miniCard"><div class="title">Hatalı</div><div class="value redText" id="sHata">0</div></div>
-        <div class="miniCard"><div class="title">Tekrarlı</div><div class="value orangeText" id="sTekrar">0</div></div>
-      </section>
+  <div class="card">
+    <label>Personel Listesi</label>
+    <textarea id="listeInput" placeholder="Her satıra bir personel yaz..."></textarea>
 
-      <section class="card">
-        <h3>Önizleme</h3>
-        <div class="preview">
-          <table>
-            <thead>
-              <tr><th>Ad Soyad</th><th>Telefon</th><th>Durum</th><th>Orijinal Satır</th></tr>
-            </thead>
-            <tbody id="previewBody">
-              <tr><td colspan="4" style="text-align:center;color:#777;font-weight:900;padding:20px">Henüz önizleme yapılmadı.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="muted" id="aktarMsg"></p>
-      </section>
-    </main>
-  </section>
+    <button class="main" onclick="onizlemeYap()">Önizleme Yap</button>
+    <button class="main btnGreen" onclick="firestoreKaydet()">Firestore'a Kaydet</button>
+  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <div class="card">
+    <h3>Sonuç</h3>
+    <div id="sonuc" class="result">Henüz işlem yapılmadı.</div>
+  </div>
+</div>
 
-    const firebaseConfig = {
-      apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-      authDomain:"berber-randevu-14f7f.firebaseapp.com",
-      projectId:"berber-randevu-14f7f",
-      storageBucket:"berber-randevu-14f7f.firebasestorage.app",
-      messagingSenderId:"280530860977",
-      appId:"1:280530860977:web:52c0df04c228896f211b90"
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain:"berber-randevu-14f7f.firebaseapp.com",
+  projectId:"berber-randevu-14f7f",
+  storageBucket:"berber-randevu-14f7f.firebasestorage.app",
+  messagingSenderId:"280530860977",
+  appId:"1:280530860977:web:52c0df04c228896f211b90"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const PERSONEL_COLLECTION = "personeller";
+
+function trLower(s){
+  return String(s || "").toLocaleLowerCase("tr-TR");
+}
+
+function trUpper(s){
+  return String(s || "").toLocaleUpperCase("tr-TR");
+}
+
+function kelimeDuzenle(kelime){
+  kelime = trLower(kelime).trim();
+  if(!kelime) return "";
+  return trUpper(kelime.charAt(0)) + kelime.slice(1);
+}
+
+function adSoyadFormatla(adSoyad){
+  let temiz = String(adSoyad || "")
+    .replace(/[0-9]/g, " ")
+    .replace(/[,+;|]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if(!temiz) return "";
+
+  const parcalar = temiz.split(" ").filter(Boolean);
+
+  if(parcalar.length === 1){
+    return kelimeDuzenle(parcalar[0]);
+  }
+
+  const soyisim = trUpper(parcalar.pop());
+  const isimler = parcalar.map(kelimeDuzenle).join(" ");
+
+  return `${isimler} ${soyisim}`.trim();
+}
+
+function temizTelefon(tel){
+  tel = String(tel || "").replace(/\D/g, "");
+
+  if(tel.startsWith("90")){
+    tel = "0" + tel.slice(2);
+  }
+
+  if(tel.length === 10 && tel.startsWith("5")){
+    tel = "0" + tel;
+  }
+
+  if(tel && !tel.startsWith("0")){
+    tel = "0" + tel;
+  }
+
+  return tel.slice(0, 11);
+}
+
+function satirParseEt(satir){
+  const orjinal = satir;
+  satir = String(satir || "").trim();
+
+  if(!satir) return null;
+
+  const telefonMatch = satir.match(/(?:\+?90\s*)?0?5[\d\s().-]{9,}/);
+
+  if(!telefonMatch){
+    return {
+      hata:true,
+      mesaj:`Telefon bulunamadı: ${orjinal}`
     };
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const telefon = temizTelefon(telefonMatch[0]);
 
-    let sonListe = [];
-
-    const loginBox = document.getElementById("loginBox");
-    const panel = document.getElementById("panel");
-    const loginMsg = document.getElementById("loginMsg");
-    const aktarMsg = document.getElementById("aktarMsg");
-
-    function temizTelefon(v){
-      let tel = String(v || "").replace(/\D/g, "");
-      if(tel.startsWith("90")) tel = "0" + tel.slice(2);
-      if(tel.length === 10 && tel.startsWith("5")) tel = "0" + tel;
-      if(tel && !tel.startsWith("0") && tel.length >= 10) tel = "0" + tel;
-      return tel.slice(0,11);
-    }
-
-    function telefonBul(satir){
-      const temiz = String(satir || "");
-      const adaylar = temiz.match(/(?:\+?90\s*)?0?5[0-9\s().-]{8,18}/g) || [];
-      if(!adaylar.length) return "";
-      return temizTelefon(adaylar[adaylar.length - 1]);
-    }
-
-    function adBul(satir, tel){
-      let ad = String(satir || "");
-      ad = ad.replace(/(?:\+?90\s*)?0?5[0-9\s().-]{8,18}/g, " ");
-      ad = ad.replace(/[;,|\t]+/g, " ");
-      ad = ad.replace(/\s+/g, " ").trim();
-      return ad;
-    }
-
-    function adDuzelt(ad){
-      return String(ad || "")
-        .trim()
-        .replace(/\s+/g," ")
-        .toLocaleUpperCase("tr-TR");
-    }
-
-    function satirlariCoz(){
-      const text = document.getElementById("bulkText").value || "";
-      const satirlar = text.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
-      const gorulen = new Set();
-
-      return satirlar.map((satir, index) => {
-        const tel = telefonBul(satir);
-        const ad = adDuzelt(adBul(satir, tel));
-        let durum = "ok";
-        let mesaj = "Aktarılabilir";
-
-        if(!tel || tel.length !== 11 || !tel.startsWith("05")){
-          durum = "hata";
-          mesaj = "Telefon hatalı";
-        }else if(!ad || ad.length < 3){
-          durum = "hata";
-          mesaj = "Ad Soyad eksik";
-        }else if(gorulen.has(tel)){
-          durum = "tekrar";
-          mesaj = "Bu listede tekrar var";
-        }
-
-        if(tel) gorulen.add(tel);
-
-        return { index:index+1, adSoyad:ad, telefon:tel, durum, mesaj, satir };
-      });
-    }
-
-    function sayacYaz(liste){
-      document.getElementById("sToplam").textContent = liste.length;
-      document.getElementById("sOk").textContent = liste.filter(x => x.durum === "ok").length;
-      document.getElementById("sHata").textContent = liste.filter(x => x.durum === "hata").length;
-      document.getElementById("sTekrar").textContent = liste.filter(x => x.durum === "tekrar").length;
-    }
-
-    function tagClass(durum){
-      if(durum === "ok") return "tag ok";
-      if(durum === "tekrar") return "tag warn";
-      return "tag bad";
-    }
-
-    function escapeHTML(v){
-      return String(v ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    window.onizle = function(){
-      sonListe = satirlariCoz();
-      sayacYaz(sonListe);
-      aktarMsg.textContent = "";
-
-      const body = document.getElementById("previewBody");
-      if(!sonListe.length){
-        body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#777;font-weight:900;padding:20px">Liste boş.</td></tr>`;
-        return;
-      }
-
-      body.innerHTML = sonListe.map(k => `
-        <tr>
-          <td data-label="Ad Soyad">${escapeHTML(k.adSoyad || "-")}</td>
-          <td data-label="Telefon">${escapeHTML(k.telefon || "-")}</td>
-          <td data-label="Durum"><span class="${tagClass(k.durum)}">${escapeHTML(k.mesaj)}</span></td>
-          <td data-label="Orijinal Satır">${escapeHTML(k.satir)}</td>
-        </tr>
-      `).join("");
+  if(telefon.length !== 11 || !telefon.startsWith("05")){
+    return {
+      hata:true,
+      mesaj:`Telefon hatalı: ${orjinal}`
     };
+  }
 
-    window.aktar = async function(){
-      if(!sonListe.length) window.onizle();
-      const aktarilacak = sonListe.filter(x => x.durum === "ok");
-      if(!aktarilacak.length){
-        alert("Aktarılabilir kayıt yok. Önce listeyi kontrol et.");
-        return;
-      }
+  const adKismi = satir
+    .replace(telefonMatch[0], " ")
+    .replace(/[,:;|()-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
-      if(!confirm(`${aktarilacak.length} personel Firestore personeller koleksiyonuna aktarılacak. Onaylıyor musun?`)) return;
+  const adSoyad = adSoyadFormatla(adKismi);
 
-      aktarMsg.textContent = "Aktarım başladı...";
-      let yeni = 0, guncel = 0, hata = 0;
-
-      for(const p of aktarilacak){
-        try{
-          const ref = doc(db, "personeller", p.telefon);
-          const eski = await getDoc(ref);
-          await setDoc(ref, {
-            adSoyad: p.adSoyad,
-            isim: p.adSoyad,
-            telefon: p.telefon,
-            aktif: true,
-            uyeMi: eski.exists() ? (eski.data().uyeMi === true) : false,
-            createdByAdmin: true,
-            updatedAt: serverTimestamp(),
-            createdAt: eski.exists() ? (eski.data().createdAt || serverTimestamp()) : serverTimestamp()
-          }, { merge:true });
-
-          if(eski.exists()) guncel++; else yeni++;
-        }catch(e){
-          console.error(e);
-          hata++;
-        }
-      }
-
-      aktarMsg.innerHTML = `✅ Aktarım tamamlandı. Yeni: <b>${yeni}</b>, Güncellenen: <b>${guncel}</b>, Hata: <b>${hata}</b>`;
-      alert("Aktarım tamamlandı.");
+  if(!adSoyad || adSoyad.length < 3){
+    return {
+      hata:true,
+      mesaj:`İsim bulunamadı: ${orjinal}`
     };
+  }
 
-    window.ornekDoldur = function(){
-      document.getElementById("bulkText").value = `Ahmet Yılmaz 05551234567\nMehmet Kaya, 0544 123 12 12\nAli Demir\t0533 988 77 66`;
-      window.onizle();
-    };
+  return {
+    hata:false,
+    adSoyad,
+    telefon
+  };
+}
 
-    window.temizle = function(){
-      document.getElementById("bulkText").value = "";
-      sonListe = [];
-      sayacYaz([]);
-      document.getElementById("previewBody").innerHTML = `<tr><td colspan="4" style="text-align:center;color:#777;font-weight:900;padding:20px">Henüz önizleme yapılmadı.</td></tr>`;
-      aktarMsg.textContent = "";
-    };
+function listeyiHazirla(){
+  const metin = document.getElementById("listeInput").value || "";
+  const satirlar = metin.split("\n");
 
-    async function adminMi(user){
-      try{
-        const snap = await getDoc(doc(db,"admins",user.uid));
-        if(!snap.exists()) return false;
-        const d = snap.data() || {};
-        return d.aktif === true && (!d.role || d.role === "admin");
-      }catch(e){
-        console.error(e);
-        return false;
-      }
+  const kayitlar = [];
+  const hatalar = [];
+  const gorulenTelefonlar = new Set();
+
+  satirlar.forEach((satir, index) => {
+    if(!satir.trim()) return;
+
+    const sonuc = satirParseEt(satir);
+
+    if(!sonuc || sonuc.hata){
+      hatalar.push(`${index + 1}. satır: ${sonuc?.mesaj || "Okunamadı"}`);
+      return;
     }
 
-    document.getElementById("loginBtn").addEventListener("click", async() => {
-      const email = document.getElementById("adminEmail").value.trim();
-      const pass = document.getElementById("adminPass").value;
-      if(!email || !pass){ loginMsg.textContent = "E-posta ve şifre gir."; loginMsg.className = "msg err"; return; }
-      try{
-        loginMsg.textContent = "Giriş kontrol ediliyor...";
-        loginMsg.className = "msg";
-        await signInWithEmailAndPassword(auth,email,pass);
-      }catch(e){
-        console.error(e);
-        loginMsg.textContent = "Giriş başarısız.";
-        loginMsg.className = "msg err";
-      }
+    if(gorulenTelefonlar.has(sonuc.telefon)){
+      hatalar.push(`${index + 1}. satır: Aynı telefon tekrar ediyor: ${sonuc.telefon}`);
+      return;
+    }
+
+    gorulenTelefonlar.add(sonuc.telefon);
+    kayitlar.push(sonuc);
+  });
+
+  return { kayitlar, hatalar };
+}
+
+window.onizlemeYap = function(){
+  const { kayitlar, hatalar } = listeyiHazirla();
+
+  let yaz = "";
+  yaz += `✅ Okunan kayıt: ${kayitlar.length}\n`;
+  yaz += `⚠️ Hatalı satır: ${hatalar.length}\n\n`;
+
+  if(kayitlar.length){
+    yaz += "ÖNİZLEME:\n";
+    kayitlar.slice(0, 30).forEach(k => {
+      yaz += `• ${k.adSoyad} — ${k.telefon}\n`;
     });
 
-    document.getElementById("adminPass").addEventListener("keydown", e => { if(e.key === "Enter") document.getElementById("loginBtn").click(); });
-    document.getElementById("logoutBtn").addEventListener("click", async() => { await signOut(auth); location.reload(); });
+    if(kayitlar.length > 30){
+      yaz += `... ve ${kayitlar.length - 30} kayıt daha\n`;
+    }
+  }
 
-    onAuthStateChanged(auth, async(user) => {
-      if(!user){
-        loginBox.classList.remove("hide");
-        panel.classList.add("hide");
-        return;
+  if(hatalar.length){
+    yaz += "\nHATALAR:\n";
+    hatalar.forEach(h => yaz += `• ${h}\n`);
+  }
+
+  document.getElementById("sonuc").textContent = yaz;
+};
+
+window.firestoreKaydet = async function(){
+  const { kayitlar, hatalar } = listeyiHazirla();
+
+  if(!kayitlar.length){
+    document.getElementById("sonuc").textContent = "Kaydedilecek geçerli personel bulunamadı.";
+    return;
+  }
+
+  if(hatalar.length){
+    const devam = confirm(`${hatalar.length} hatalı satır var. Geçerli olanları yine de kaydedeyim mi?`);
+    if(!devam) return;
+  }
+
+  let yeni = 0;
+  let guncel = 0;
+  let hata = 0;
+
+  document.getElementById("sonuc").textContent = "Firestore'a kayıt yapılıyor...";
+
+  for(const k of kayitlar){
+    try{
+      const ref = doc(db, PERSONEL_COLLECTION, k.telefon);
+      const eski = await getDoc(ref);
+
+      const veri = {
+        adSoyad: k.adSoyad,
+        isim: k.adSoyad,
+        telefon: k.telefon,
+        aktif: true,
+        uyeMi: eski.exists() ? (eski.data().uyeMi === true) : false,
+        createdByAdmin: true,
+        updatedAt: serverTimestamp()
+      };
+
+      if(!eski.exists()){
+        veri.sifre = "";
+        veri.createdAt = serverTimestamp();
+        yeni++;
+      }else{
+        guncel++;
       }
-      const ok = await adminMi(user);
-      if(!ok){
-        await signOut(auth);
-        loginMsg.textContent = "Bu kullanıcı admin değil.";
-        loginMsg.className = "msg err";
-        loginBox.classList.remove("hide");
-        panel.classList.add("hide");
-        return;
-      }
-      loginBox.classList.add("hide");
-      panel.classList.remove("hide");
-    });
-  </script>
+
+      await setDoc(ref, veri, { merge:true });
+
+    }catch(e){
+      console.error(e);
+      hata++;
+    }
+  }
+
+  let yaz = "";
+  yaz += "✅ İşlem tamamlandı.\n\n";
+  yaz += `Yeni eklenen: ${yeni}\n`;
+  yaz += `Güncellenen: ${guncel}\n`;
+  yaz += `Hata: ${hata}\n`;
+
+  if(hatalar.length){
+    yaz += `\nAtlanan/hatalı satır: ${hatalar.length}\n`;
+    hatalar.forEach(h => yaz += `• ${h}\n`);
+  }
+
+  document.getElementById("sonuc").textContent = yaz;
+};
+
+window.cikisYap = async function(){
+  localStorage.removeItem("adminLogin");
+  localStorage.removeItem("adminGiris");
+  await signOut(auth);
+  location.href = "adminpanel.html";
+};
+
+async function adminMi(user){
+  if(!user) return false;
+
+  try{
+    const snap = await getDoc(doc(db, "admins", user.uid));
+    if(!snap.exists()) return false;
+
+    const d = snap.data() || {};
+    return d.aktif === true && (!d.role || d.role === "admin");
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+
+onAuthStateChanged(auth, async user => {
+  if(!user){
+    location.replace("adminpanel.html");
+    return;
+  }
+
+  const ok = await adminMi(user);
+
+  if(!ok){
+    await signOut(auth);
+    location.replace("adminpanel.html");
+  }
+});
+</script>
+
 </body>
 </html>
