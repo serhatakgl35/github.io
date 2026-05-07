@@ -2,13 +2,13 @@
 <html lang="tr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Ödeme Admin Paneli</title><style>
 *{box-sizing:border-box}
-:root{--bg:#f5f5f7;--text:#111;--muted:#666;--shadow:0 18px 55px rgba(0,0,0,.10);--soft:0 8px 25px rgba(0,0,0,.08);--r:26px}
-body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(circle at 20% 10%,rgba(255,255,255,.95),transparent 32%),radial-gradient(circle at 80% 0%,rgba(225,229,238,.9),transparent 35%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
-.topbar{position:sticky;top:0;z-index:20;background:rgba(17,17,17,.94);padding:14px 18px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;box-shadow:0 4px 18px rgba(0,0,0,.18);backdrop-filter:blur(16px)}
+:root{--bg:#f5f5f7;--text:#111;--muted:#666;--shadow:0 12px 32px rgba(0,0,0,.08);--soft:0 5px 16px rgba(0,0,0,.06);--r:24px}
+body{margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(17,17,17,.94);padding:14px 18px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;box-shadow:0 3px 12px rgba(0,0,0,.14)}
 .topbar a,.topbar button{background:white;color:#111;text-decoration:none;border:0;border-radius:999px;padding:9px 15px;font-weight:900;cursor:pointer}
 .wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
 .centerWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.card{background:rgba(255,255,255,.90);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);margin-bottom:18px}
+.card{background:rgba(255,255,255,.90);border-radius:var(--r);padding:24px;box-shadow:var(--soft);margin-bottom:16px}
 .loginCard{width:100%;max-width:430px}.logo{width:62px;height:62px;border-radius:20px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
 h1{font-size:34px;margin:0 0 12px;font-weight:950;letter-spacing:-.5px}h2,h3{margin-top:0}p{color:var(--muted);line-height:1.45}
 label{font-weight:800;font-size:14px;display:block;margin:0 0 6px}
@@ -25,7 +25,11 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
 .historyLeft{display:flex;flex-direction:column;gap:6px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#666;font-weight:800;line-height:1.6}.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px}
 .fazla,.tamam{display:inline-block;margin-top:6px;color:#166534;background:#dcfce7;padding:6px 10px;border-radius:999px;font-weight:950}
 .borc{display:inline-block;margin-top:6px;color:#991b1b;background:#fee2e2;padding:6px 10px;border-radius:999px;font-weight:950}
-.hide{display:none!important}@media(max-width:720px){.wrap{padding:0 10px}.card{padding:18px;border-radius:22px}h1{font-size:27px}th,td{font-size:13px;padding:10px}.historyItem{align-items:flex-start;flex-direction:column}.ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:50px}}
+.hide{display:none!important}@media(max-width:720px){
+.wrap{padding:0 10px;margin:16px auto}.card{padding:16px;border-radius:20px}h1{font-size:26px}h3{font-size:17px}.topbar{padding:10px 8px}.topbar a,.topbar button{padding:8px 11px;font-size:12px}
+.grid{grid-template-columns:1fr;gap:10px}.tableWrap{overflow:visible;border-radius:0}table,thead,tbody,tr,td{display:block;width:100%}thead{display:none}tr{background:#fff;border-radius:18px;padding:10px;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,.055)}td{border:0;padding:7px 6px;font-size:13px}td::before{content:attr(data-label);display:block;font-size:11px;color:#777;font-weight:950;margin-bottom:3px}.tutarInput{width:92px!important}.small{padding:8px 9px;font-size:12px}.status{font-size:12px;padding:7px 10px}.historyItem{align-items:flex-start;flex-direction:column}.ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:50px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style></head>
 <body>
 <div id="adminLogin" class="centerWrap">
@@ -43,10 +47,10 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
       </div>
       <button class="main" onclick="aylikTutarKaydet()">Bu Dönem Tutarını Kaydet</button>
       <button class="main" style="margin-top:12px;background:#15803d" onclick="csvIndir()">Tabloyu CSV İndir</button>
-      <p class="muted">CSV dosyası Excel’de açılır. İçinde dönem aidatı, ödenen tutar, geçmiş bakiye, bu dönem bakiye ve genel bakiye bulunur.</p>
+      <p class="muted">CSV dosyası Excel’de açılır. İçinde personel adı, dönem aidatı, ödenen tutar, geçmiş bakiye, bu dönem bakiye ve genel bakiye bulunur. Telefon numarası dışa aktarılmaz.</p>
     </div>
     <div class="card"><h3>Özet</h3><div id="adminOzet" class="grid"></div></div>
-    <div class="card"><h3>Personel Listesi</h3><div class="tableWrap"><table><thead><tr><th>Personel</th><th>Telefon</th><th>Dönem</th><th>Ödenen Tutar</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="adminTable"></tbody></table></div></div>
+    <div class="card"><h3>Personel Listesi</h3><div class="tableWrap"><table><thead><tr><th>Personel</th><th>Dönem</th><th>Ödenen Tutar</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="adminTable"></tbody></table></div></div>
   </div>
 </div>
 <script type="module">
@@ -281,15 +285,14 @@ window.adminListele=async function(){
 
     rows+=`
       <tr>
-        <td>${ad}</td>
-        <td>${tel}</td>
-        <td>${donemLabel(key)}</td>
-        <td><input id="${inputId}" class="tutarInput" type="number" min="0" value="${tutar}" placeholder="${aktifDonemTutari}"> TL</td>
-        <td>
+        <td data-label="Personel">${ad}</td>
+        <td data-label="Dönem">${donemLabel(key)}</td>
+        <td data-label="Ödenen Tutar"><input id="${inputId}" class="tutarInput" type="number" min="0" value="${tutar}" placeholder="${aktifDonemTutari}"> TL</td>
+        <td data-label="Durum">
           <span class="status ${durumClass(durum,key)}">${durumText(durum,key)}</span><br>
           <span class="${genelNet<0?'borc':genelNet>0?'fazla':'tamam'}" style="margin-top:6px">${bakiyeText(genelNet)}</span>
         </td>
-        <td>
+        <td data-label="İşlem">
           <button class="small green" onclick="durumDegistir('${tel}','${safeAd}','odendi','${inputId}')">Ödendi</button>
           <button class="small gray" onclick="durumDegistir('${tel}','${safeAd}','odeme_bekliyor','${inputId}')">Bekliyor</button>
           <button class="small red" onclick="reddet('${tel}','${safeAd}','${inputId}')">Reddet</button>
@@ -310,7 +313,7 @@ window.adminListele=async function(){
     reddedildi:say.reddedildi
   };
 
-  document.getElementById("adminTable").innerHTML=rows||`<tr><td colspan="6">Kayıt yok.</td></tr>`;
+  document.getElementById("adminTable").innerHTML=rows||`<tr><td colspan="5">Kayıt yok.</td></tr>`;
   document.getElementById("adminOzet").innerHTML=`
     <div class="card"><h3>Bu Dönem Aidatı</h3><h1>${aktifDonemTutari} TL</h1></div>
     <div class="card"><h3>Ödendi</h3><h1>${say.odendi}</h1></div>
@@ -331,13 +334,12 @@ window.csvIndir=function(){
   const key=document.getElementById("adminAy").value||donemKey();
 
   const rows=[
-    ["Personel Adı","Telefon","Dönem","Dönem Anahtarı","Dönem Aidatı","Ödenen Tutar","Geçmiş Bakiye","Bu Dönem Bakiye","Genel Bakiye","Durum"]
+    ["Personel Adı","Dönem","Dönem Anahtarı","Dönem Aidatı","Ödenen Tutar","Geçmiş Bakiye","Bu Dönem Bakiye","Genel Bakiye","Durum"]
   ];
 
   sonRaporSatirlari.forEach(r=>{
     rows.push([
       r.ad,
-      r.tel,
       r.donem,
       r.donemKey,
       r.donemAidati,
