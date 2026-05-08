@@ -14,12 +14,6 @@
   --shadow:0 18px 55px rgba(0,0,0,.10);
   --soft:0 8px 25px rgba(0,0,0,.08);
   --r:26px;
-  --green:#166534;
-  --greenBg:#dcfce7;
-  --red:#991b1b;
-  --redBg:#fee2e2;
-  --yellow:#92400e;
-  --yellowBg:#fef3c7;
 }
 body{
   margin:0;
@@ -56,7 +50,7 @@ body{
 }
 .wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
 .card{
-  background:rgba(255,255,255,.92);
+  background:rgba(255,255,255,.90);
   border-radius:var(--r);
   padding:24px;
   box-shadow:var(--shadow);
@@ -66,13 +60,9 @@ body{
 h1{font-size:34px;margin:0 0 12px;font-weight:950;letter-spacing:-.5px}
 h2,h3{margin-top:0}
 p{color:var(--muted);line-height:1.45}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 .muted{color:var(--muted);font-size:14px}
-.bigMoney{font-size:40px;font-weight:950;letter-spacing:-.7px;margin:8px 0}
-.goodText{color:var(--green)}
-.badText{color:var(--red)}
-.neutralText{color:#111}
-.warnText{color:var(--yellow)}
+.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
 
 .status{
   display:inline-block;
@@ -82,21 +72,9 @@ p{color:var(--muted);line-height:1.45}
   font-size:13px;
   white-space:nowrap;
 }
-.odendi,.tamam{background:var(--greenBg);color:var(--green)}
-.bekliyor,.eksik{background:var(--yellowBg);color:var(--yellow)}
-.borc,.reddedildi,.gecikti,.hata{background:var(--redBg);color:var(--red)}
-.noteBox{
-  margin-top:12px;
-  padding:14px;
-  border-radius:18px;
-  background:#f5f5f7;
-  color:#555;
-  font-weight:800;
-  line-height:1.45;
-}
-.noteBox.good{background:var(--greenBg);color:var(--green)}
-.noteBox.bad{background:var(--redBg);color:var(--red)}
-.noteBox.warn{background:var(--yellowBg);color:var(--yellow)}
+.odendi{background:#dcfce7;color:#166534}
+.bekliyor{background:#fef3c7;color:#92400e}
+.reddedildi,.gecikti{background:#fee2e2;color:#991b1b}
 
 .ibanBox{display:flex;align-items:center;gap:10px}
 .iban{
@@ -120,19 +98,7 @@ p{color:var(--muted);line-height:1.45}
   cursor:pointer;
   box-shadow:0 8px 20px rgba(0,0,0,.12);
 }
-.copyMsg{margin-top:8px;font-weight:800;color:var(--green);min-height:20px}
-
-.summaryLine{
-  display:flex;
-  justify-content:space-between;
-  gap:14px;
-  padding:11px 0;
-  border-bottom:1px solid rgba(0,0,0,.07);
-  font-weight:900;
-}
-.summaryLine:last-child{border-bottom:0}
-.summaryLine span:first-child{color:#666}
-.summaryLine span:last-child{text-align:right}
+.copyMsg{margin-top:8px;font-weight:800;color:#166534;min-height:20px}
 
 .historyItem{
   background:white;
@@ -145,29 +111,57 @@ p{color:var(--muted);line-height:1.45}
   gap:14px;
   margin-bottom:12px;
 }
-.historyLeft{display:flex;flex-direction:column;gap:8px}
+.historyLeft{display:flex;flex-direction:column;gap:6px}
 .historyTitle{font-weight:950;font-size:16px}
-.historyMoney{color:#666;font-weight:850;line-height:1.7}
-.resultBadge{
+.historyMoney{color:#666;font-weight:800;line-height:1.6}
+
+.fazla,.tamam{
   display:inline-block;
-  width:max-content;
-  padding:7px 11px;
+  margin-top:6px;
+  color:#166534;
+  background:#dcfce7;
+  padding:6px 10px;
   border-radius:999px;
   font-weight:950;
 }
-.resultGood{background:var(--greenBg);color:var(--green)}
-.resultBad{background:var(--redBg);color:var(--red)}
-.resultWarn{background:var(--yellowBg);color:var(--yellow)}
+.borc{
+  display:inline-block;
+  margin-top:6px;
+  color:#991b1b;
+  background:#fee2e2;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:950;
+}
+.mahsup{
+  display:inline-block;
+  margin-top:6px;
+  color:#075985;
+  background:#e0f2fe;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:950;
+}
+.warningBox{
+  background:#fee2e2;
+  color:#991b1b;
+  border-radius:20px;
+  padding:15px;
+  font-weight:950;
+  margin-top:14px;
+}
+.balanceCard h1{margin-bottom:8px}
+.balanceGood{color:#166534}
+.balanceBad{color:#991b1b}
+.balanceNeutral{color:#166534}
 
 @media(max-width:720px){
-  .wrap{padding:0 10px;margin:16px auto}
+  .wrap{padding:0 10px}
   .card{padding:18px;border-radius:22px}
   h1{font-size:27px}
-  .bigMoney{font-size:32px}
   .historyItem{align-items:flex-start;flex-direction:column}
   .ibanBox{align-items:stretch}
   .copyBtn{height:auto;min-width:50px}
-  .summaryLine{font-size:14px}
 }
 </style>
 </head>
@@ -190,10 +184,10 @@ p{color:var(--muted);line-height:1.45}
 
   <div class="grid">
     <div class="card">
-      <h3>Güncel Net Durum</h3>
-      <div id="genelDurumTutar" class="bigMoney neutralText">Hesaplanıyor...</div>
-      <div id="genelDurumEtiket" class="status bekliyor">Yükleniyor</div>
-      <div id="genelDurumAciklama" class="noteBox">Ödemeler kontrol ediliyor...</div>
+      <h3>Bu Dönemki Aidat</h3>
+      <h1 id="aidatTutar">300 TL</h1>
+      <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
+      <div id="uyariAlan"></div>
     </div>
 
     <div class="card">
@@ -207,27 +201,28 @@ p{color:var(--muted);line-height:1.45}
     </div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <h3>Bu Dönem</h3>
-      <div class="summaryLine"><span>Dönem</span><span id="aktifDonemYazi">-</span></div>
-      <div class="summaryLine"><span>Aidat</span><span id="aidatTutar">300 TL</span></div>
-      <div class="summaryLine"><span>Bu dönem ödenen</span><span id="aktifOdenen">0 TL</span></div>
-      <div class="summaryLine"><span>Bu dönem sonucu</span><span id="aktifSonuc">-</span></div>
-      <div id="aktifDonemNotu"></div>
+  <div class="grid" id="bakiyeKartlari" style="margin-bottom:18px;">
+    <div class="card balanceCard">
+      <h3>Önceki Devir</h3>
+      <h1 id="gecmisBakiye">0 TL</h1>
+      <p id="gecmisBakiyeAciklama" class="muted">Hesaplanıyor...</p>
     </div>
 
-    <div class="card">
-      <h3>Hesap Özeti</h3>
-      <div class="summaryLine"><span>Geçmiş dönemlerden kalan</span><span id="gecmisNet">0 TL</span></div>
-      <div class="summaryLine"><span>Bu dönem sonucu</span><span id="buDonemNet">0 TL</span></div>
-      <div class="summaryLine"><span>Net sonuç</span><span id="netSonuc">0 TL</span></div>
-      <div class="noteBox">Fazla ödeme varsa otomatik olarak borçtan düşülür. Yeşil borç olmadığını, kırmızı borç olduğunu gösterir.</div>
+    <div class="card balanceCard">
+      <h3>Bu Dönem İşlem</h3>
+      <h1 id="buDonemKalan">300 TL</h1>
+      <p id="buDonemKalanAciklama" class="muted">Hesaplanıyor...</p>
+    </div>
+
+    <div class="card balanceCard">
+      <h3>Güncel Sonuç</h3>
+      <h1 id="genelBakiye">0 TL</h1>
+      <p id="genelBakiyeAciklama" class="muted">Fazla ödeme varsa borçtan düşülür.</p>
     </div>
   </div>
 
   <div class="card">
-    <h3>Geçmiş Ödeme Durumlarım</h3>
+    <h3>Bakiye Hareketleri</h3>
     <div id="personelGecmis">Yükleniyor...</div>
   </div>
 
@@ -308,6 +303,24 @@ function donemLabel(key){
   return `15 ${ayAdi(key)} - 14 ${ayAdi(next)}`;
 }
 
+function donemGectiMi(key){
+  return String(key) < donemKey(new Date());
+}
+
+function durumText(durum, key){
+  if(durum === "odendi") return "Ödendi";
+  if(durum === "reddedildi") return "Reddedildi";
+  if(donemGectiMi(key)) return "ÖDEME GEÇTİ - Dönem: " + ayAdi(key);
+  return "Ödeme Bekliyor";
+}
+
+function durumClass(durum, key){
+  if(durum === "odendi") return "odendi";
+  if(durum === "reddedildi") return "reddedildi";
+  if(donemGectiMi(key)) return "gecikti";
+  return "bekliyor";
+}
+
 async function donemTutariGetir(key, fallback = VARSAYILAN_AIDAT){
   try{
     const snap = await getDoc(doc(db, AYAR_COLLECTION, key));
@@ -318,98 +331,89 @@ async function donemTutariGetir(key, fallback = VARSAYILAN_AIDAT){
   }catch(e){
     console.warn(e);
   }
+
   return fallback;
 }
 
-function para(n){
-  n = Number(n || 0);
-  return `${n} TL`;
-}
-
-function bakiyeYazi(net){
-  net = Number(net || 0);
-  if(net > 0) return `${net} TL Fazla`;
-  if(net < 0) return `${Math.abs(net)} TL Borç`;
-  return "Borç Yok";
-}
-
-function bakiyeClass(net){
-  if(net > 0) return "goodText";
-  if(net < 0) return "badText";
-  return "goodText";
-}
-
 /*
-  En önemli kural:
-  Tutar 0 TL ise yeşil "Ödendi" gösterilmez.
-  Çünkü 0 TL ödenmiş bir kayıt, kullanıcıya "ödendi" gibi görünmemeli.
+  Net devreden bakiye mantığı:
+  + bakiye = personelin fazla parası vardır, sonraki aylardan otomatik düşer.
+  - bakiye = personelin borcu vardır, sonraki aya devreder.
+  Reddedilen veya bekleyen kayıt ödeme sayılmaz.
 */
-function temizDurum(rawDurum, odenenTutar, net){
-  rawDurum = rawDurum || "odeme_bekliyor";
-  odenenTutar = Number(odenenTutar || 0);
-
-  if(rawDurum === "reddedildi"){
-    return {text:"Reddedildi", cls:"reddedildi"};
-  }
-
-  if(odenenTutar <= 0){
-    return {text:"Ödeme Bekliyor", cls:"bekliyor"};
-  }
-
-  if(net < 0){
-    return {text:"Eksik Ödeme", cls:"eksik"};
-  }
-
-  return {text:"Ödendi", cls:"odendi"};
-}
-
-function sonucBadge(net){
-  net = Number(net || 0);
-
-  if(net > 0){
-    return `<span class="resultBadge resultGood">Fazla ödeme: ${net} TL</span>`;
-  }
-
-  if(net < 0){
-    return `<span class="resultBadge resultBad">Kalan borç: ${Math.abs(net)} TL</span>`;
-  }
-
-  return `<span class="resultBadge resultGood">Borç yok</span>`;
-}
-
 function hesaplananOdenenTutar(kayitDurum, kayitTutar){
-  if(kayitDurum === "odeme_bekliyor") return 0;
+  if(kayitDurum !== "odendi") return 0;
   return Number(kayitTutar || 0);
 }
 
-function anaDurumYaz(genelNet, gecmisNet, buDonemNet){
-  const tutarEl = document.getElementById("genelDurumTutar");
-  const etiketEl = document.getElementById("genelDurumEtiket");
-  const aciklamaEl = document.getElementById("genelDurumAciklama");
-
-  tutarEl.textContent = bakiyeYazi(genelNet);
-  tutarEl.className = "bigMoney " + bakiyeClass(genelNet);
-
-  if(genelNet > 0){
-    etiketEl.textContent = "Fazla Bakiye Var";
-    etiketEl.className = "status odendi";
-    aciklamaEl.className = "noteBox good";
-    aciklamaEl.textContent = "Şu an borç görünmüyor. Fazla ödeme sonraki dönemlerden otomatik düşülür.";
-    return;
+function aySonuSonucHtml(oncekiBakiye, donemTutar, odenenTutar, sonrakiBakiye){
+  if(odenenTutar > 0){
+    const fark = odenenTutar - donemTutar;
+    if(fark > 0) return `<span class="fazla">Bu ay ödendi, ${fark} TL fazla bakiye oluştu.</span>`;
+    if(fark === 0) return `<span class="tamam">Bu ay ödendi. Borç yok.</span>`;
+    return `<span class="borc">Bu ay ${Math.abs(fark)} TL eksik ödendi.</span>`;
   }
 
-  if(genelNet < 0){
-    etiketEl.textContent = "Ödeme Gerekli";
-    etiketEl.className = "status borc";
-    aciklamaEl.className = "noteBox bad";
-    aciklamaEl.textContent = "Bu tutar ödenmesi gereken net borçtur.";
-    return;
+  if(oncekiBakiye >= donemTutar){
+    return `<span class="mahsup">Ödediğiniz fazla miktardan tahsil edilmiştir. Kalan fazla bakiye: ${sonrakiBakiye} TL</span>`;
   }
 
-  etiketEl.textContent = "Borç Yok";
-  etiketEl.className = "status odendi";
-  aciklamaEl.className = "noteBox good";
-  aciklamaEl.textContent = "Güncel olarak borç veya fazla ödeme yok.";
+  if(oncekiBakiye > 0 && oncekiBakiye < donemTutar){
+    return `<span class="borc">Fazla bakiyeden ${oncekiBakiye} TL düşüldü. Kalan borç: ${Math.abs(sonrakiBakiye)} TL</span>`;
+  }
+
+  if(sonrakiBakiye < 0){
+    return `<span class="borc">Devreden toplam borç: ${Math.abs(sonrakiBakiye)} TL</span>`;
+  }
+
+  return `<span class="tamam">Borç yok.</span>`;
+}
+
+function hareketEtiketi(oncekiBakiye, donemTutar, odenenTutar, sonrakiBakiye){
+  if(odenenTutar >= donemTutar && odenenTutar > 0) return {text:"Ödendi", cls:"odendi"};
+  if(odenenTutar > 0 && odenenTutar < donemTutar) return {text:"Eksik Ödendi", cls:"gecikti"};
+  if(oncekiBakiye >= donemTutar) return {text:"Fazladan Tahsil Edildi", cls:"odendi"};
+  if(sonrakiBakiye < 0) return {text:"Borç Devretti", cls:"gecikti"};
+  return {text:"Borç Yok", cls:"odendi"};
+}
+
+function bakiyeKisa(net){
+  net = Number(net || 0);
+  if(net > 0) return `${net} TL Fazla`;
+  if(net < 0) return `${Math.abs(net)} TL Borç`;
+  return "0 TL";
+}
+
+function bakiyeYazi(net){
+  if(net > 0){
+    return {
+      text: `${net} TL Fazla`,
+      cls: "balanceGood",
+      desc: "Sonraki dönem aidatlarından otomatik düşülür."
+    };
+  }
+
+  if(net < 0){
+    return {
+      text: `${Math.abs(net)} TL Borç`,
+      cls: "balanceBad",
+      desc: "Ödenmeyen tutar sonraki aya devreder."
+    };
+  }
+
+  return {
+    text: "0 TL",
+    cls: "balanceNeutral",
+    desc: "Borç veya fazla ödeme yok."
+  };
+}
+
+function kartBakiyeYaz(id, aciklamaId, net){
+  const info = bakiyeYazi(net);
+  const el = document.getElementById(id);
+  el.textContent = info.text;
+  el.className = info.cls;
+  document.getElementById(aciklamaId).textContent = info.desc;
 }
 
 window.ibanKopyala = async function(){
@@ -462,8 +466,6 @@ async function yukle(){
 
   document.getElementById("personelInfo").textContent = ad + " olarak giriş yapıldı.";
   document.getElementById("donemInfo").textContent = "Aktif dönem: " + donemLabel(aktifDonem);
-  document.getElementById("aktifDonemYazi").textContent = donemLabel(aktifDonem);
-  document.getElementById("aidatTutar").textContent = para(aktifDonemTutar);
 
   const q1 = query(collection(db, ODEME_COLLECTION), where("telefon", "==", tel));
   const q2 = query(collection(db, ODEME_COLLECTION), where("personelId", "==", tel));
@@ -472,112 +474,99 @@ async function yukle(){
   const snap2 = await getDocs(q2);
 
   const map = new Map();
+  snap1.forEach(d=> map.set(d.id, {id:d.id, ...d.data()}));
+  snap2.forEach(d=> map.set(d.id, {id:d.id, ...d.data()}));
 
-  snap1.forEach(d=>{
-    map.set(d.id, {id:d.id, ...d.data()});
+  const kayitlar = Array.from(map.values())
+    .filter(o=>String(o.ay || "").includes("-"));
+
+  const kayitByAy = new Map();
+  kayitlar.forEach(o=>{
+    const key = String(o.ay);
+    const mevcut = kayitByAy.get(key);
+    if(!mevcut){
+      kayitByAy.set(key,o);
+      return;
+    }
+    // Aynı ayda iki kayıt varsa, ödendi olanı öncelikli al.
+    if((o.durum || "") === "odendi") kayitByAy.set(key,o);
   });
 
-  snap2.forEach(d=>{
-    map.set(d.id, {id:d.id, ...d.data()});
+  let ilkDonem = aktifDonem;
+  kayitlar.forEach(o=>{
+    if(String(o.ay) < ilkDonem) ilkDonem = String(o.ay);
   });
 
-  const list = Array.from(map.values())
-    .filter(o => String(o.ay || "").includes("-"))
-    .sort((a,b)=>String(b.ay || "").localeCompare(String(a.ay || "")));
+  const donemler = [];
+  let cursor = ilkDonem;
+  while(cursor <= aktifDonem){
+    donemler.push(cursor);
+    cursor = addMonthsKey(cursor, 1);
+  }
 
-  let gecmisNet = 0;
-  let buDonemNet = -aktifDonemTutar;
-  let aktifOdenen = 0;
-  let aktifKayitVar = false;
+  let bakiye = 0; // + fazla, - borç
+  let oncekiDevirAktif = 0;
+  let aktifIslemNet = -aktifDonemTutar;
+  let aktifEtiket = {text:"Ödeme Bekliyor", cls:"bekliyor"};
   let html = "";
 
-  for(const o of list){
-    const key = o.ay;
-    const rawDurum = o.durum || "odeme_bekliyor";
+  for(const key of donemler){
+    const o = kayitByAy.get(key);
+    const oncekiBakiye = bakiye;
     const donemTutar = await donemTutariGetir(key, VARSAYILAN_AIDAT);
-    const odenenTutar = hesaplananOdenenTutar(rawDurum, o.tutar);
-    const net = odenenTutar - donemTutar;
-    const durum = temizDurum(rawDurum, odenenTutar, net);
+    const kayitDurum = o ? (o.durum || "odeme_bekliyor") : "odeme_bekliyor";
+    const odenenTutar = hesaplananOdenenTutar(kayitDurum, o?.tutar);
+
+    // Önce varsa o ay yapılan ödeme bakiyeye eklenir, sonra o ayın aidatı düşülür.
+    bakiye = bakiye + odenenTutar - donemTutar;
+    const sonrakiBakiye = bakiye;
+    const etiket = hareketEtiketi(oncekiBakiye, donemTutar, odenenTutar, sonrakiBakiye);
 
     if(key === aktifDonem){
-      aktifKayitVar = true;
-      aktifOdenen = odenenTutar;
-      buDonemNet = net;
-    }else if(key < aktifDonem){
-      gecmisNet += net;
+      oncekiDevirAktif = oncekiBakiye;
+      aktifIslemNet = odenenTutar - donemTutar;
+      aktifEtiket = bakiye >= 0
+        ? {text:"Borç Yok", cls:"odendi"}
+        : {text:"Borç Var", cls:"gecikti"};
     }
+
+    const odenenSatir = odenenTutar > 0 ? `Bu Ay Ödenen: ${odenenTutar} TL<br>` : `Bu Ay Ödenen: 0 TL<br>`;
+    const devirSatir = oncekiBakiye !== 0 ? `Önceki Devir: ${bakiyeKisa(oncekiBakiye)}<br>` : "";
 
     html += `
       <div class="historyItem">
         <div class="historyLeft">
           <div class="historyTitle">Dönem: ${donemLabel(key)}</div>
           <div class="historyMoney">
-            Aidat: ${para(donemTutar)}<br>
-            Ödenen: ${para(odenenTutar)}<br>
-            Sonuç: ${sonucBadge(net)}
+            ${devirSatir}
+            Dönem Aidatı: ${donemTutar} TL<br>
+            ${odenenSatir}
+            ${aySonuSonucHtml(oncekiBakiye, donemTutar, odenenTutar, sonrakiBakiye)}<br>
+            <span class="muted">Dönem Sonu Bakiye: ${bakiyeKisa(sonrakiBakiye)}</span>
           </div>
-          ${rawDurum === "odendi" && odenenTutar <= 0 ? `<div class="noteBox warn">Bu kayıt eski sistemde “Ödendi” görünüyor olabilir; fakat tutar 0 TL olduğu için ödeme bekliyor olarak gösterildi.</div>` : ""}
-          ${o.adminNot ? `<div class="muted">Admin Notu: ${o.adminNot}</div>` : ""}
+          ${o?.adminNot ? `<div class="muted">Admin Notu: ${o.adminNot}</div>` : ""}
         </div>
 
-        <span class="status ${durum.cls}">${durum.text}</span>
+        <span class="status ${etiket.cls}">${etiket.text}</span>
       </div>
     `;
   }
 
-  if(!aktifKayitVar){
-    const durum = temizDurum("odeme_bekliyor", 0, -aktifDonemTutar);
-    html = `
-      <div class="historyItem">
-        <div class="historyLeft">
-          <div class="historyTitle">Dönem: ${donemLabel(aktifDonem)}</div>
-          <div class="historyMoney">
-            Aidat: ${para(aktifDonemTutar)}<br>
-            Ödenen: 0 TL<br>
-            Sonuç: ${sonucBadge(-aktifDonemTutar)}
-          </div>
-        </div>
+  document.getElementById("aidatTutar").textContent = aktifDonemTutar + " TL";
 
-        <span class="status ${durum.cls}">${durum.text}</span>
-      </div>
-    ` + html;
-  }
+  const durumEl = document.getElementById("personelDurum");
+  durumEl.textContent = aktifEtiket.text;
+  durumEl.className = "status " + aktifEtiket.cls;
 
-  const genelNet = gecmisNet + buDonemNet;
+  kartBakiyeYaz("gecmisBakiye", "gecmisBakiyeAciklama", oncekiDevirAktif);
+  kartBakiyeYaz("buDonemKalan", "buDonemKalanAciklama", aktifIslemNet);
+  kartBakiyeYaz("genelBakiye", "genelBakiyeAciklama", bakiye);
 
-  document.getElementById("aktifOdenen").textContent = para(aktifOdenen);
-  document.getElementById("aktifSonuc").innerHTML = sonucBadge(buDonemNet);
-
-  document.getElementById("gecmisNet").textContent = bakiyeYazi(gecmisNet);
-  document.getElementById("gecmisNet").className = bakiyeClass(gecmisNet);
-
-  document.getElementById("buDonemNet").textContent = bakiyeYazi(buDonemNet);
-  document.getElementById("buDonemNet").className = bakiyeClass(buDonemNet);
-
-  document.getElementById("netSonuc").textContent = bakiyeYazi(genelNet);
-  document.getElementById("netSonuc").className = bakiyeClass(genelNet);
-
-  anaDurumYaz(genelNet, gecmisNet, buDonemNet);
-
-  const notAlan = document.getElementById("aktifDonemNotu");
-  notAlan.innerHTML = "";
-
-  if(buDonemNet < 0 && gecmisNet > 0 && genelNet >= 0){
-    notAlan.innerHTML = `
-      <div class="noteBox good">
-        Bu dönem eksik görünse de geçmiş fazla bakiyeniz bu borcu karşılıyor. Güncel borç yok.
-      </div>
-    `;
-  }else if(buDonemNet < 0 && genelNet < 0){
-    notAlan.innerHTML = `
-      <div class="noteBox bad">
-        Bu dönem için ödeme yapılması gerekiyor.
-      </div>
-    `;
-  }else if(buDonemNet >= 0){
-    notAlan.innerHTML = `
-      <div class="noteBox good">
-        Bu dönem için borç görünmüyor.
+  document.getElementById("uyariAlan").innerHTML = "";
+  if(bakiye < 0){
+    document.getElementById("uyariAlan").innerHTML = `
+      <div class="warningBox">
+        Güncel borç: ${Math.abs(bakiye)} TL
       </div>
     `;
   }
@@ -588,7 +577,7 @@ async function yukle(){
 yukle().catch(e=>{
   console.error(e);
   document.getElementById("personelGecmis").innerHTML =
-    "<p style='color:#991b1b;font-weight:900'>Ödeme bilgileri yüklenemedi.</p>";
+    "<p class='msg'>Ödeme bilgileri yüklenemedi.</p>";
 });
 </script>
 
