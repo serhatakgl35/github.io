@@ -333,8 +333,8 @@ if(!tel){
   location.href = "index.html";
 }
 
-document.getElementById("welcome").textContent =
-  ad + " olarak giriş yapıldı.";
+document.getElementById("welcome").innerHTML =
+  "Hoşgeldiniz <b>" + ad + "</b>";
 
 function logout(){
 
