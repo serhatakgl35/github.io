@@ -214,6 +214,7 @@
           <div class="dash-card" onclick="sekmeAc('randevuyonetim')"><div class="icon">🛠️</div><h3>Randevu Yönetimi</h3><p>Mevcut admin randevu yönetim sayfası panel içinde açılır.</p></div>
           <div class="dash-card" onclick="sekmeAc('odeme')"><div class="icon">☕</div><h3>Ödeme Paneli</h3><p>Çay aidatı, borç/fazla bakiye ve CSV raporu.</p></div>
           <div class="dash-card" onclick="sekmeAc('caybilanco')"><div class="icon">📊</div><h3>Çay Bilançoları</h3><p>Dönem bilançosu, gider kalemleri, kalan kasa ve fiş/fatura arşiv linkleri.</p></div>
+          <div class="dash-card" onclick="sekmeAc('kantinveresiye')"><div class="icon">🧾</div><h3>Kantin Veresiye</h3><p>Personel veresiye borçları, ödemeler ve borçlu listesi.</p></div>
         </div>
       </div>
 
@@ -267,20 +268,61 @@
     const openNewBtn = document.getElementById("openNewBtn");
 
     const SAYFALAR = {
-      dashboard: { title:"Ana Panel", desc:"Yönetim kısayolları.", url:"" },
-      uyeler: { title:"Üye Listesi", desc:"Personel kayıtları ve randevu istatistikleri.", url:"uyelistesi.html" },
-      adminliste: { title:"Admin Liste", desc:"Bugün, yarın ve aylık randevu listesi.", url:"adminliste.html" },
-      gunkapat: { title:"Gün / Saat Kapat", desc:"Admin gün ve saat kapatma paneli.", url:"admingunkapat.html" },
-      takvim: { title:"Haftalık Takvim", desc:"Haftalık randevu takvimi.", url:"adminhaftaliktakvim.html" },
-      randevuyonetim: { title:"Randevu Yönetimi", desc:"Mevcut admin randevu yönetim ekranı.", url:"admin.html" },
-      odeme: { title:"Ödeme Paneli", desc:"Çay aidatı ve ödeme takibi.", url:"odeme-admin.html" },
-      caybilanco: { title:"Çay Bilançoları", desc:"Dönem bilançosu, gider kalemleri ve fiş/fatura arşivi.", url:"cay-bilanco.html" }
-,
-kantinveresiye: {
-  title:"Kantin Veresiye",
-  desc:"Personel veresiye borçları, ödemeler ve borçlu listesi.",
-  url:"kantin-veresiye-admin.html"
-};
+
+      dashboard: {
+        title:"Ana Panel",
+        desc:"Yönetim kısayolları.",
+        url:""
+      },
+
+      uyeler: {
+        title:"Üye Listesi",
+        desc:"Personel kayıtları ve randevu istatistikleri.",
+        url:"uyelistesi.html"
+      },
+
+      adminliste: {
+        title:"Admin Liste",
+        desc:"Bugün, yarın ve aylık randevu listesi.",
+        url:"adminliste.html"
+      },
+
+      gunkapat: {
+        title:"Gün / Saat Kapat",
+        desc:"Admin gün ve saat kapatma paneli.",
+        url:"admingunkapat.html"
+      },
+
+      takvim: {
+        title:"Haftalık Takvim",
+        desc:"Haftalık randevu takvimi.",
+        url:"adminhaftaliktakvim.html"
+      },
+
+      randevuyonetim: {
+        title:"Randevu Yönetimi",
+        desc:"Mevcut admin randevu yönetim ekranı.",
+        url:"admin.html"
+      },
+
+      odeme: {
+        title:"Ödeme Paneli",
+        desc:"Çay aidatı ve ödeme takibi.",
+        url:"odeme-admin.html"
+      },
+
+      caybilanco: {
+        title:"Çay Bilançoları",
+        desc:"Dönem bilançosu, gider kalemleri ve fiş/fatura arşivi.",
+        url:"cay-bilanco.html"
+      },
+
+      kantinveresiye: {
+        title:"Kantin Veresiye",
+        desc:"Personel veresiye borçları, ödemeler ve borçlu listesi.",
+        url:"kantin-veresiye-admin.html"
+      }
+
     };
 
     let aktifKey = "dashboard";
