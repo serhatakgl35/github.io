@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kantin10 | Personel Üye Listesi</title>
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{--bg:#f5f5f7;--card:#fff;--text:#111;--muted:#6b7280;--line:#e5e7eb;--soft:0 10px 28px rgba(0,0,0,.07);--shadow:0 18px 48px rgba(0,0,0,.10);--r:24px;--green:#16a34a;--red:#dc2626;--amber:#d97706;--blue:#2563eb}
+    body{margin:0;background:linear-gradient(180deg,#fbfbfd 0%,var(--bg) 50%,#fff 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;padding:14px}
+    a{color:inherit;text-decoration:none}.hidden{display:none!important}.wrap{max-width:1180px;margin:auto}
+    .topbar{position:sticky;top:10px;z-index:20;background:rgba(17,17,17,.94);color:#fff;border-radius:24px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 14px 40px rgba(0,0,0,.18);backdrop-filter:blur(16px)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:-.35px}.brand:before{content:"K10";width:34px;height:34px;border-radius:12px;background:white;color:#111;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:950}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a,.nav button{border:0;background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:9px 12px;font-weight:900;font-size:12px;cursor:pointer}
+    .hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#111 0%,#2b2b2f 62%,#4b5563 100%);color:white;border-radius:30px;padding:24px;margin:16px 0 14px;box-shadow:var(--shadow)}.hero:after{content:"";position:absolute;right:-52px;top:-52px;width:165px;height:165px;border-radius:50%;background:rgba(255,255,255,.10)}.hero h1{margin:0 0 8px;font-size:29px;letter-spacing:-.9px}.hero p{margin:0;max-width:760px;color:rgba(255,255,255,.74);line-height:1.45}.badgeTop{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;margin-bottom:12px}.dot{width:8px;height:8px;border-radius:99px;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.16)}
+    .card{background:rgba(255,255,255,.92);border:1px solid rgba(229,231,235,.92);border-radius:var(--r);box-shadow:var(--soft);padding:18px;margin-bottom:14px;backdrop-filter:blur(14px)}h2{margin:0 0 6px;font-size:20px;letter-spacing:-.35px}.muted{color:var(--muted);font-size:13px;line-height:1.45}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px;min-height:92px;position:relative;overflow:hidden}.stat:after{content:"";position:absolute;right:-28px;bottom:-28px;width:72px;height:72px;border-radius:50%;background:#f3f4f6}.stat b{display:block;font-size:25px;letter-spacing:-.5px;position:relative;z-index:1}.stat span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-top:4px;position:relative;z-index:1}.stat small{display:block;color:#9ca3af;font-size:11px;font-weight:800;margin-top:8px;position:relative;z-index:1}.stat.green:after{background:#dcfce7}.stat.blue:after{background:#dbeafe}.stat.amber:after{background:#fef3c7}
+    .controls{display:grid;grid-template-columns:1.25fr .95fr auto auto;gap:10px;align-items:end;margin-top:14px}label{display:block;font-size:12px;font-weight:950;color:#374151;margin:0 0 6px}input,select{width:100%;border:1px solid var(--line);border-radius:16px;padding:13px 12px;background:white;font-size:15px;outline:none}input:focus,select:focus{border-color:#111;box-shadow:0 0 0 4px rgba(17,17,17,.07)}button{border:0;border-radius:16px;padding:13px 14px;background:#111;color:#fff;font-weight:950;cursor:pointer}.btnLight{background:#f3f4f6;color:#111}.btnBlue{background:var(--blue)}.btnRed{background:#fee2e2;color:#991b1b}.pill{display:inline-flex;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950}.pill.ok{background:#dcfce7;color:#166534}.pill.warn{background:#fef3c7;color:#92400e}.pill.off{background:#fee2e2;color:#991b1b}.table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);background:#fff}table{width:100%;border-collapse:collapse;min-width:860px}th,td{text-align:left;padding:13px 12px;border-bottom:1px solid #eee;font-size:14px;white-space:nowrap}th{background:#fafafa;color:#555;font-size:12px;font-weight:950}.empty{text-align:center;padding:24px;color:var(--muted)}.top10-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:14px}.top10-item{background:#fff;border:1px solid var(--line);border-radius:20px;padding:13px;display:flex;justify-content:space-between;align-items:center;gap:10px}.top10-left strong{display:block;font-size:15px;margin-bottom:4px}.top10-left span{display:block;color:var(--muted);font-size:12px;font-weight:800}.top10-count{min-width:46px;height:46px;border-radius:16px;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-weight:950;font-size:18px}.infoBar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#f9fafb;border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:12px}.toast{position:fixed;left:14px;right:14px;bottom:14px;background:#111;color:#fff;border-radius:18px;padding:13px 14px;text-align:center;font-weight:900;box-shadow:0 16px 44px rgba(0,0,0,.22);z-index:99}
+    @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.nav a,.nav button{font-size:12px;padding:8px 10px}.hero h1{font-size:24px}.card{padding:15px;border-radius:22px}button{width:100%}}
+    @media(max-width:520px){body{padding:10px}.stats{grid-template-columns:1fr}.hero{padding:20px;border-radius:26px}.stat b{font-size:23px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">Personel Üye Listesi</div>
+      <div class="nav">
+        <a href="adminpanel.html">Admin Paneli</a>
+        <a href="index.html">Ana Sayfa</a>
+        <button id="yenileBtn">Personeli Yenile</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="badgeTop"><span class="dot"></span> Read düşük hızlı sürüm</div>
+      <h1>Üye listesi</h1>
+      <p>Sayfa açılışında sadece personeller okunur. Randevu geçmişi ve Top 10 hesabı otomatik çekilmez; ihtiyaç olunca butonla yüklenir.</p>
+    </section>
+
+    <section class="card">
+      <h2>Özet</h2>
+      <div class="muted">Mobilde hızlı açılması için randevu sayıları ilk açılışta hesaplanmaz.</div>
+      <div class="stats">
+        <div class="stat green"><b id="toplamPersonel">0</b><span>Toplam Personel</span><small>Sadece personeller okundu</small></div>
+        <div class="stat"><b id="bugunKayit">0</b><span>Bugün Kayıt Olan</span><small>Personel kayıt tarihine göre</small></div>
+        <div class="stat blue"><b id="toplamRandevu">-</b><span>Toplam Randevu</span><small>Butonla hesaplanır</small></div>
+        <div class="stat amber"><b id="bugunRandevu">-</b><span>Bugünkü Randevu</span><small>Butonla hesaplanır</small></div>
+        <div class="stat"><b id="gosterilenKayit">0</b><span>Gösterilen Kayıt</span><small>Arama/sıralama sonucu</small></div>
+      </div>
+      <div class="infoBar">
+        <div><b>Randevu istatistikleri</b><div class="muted" id="randevuBilgi">Henüz yüklenmedi. Bu sayede açılışta read patlamaz.</div></div>
+        <button class="btnBlue" id="randevuYukleBtn">Randevu Sayılarını / Top 10'u Yükle</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Filtrele ve sırala</h2>
+      <div class="controls">
+        <div><label>Arama</label><input id="aramaInput" placeholder="İsim veya telefon ara..." /></div>
+        <div><label>Sıralama</label><select id="siralaSecim">
+          <option value="kayit_desc">Kayıt Tarihi: Yeni → Eski</option>
+          <option value="isim_asc">İsim: A → Z</option>
+          <option value="isim_desc">İsim: Z → A</option>
+          <option value="randevu_desc">Toplam Randevu: Çok → Az</option>
+          <option value="randevu_asc">Toplam Randevu: Az → Çok</option>
+          <option value="son_desc">Son Randevu: Yeni → Eski</option>
+          <option value="son_asc">Son Randevu: Eski → Yeni</option>
+        </select></div>
+        <button class="btnLight" id="csvBtn">Tabloyu İndir</button>
+        <button class="btnLight" id="cacheSilBtn">Randevu Cache Sil</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>En Çok Gelenler Top 10</h2>
+      <div class="muted">Randevu istatistiği yüklenince dolar. Açılışta boş kalması bilerek yapıldı.</div>
+      <div id="top10List" class="top10-grid"><div class="empty">Top 10 için randevu sayılarını yükle.</div></div>
+    </section>
+
+    <section class="card">
+      <h2>Personeller</h2>
+      <div class="table-wrap" style="margin-top:12px">
+        <table>
+          <thead><tr><th>İsim</th><th>Telefon</th><th>Kayıt Tarihi</th><th>Son Randevu</th><th>Toplam Randevu</th><th>Durum</th><th>İşlem</th></tr></thead>
+          <tbody id="uyeTablo"><tr><td colspan="7" class="empty">Yükleniyor...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4", authDomain:"berber-randevu-14f7f.firebaseapp.com", projectId:"berber-randevu-14f7f", storageBucket:"berber-randevu-14f7f.firebasestorage.app", messagingSenderId:"280530860977", appId:"1:280530860977:web:52c0df04c228896f211b90" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const PERSONEL_COLLECTION = "personeller";
+    const AKTIF_RANDEVU_COLLECTION = "randevular";
+    const GECMIS_RANDEVU_COLLECTION = "randevu_gecmisi";
+    const CACHE_KEY = "kantin10_uye_randevu_ozet_cache_v1";
+    const CACHE_DATE_KEY = "kantin10_uye_randevu_ozet_cache_date_v1";
+
+    let tumPersoneller = [];
+    let filtreliPersoneller = [];
+    let randevuYuklendi = false;
+    let tumRandevuSayisi = 0;
+    let bugunRandevuSayisi = 0;
+
+    const $ = id => document.getElementById(id);
+    const tablo = $("uyeTablo"), aramaInput = $("aramaInput"), siralaSecim = $("siralaSecim"), top10List = $("top10List");
+
+    function toast(t){ $("toast").textContent=t; $("toast").classList.remove("hidden"); setTimeout(()=>$("toast").classList.add("hidden"),2200); }
+    function telefonTemizle(v){ let t=String(v||"").replace(/\D/g,""); if(t.startsWith("90")) t="0"+t.slice(2); if(t.length===10) t="0"+t; return t.slice(0,11); }
+    function htmlTemizle(v){ return String(v ?? "-").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function temiz(v){ return String(v||"").toLocaleLowerCase("tr").trim(); }
+    function tarihObjesi(value){ if(!value) return null; try{ if(value.toDate) return value.toDate(); const d=new Date(value); return isNaN(d.getTime()) ? null : d; }catch{return null;} }
+    function tarihYaz(value){ const d=tarihObjesi(value); if(!d) return "-"; return d.toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+    function tarihSaattenOlustur(r){ const tarih=r.date||r.tarih||r.kayitTarih||""; const saat=r.time||r.saat||r.zaman||r.kayitSaat||""; if(tarih&&saat){const d=new Date(`${tarih}T${saat}`); if(!isNaN(d.getTime())) return d;} if(tarih){const d=new Date(tarih); if(!isNaN(d.getTime())) return d;} return tarihObjesi(r.createdAt||r.kayitTarihi||r.olusturmaTarihi); }
+    function bugunMu(value){ const d=tarihObjesi(value); if(!d) return false; const n=new Date(); return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate(); }
+    function randevuBugunMu(r){ const tarih=r.date||r.tarih||r.kayitTarih||""; if(tarih){ const n=new Date(); const y=n.getFullYear(); const m=String(n.getMonth()+1).padStart(2,"0"); const d=String(n.getDate()).padStart(2,"0"); return tarih===`${y}-${m}-${d}`; } const d=tarihSaattenOlustur(r); return bugunMu(d); }
+
+    async function koleksiyonOku(collectionName){ const snap=await getDocs(collection(db,collectionName)); return snap.docs.map(item=>({id:item.id,...item.data()})); }
+
+    async function personelleriGetir(){
+      tablo.innerHTML = `<tr><td colspan="7" class="empty">Personeller yükleniyor...</td></tr>`;
+      try{
+        const personeller = await koleksiyonOku(PERSONEL_COLLECTION);
+        tumPersoneller = personeller.map(p=>({
+          id:p.id,
+          isim:p.isim || p.adSoyad || p.ad || p.name || "-",
+          telefon:telefonTemizle(p.telefon || p.phone || p.id) || p.telefon || p.id || "-",
+          createdAt:p.createdAt || p.kayitTarihi || p.tarih || null,
+          aktif:p.aktif !== false && p.aktifMi !== false,
+          toplamRandevu:0,
+          sonRandevu:null
+        }));
+        tumPersoneller.sort((a,b)=>(tarihObjesi(b.createdAt)?.getTime()||0)-(tarihObjesi(a.createdAt)?.getTime()||0));
+        filtrele(false);
+        istatistikYaz();
+        cacheVarsaUygula();
+        toast("Personeller yüklendi");
+      }catch(error){ console.error(error); tablo.innerHTML=`<tr><td colspan="7" class="empty">Personeller yüklenemedi. Firestore kurallarını kontrol et.</td></tr>`; }
+    }
+
+    function cacheVarsaUygula(){
+      try{
+        const today = new Date().toISOString().slice(0,10);
+        if(localStorage.getItem(CACHE_DATE_KEY) !== today) return;
+        const raw = localStorage.getItem(CACHE_KEY); if(!raw) return;
+        const cache = JSON.parse(raw);
+        if(!cache || !cache.personelStats) return;
+        randevuYuklendi = true;
+        tumRandevuSayisi = Number(cache.tumRandevuSayisi||0);
+        bugunRandevuSayisi = Number(cache.bugunRandevuSayisi||0);
+        tumPersoneller = tumPersoneller.map(p=>({ ...p, ...(cache.personelStats[p.telefon] || {}) }));
+        $("randevuBilgi").textContent = "Bugünkü cache kullanıldı. Tekrar read yazmadı.";
+        filtrele(false); istatistikYaz(); top10Yaz();
+      }catch(e){ console.warn(e); }
+    }
+
+    async function randevuIstatistikleriniYukle(force=false){
+      if(randevuYuklendi && !force){ toast("Randevu istatistiği zaten yüklü"); return; }
+      $("randevuYukleBtn").disabled = true;
+      $("randevuYukleBtn").textContent = "Yükleniyor...";
+      $("randevuBilgi").textContent = "Aktif ve geçmiş randevular okunuyor. Bu işlem read yazar ama sadece butona basınca çalışır.";
+      try{
+        const [aktifRandevular, gecmisRandevular] = await Promise.all([
+          koleksiyonOku(AKTIF_RANDEVU_COLLECTION).catch(()=>[]),
+          koleksiyonOku(GECMIS_RANDEVU_COLLECTION).catch(()=>[])
+        ]);
+        const tumRandevular = [...aktifRandevular, ...gecmisRandevular];
+        const stats = {};
+        tumRandevular.forEach(r=>{
+          const tel = telefonTemizle(r.telefon || r.phone || r.kayitTelefon || r.personelTelefon || r.userPhone);
+          if(!tel) return;
+          if(!stats[tel]) stats[tel] = { toplamRandevu:0, sonRandevu:null };
+          stats[tel].toplamRandevu += 1;
+          const d = tarihSaattenOlustur(r);
+          if(d && (!stats[tel].sonRandevu || d > new Date(stats[tel].sonRandevu))) stats[tel].sonRandevu = d.toISOString();
+        });
+        tumRandevuSayisi = tumRandevular.length;
+        bugunRandevuSayisi = tumRandevular.filter(randevuBugunMu).length;
+        tumPersoneller = tumPersoneller.map(p=>({ ...p, ...(stats[p.telefon] || {toplamRandevu:0,sonRandevu:null}) }));
+        localStorage.setItem(CACHE_DATE_KEY, new Date().toISOString().slice(0,10));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ tumRandevuSayisi, bugunRandevuSayisi, personelStats:stats }));
+        randevuYuklendi = true;
+        $("randevuBilgi").textContent = `Yüklendi ve bugünkü cache'e alındı. Toplam ${tumRandevuSayisi} randevu okundu.`;
+        filtrele(false); istatistikYaz(); top10Yaz(); toast("Randevu istatistikleri yüklendi");
+      }catch(error){ console.error(error); $("randevuBilgi").textContent = "Randevu istatistikleri yüklenemedi."; }
+      finally{ $("randevuYukleBtn").disabled = false; $("randevuYukleBtn").textContent = "Randevu Sayılarını / Top 10'u Yükle"; }
+    }
+
+    function filtrele(yaz=true){
+      const arama=temiz(aramaInput.value);
+      filtreliPersoneller = tumPersoneller.filter(p=> !arama || temiz(p.isim).includes(arama) || temiz(p.telefon).includes(arama));
+      siralaUygula(false);
+      if(yaz){ tabloYaz(); istatistikYaz(); }
+    }
+
+    function siralaUygula(yenidenYaz=true){
+      const secim = siralaSecim.value;
+      filtreliPersoneller.sort((a,b)=>{
+        if(secim==="isim_asc") return String(a.isim).localeCompare(String(b.isim),"tr",{sensitivity:"base"});
+        if(secim==="isim_desc") return String(b.isim).localeCompare(String(a.isim),"tr",{sensitivity:"base"});
+        if(secim==="randevu_desc") return Number(b.toplamRandevu||0)-Number(a.toplamRandevu||0);
+        if(secim==="randevu_asc") return Number(a.toplamRandevu||0)-Number(b.toplamRandevu||0);
+        if(secim==="son_desc") return (tarihObjesi(b.sonRandevu)?.getTime()||0)-(tarihObjesi(a.sonRandevu)?.getTime()||0);
+        if(secim==="son_asc") return (tarihObjesi(a.sonRandevu)?.getTime()||0)-(tarihObjesi(b.sonRandevu)?.getTime()||0);
+        return (tarihObjesi(b.createdAt)?.getTime()||0)-(tarihObjesi(a.createdAt)?.getTime()||0);
+      });
+      if(yenidenYaz){ tabloYaz(); istatistikYaz(); }
+    }
+
+    function top10Yaz(){
+      const liste=[...tumPersoneller].filter(p=>Number(p.toplamRandevu||0)>0).sort((a,b)=>Number(b.toplamRandevu||0)-Number(a.toplamRandevu||0) || String(a.isim).localeCompare(String(b.isim),"tr",{sensitivity:"base"})).slice(0,10);
+      if(!randevuYuklendi){ top10List.innerHTML=`<div class="empty">Top 10 için randevu sayılarını yükle.</div>`; return; }
+      if(liste.length===0){ top10List.innerHTML=`<div class="empty">Henüz randevusu olan personel yok.</div>`; return; }
+      top10List.innerHTML=liste.map((p,i)=>`<div class="top10-item"><div class="top10-left"><strong>${i+1}. ${htmlTemizle(p.isim)}</strong><span>${htmlTemizle(p.telefon)} • Son: ${p.sonRandevu ? tarihYaz(p.sonRandevu) : "-"}</span></div><div class="top10-count">${Number(p.toplamRandevu||0)}</div></div>`).join("");
+    }
+
+    function tabloYaz(){
+      if(filtreliPersoneller.length===0){ tablo.innerHTML=`<tr><td colspan="7" class="empty">Kayıt bulunamadı.</td></tr>`; return; }
+      tablo.innerHTML=filtreliPersoneller.map(p=>`<tr><td>${htmlTemizle(p.isim)}</td><td>${htmlTemizle(p.telefon)}</td><td>${tarihYaz(p.createdAt)}</td><td>${p.sonRandevu ? tarihYaz(p.sonRandevu) : (randevuYuklendi ? "-" : "Yüklenmedi")}</td><td><strong>${randevuYuklendi ? Number(p.toplamRandevu||0) : "-"}</strong></td><td><span class="pill ${p.aktif ? "ok" : "off"}">${p.aktif ? "Aktif" : "Pasif"}</span></td><td><button class="btnRed" onclick="personelSil('${p.id}')">Sil</button></td></tr>`).join("");
+    }
+
+    function istatistikYaz(){
+      $("toplamPersonel").textContent=tumPersoneller.length;
+      $("bugunKayit").textContent=tumPersoneller.filter(p=>bugunMu(p.createdAt)).length;
+      $("toplamRandevu").textContent=randevuYuklendi ? tumRandevuSayisi : "-";
+      $("bugunRandevu").textContent=randevuYuklendi ? bugunRandevuSayisi : "-";
+      $("gosterilenKayit").textContent=filtreliPersoneller.length;
+      tabloYaz();
+    }
+
+    async function personelSil(id){
+      if(!confirm("Bu personeli silmek istiyor musun?")) return;
+      try{ await deleteDoc(doc(db,PERSONEL_COLLECTION,id)); tumPersoneller=tumPersoneller.filter(p=>p.id!==id); filtrele(); toast("Personel silindi"); }
+      catch(error){ console.error(error); alert("Personel silinemedi. Firestore yetkilerini kontrol et."); }
+    }
+
+    function csvIndir(){
+      if(!filtreliPersoneller.length){ alert("İndirilecek kayıt yok."); return; }
+      const satirlar=[["İsim","Telefon","Kayıt Tarihi","Son Randevu","Toplam Randevu","Durum"]];
+      filtreliPersoneller.forEach(p=>satirlar.push([p.isim,p.telefon,tarihYaz(p.createdAt),p.sonRandevu?tarihYaz(p.sonRandevu):"-",randevuYuklendi?Number(p.toplamRandevu||0):"Yüklenmedi",p.aktif?"Aktif":"Pasif"]));
+      const csv=satirlar.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(";")).join("\n");
+      const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+      const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="personel-uye-listesi.csv"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    function cacheSil(){ localStorage.removeItem(CACHE_KEY); localStorage.removeItem(CACHE_DATE_KEY); randevuYuklendi=false; tumRandevuSayisi=0; bugunRandevuSayisi=0; tumPersoneller=tumPersoneller.map(p=>({...p,toplamRandevu:0,sonRandevu:null})); $("randevuBilgi").textContent="Cache silindi. İstersen tekrar randevu sayılarını yükle."; top10Yaz(); filtrele(); toast("Randevu cache silindi"); }
+
+    aramaInput.addEventListener("input",()=>filtrele(true));
+    siralaSecim.addEventListener("change",()=>siralaUygula(true));
+    $("yenileBtn").addEventListener("click",personelleriGetir);
+    $("randevuYukleBtn").addEventListener("click",()=>randevuIstatistikleriniYukle(true));
+    $("csvBtn").addEventListener("click",csvIndir);
+    $("cacheSilBtn").addEventListener("click",cacheSil);
+    window.personelSil = personelSil;
+
+    personelleriGetir();
+  </script>
+</body>
+</html>
