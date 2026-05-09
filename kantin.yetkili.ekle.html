@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Kantin10 | Kantin Yetkili Ekle</title>
+  <style>
+    :root{--bg:#f5f5f7;--card:#fff;--text:#111;--muted:#6b7280;--line:#e5e7eb;--black:#111;--green:#16a34a;--red:#dc2626;--amber:#d97706;--shadow:0 18px 45px rgba(0,0,0,.08);--r:22px}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif} a{color:inherit;text-decoration:none}
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(17,17,17,.92);backdrop-filter:blur(18px);color:white;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .topbar-inner{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;letter-spacing:-.4px}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a,.nav button{border:0;background:rgba(255,255,255,.12);color:white;border-radius:999px;padding:9px 12px;font-weight:800;font-size:13px}
+    .wrap{max-width:1100px;margin:0 auto;padding:18px 14px 42px}.hero{background:linear-gradient(135deg,#fff,#f8fafc);border:1px solid rgba(255,255,255,.75);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin:12px 0 16px}.hero h1{font-size:26px;margin:0 0 8px;letter-spacing:-.8px}.hero p{margin:0;color:var(--muted);line-height:1.45}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--card);border:1px solid rgba(229,231,235,.9);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.06);padding:16px}.card h2{font-size:18px;margin:0 0 12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin-bottom:10px}label{display:block;font-size:12px;font-weight:900;color:#374151;margin:0 0 6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:15px;padding:13px 12px;background:#fff;font-size:15px;outline:none}textarea{min-height:80px;resize:vertical}.btns{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:16px;padding:13px 15px;font-weight:900;cursor:pointer}.btn.black{background:#111;color:white}.btn.green{background:var(--green);color:white}.btn.red{background:var(--red);color:white}.btn.light{background:#f3f4f6;color:#111}.btn:disabled{opacity:.45;cursor:not-allowed}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}.stat{background:#f9fafb;border:1px solid var(--line);border-radius:18px;padding:14px}.stat b{display:block;font-size:20px;letter-spacing:-.5px}.stat span{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-top:4px}.stat.debt b{color:var(--red)}.stat.pay b{color:var(--green)}.stat.net b{color:#111}
+    .list{display:flex;flex-direction:column;gap:10px}.item{border:1px solid var(--line);border-radius:18px;padding:12px;background:#fff}.item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900}.badge.borc{background:#fee2e2;color:#991b1b}.badge.odeme{background:#dcfce7;color:#166534}.amt{font-weight:950;font-size:17px}.muted{color:var(--muted);font-size:12px}.empty{padding:18px;border:1px dashed #d1d5db;border-radius:18px;color:var(--muted);text-align:center}.notice{font-size:13px;color:var(--muted);line-height:1.45;background:#f9fafb;border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:10px}.danger{color:var(--red)}
+
+    .debt-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px}.debt-panel-head p{margin:4px 0 0;color:var(--muted);font-size:13px}.debt-total{background:#111;color:white;border-radius:18px;padding:12px 14px;min-width:180px;text-align:right}.debt-total b{display:block;font-size:23px;letter-spacing:-.7px}.debt-total span{display:block;font-size:11px;font-weight:900;opacity:.75;margin-top:3px}.debtor-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.debtor-card{border:1px solid var(--line);border-radius:18px;background:#fff;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.debtor-name{font-weight:950}.debtor-phone{color:var(--muted);font-size:12px;margin-top:3px}.debtor-meta{color:var(--muted);font-size:11px;margin-top:7px}.debtor-amount{text-align:right;font-weight:950;color:var(--red);font-size:18px;white-space:nowrap}.small-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    @media(max-width:800px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.debtor-list{grid-template-columns:1fr}.debt-total{text-align:left;width:100%}.topbar-inner{align-items:flex-start;flex-direction:column}.nav a,.nav button{font-size:12px;padding:8px 10px}.hero h1{font-size:23px}}
+  
+    .auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,#f5f5f7,#fff)}
+    .auth-card{width:100%;max-width:430px;background:#fff;border:1px solid rgba(229,231,235,.95);border-radius:28px;box-shadow:var(--shadow);padding:22px}
+    .auth-logo{width:54px;height:54px;border-radius:18px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:950;font-size:20px;margin-bottom:14px}
+    .auth-card h1{font-size:24px;margin:0 0 7px;letter-spacing:-.6px}.auth-card p{margin:0 0 16px;color:var(--muted);line-height:1.45;font-size:14px}
+    .hidden{display:none!important}.user-pill{background:rgba(255,255,255,.12);border-radius:999px;padding:9px 12px;font-weight:900;font-size:12px;color:#fff}.warn-box{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:18px;padding:12px;font-size:13px;line-height:1.45;margin-top:10px}.ok-box{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;border-radius:18px;padding:12px;font-size:13px;line-height:1.45;margin-top:10px}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand">Kantin10 Yetkili Ekle</div><div class="nav"><a href="kantin-veresiye-admin.html">Veresiye Admin</a><a href="adminpanel.html">Admin Paneli</a><button onclick="location.reload()">Yenile</button></div></div></header>
+<main class="wrap">
+  <section class="hero"><h1>Kantin yetkilisi oluştur</h1><p>Kantine bakan personelleri bu sayfadan yetkili olarak ekleyebilirsin. Oluşturulan telefon ve şifre ile veresiye admin sayfasına giriş yapılır.</p></section>
+  <section class="grid">
+    <div class="card">
+      <h2>Yetkili Bilgileri</h2>
+      <div class="field"><label>Kurulum Kodu</label><input id="kurulumKodu" type="password" placeholder="Yönetici kurulum kodu" /></div>
+      <div class="field"><label>Ad Soyad</label><input id="adSoyad" placeholder="Örn: Ahmet YILMAZ" /></div>
+      <div class="field"><label>Telefon</label><input id="telefon" inputmode="tel" placeholder="0546 000 00 00" /></div>
+      <div class="row"><div class="field"><label>Şifre</label><input id="sifre" type="password" placeholder="En az 4 karakter" /></div><div class="field"><label>Şifre Tekrar</label><input id="sifre2" type="password" placeholder="Tekrar gir" /></div></div>
+      <button class="btn black" id="kaydetBtn" style="width:100%">Yetkiliyi Kaydet / Güncelle</button>
+      <div class="warn-box"><b>Önemli:</b> Bu deneme sürümünde kurulum kodu sayfa içinde durur. Yayına almadan önce Firestore güvenlik kurallarıyla sadece ana adminin yazmasına izin vermek daha doğru olur.</div>
+    </div>
+    <div class="card">
+      <h2>Kayıtlı Kantin Yetkilileri</h2>
+      <div id="yetkiliList" class="list"><div class="empty">Liste yükleniyor...</div></div>
+    </div>
+  </section>
+</main>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+    authDomain: "berber-randevu-14f7f.firebaseapp.com",
+    projectId: "berber-randevu-14f7f",
+    storageBucket: "berber-randevu-14f7f.firebasestorage.app",
+    messagingSenderId: "280530860977",
+    appId: "1:280530860977:web:52c0df04c228896f211b90"
+  };
+  const KURULUM_KODU = "KANTIN10-2026"; // İstersen burayı değiştir.
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+  function normalizePhone(v){ let d=String(v||'').replace(/\D/g,''); if(d.startsWith('90')) d=d.slice(2); if(d&&!d.startsWith('0')) d='0'+d; return d; }
+
+  $('telefon').addEventListener('input', e=>{ e.target.value = normalizePhone(e.target.value); });
+
+  async function yetkilileriYukle(){
+    const snap = await getDocs(collection(db,'kantin_adminleri'));
+    const rows = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.adSoyad||'').localeCompare(b.adSoyad||'','tr'));
+    $('yetkiliList').innerHTML = rows.length ? rows.map(x=>`<div class="item"><div class="item-top"><div><div style="font-weight:950">${esc(x.adSoyad||'İsimsiz Yetkili')}</div><div class="muted">${esc(x.telefon||'Telefon yok')}</div></div><span class="badge ${x.aktif===false?'borc':'odeme'}">${x.aktif===false?'PASİF':'AKTİF'}</span></div></div>`).join('') : '<div class="empty">Henüz yetkili yok.</div>';
+  }
+
+  $('kaydetBtn').addEventListener('click', async()=>{
+    if($('kurulumKodu').value.trim() !== KURULUM_KODU) return alert('Kurulum kodu hatalı.');
+    const adSoyad = $('adSoyad').value.trim();
+    const telefon = normalizePhone($('telefon').value);
+    const sifre = $('sifre').value.trim();
+    const sifre2 = $('sifre2').value.trim();
+    if(!adSoyad || !telefon || !sifre) return alert('Ad soyad, telefon ve şifre zorunlu.');
+    if(sifre.length < 4) return alert('Şifre en az 4 karakter olmalı.');
+    if(sifre !== sifre2) return alert('Şifreler aynı değil.');
+    $('kaydetBtn').disabled = true;
+    try{
+      const q = query(collection(db,'kantin_adminleri'), where('telefon','==',telefon));
+      const snap = await getDocs(q);
+      if(snap.empty){
+        await addDoc(collection(db,'kantin_adminleri'), { adSoyad, telefon, sifre, aktif:true, rol:'kantin_admin', createdAt:serverTimestamp() });
+      }else{
+        await updateDoc(doc(db,'kantin_adminleri',snap.docs[0].id), { adSoyad, sifre, aktif:true, rol:'kantin_admin', updatedAt:serverTimestamp() });
+      }
+      $('adSoyad').value=''; $('telefon').value=''; $('sifre').value=''; $('sifre2').value='';
+      await yetkilileriYukle(); alert('Yetkili kaydedildi.');
+    }catch(e){ console.error(e); alert('Kayıt yapılamadı: '+e.message); }
+    finally{ $('kaydetBtn').disabled = false; }
+  });
+  yetkilileriYukle().catch(e=>{ console.error(e); $('yetkiliList').innerHTML='<div class="empty">Yetkililer yüklenemedi.</div>'; });
+</script>
+</body>
+</html>
