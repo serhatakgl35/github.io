@@ -8,189 +8,69 @@
 <style>
 *{box-sizing:border-box}
 :root{
-  --bg:#f5f5f7;
-  --text:#111;
-  --muted:#666;
-  --shadow:0 18px 55px rgba(0,0,0,.10);
-  --soft:0 8px 25px rgba(0,0,0,.08);
-  --r:26px;
+  --bg:#f5f5f7; --text:#111; --muted:#6b7280; --card:#fff; --line:#e5e7eb;
+  --dark:#111; --green:#16a34a; --red:#dc2626; --amber:#d97706; --blue:#0284c7;
+  --shadow:0 20px 60px rgba(0,0,0,.10); --soft:0 10px 30px rgba(0,0,0,.07);
+  --r:28px;
 }
 body{
-  margin:0;
-  min-height:100vh;
-  color:var(--text);
+  margin:0; min-height:100vh; color:var(--text);
   background:
-    radial-gradient(circle at 20% 10%,rgba(255,255,255,.95),transparent 32%),
-    radial-gradient(circle at 80% 0%,rgba(225,229,238,.9),transparent 35%),
-    var(--bg);
+    radial-gradient(circle at 12% 0%, rgba(17,17,17,.10), transparent 28%),
+    radial-gradient(circle at 90% 10%, rgba(2,132,199,.10), transparent 30%),
+    linear-gradient(180deg,#fbfbfd 0%,var(--bg) 44%,#fff 100%);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
 }
-.topbar{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:rgba(17,17,17,.94);
-  padding:14px 18px;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  flex-wrap:wrap;
-  box-shadow:0 4px 18px rgba(0,0,0,.18);
-  backdrop-filter:blur(16px);
-}
-.topbar a,.topbar button{
-  background:white;
-  color:#111;
-  text-decoration:none;
-  border:0;
-  border-radius:999px;
-  padding:9px 15px;
-  font-weight:900;
-  cursor:pointer;
-}
-.wrap{width:min(1180px,100%);margin:28px auto;padding:0 16px}
-.card{
-  background:rgba(255,255,255,.90);
-  border-radius:var(--r);
-  padding:24px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(18px);
-  margin-bottom:18px;
-}
-h1{font-size:34px;margin:0 0 12px;font-weight:950;letter-spacing:-.5px}
-h2,h3{margin-top:0}
-p{color:var(--muted);line-height:1.45}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.muted{color:var(--muted);font-size:14px}
-.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
-
-.status{
-  display:inline-block;
-  padding:8px 13px;
-  border-radius:999px;
-  font-weight:950;
-  font-size:13px;
-  white-space:nowrap;
-}
-.odendi{background:#dcfce7;color:#166534}
-.bekliyor{background:#fef3c7;color:#92400e}
-.reddedildi,.gecikti{background:#fee2e2;color:#991b1b}
-
-.ibanBox{display:flex;align-items:center;gap:10px}
-.iban{
-  flex:1;
-  background:#f5f5f7;
-  border-radius:18px;
-  padding:15px;
-  font-size:15px;
-  letter-spacing:.35px;
-  font-weight:950;
-  word-break:break-word;
-}
-.copyBtn{
-  width:50px;
-  height:50px;
-  border:0;
-  border-radius:17px;
-  background:#111;
-  color:white;
-  font-size:21px;
-  cursor:pointer;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-.copyMsg{margin-top:8px;font-weight:800;color:#166534;min-height:20px}
-
-.historyItem{
-  background:white;
-  border-radius:22px;
-  padding:18px;
-  box-shadow:var(--soft);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
-  margin-bottom:12px;
-}
-.historyLeft{display:flex;flex-direction:column;gap:6px}
-.historyTitle{font-weight:950;font-size:16px}
-.historyMoney{color:#666;font-weight:800;line-height:1.6}
-
-.fazla,.tamam{
-  display:inline-block;
-  margin-top:6px;
-  color:#166534;
-  background:#dcfce7;
-  padding:6px 10px;
-  border-radius:999px;
-  font-weight:950;
-}
-.borc{
-  display:inline-block;
-  margin-top:6px;
-  color:#991b1b;
-  background:#fee2e2;
-  padding:6px 10px;
-  border-radius:999px;
-  font-weight:950;
-}
-.mahsup{
-  display:inline-block;
-  margin-top:6px;
-  color:#075985;
-  background:#e0f2fe;
-  padding:6px 10px;
-  border-radius:999px;
-  font-weight:950;
-}
-.warningBox{
-  background:#fee2e2;
-  color:#991b1b;
-  border-radius:20px;
-  padding:15px;
-  font-weight:950;
-  margin-top:14px;
-}
-.balanceCard h1{margin-bottom:8px}
-.balanceGood{color:#166534}
-.balanceBad{color:#991b1b}
-.balanceNeutral{color:#166534}
-
-@media(max-width:720px){
-  .wrap{padding:0 10px}
-  .card{padding:18px;border-radius:22px}
-  h1{font-size:27px}
-  .historyItem{align-items:flex-start;flex-direction:column}
-  .ibanBox{align-items:stretch}
-  .copyBtn{height:auto;min-width:50px}
-}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.55),transparent 40%);z-index:-1}
+.topbar{position:sticky;top:0;z-index:30;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 10px 35px rgba(0,0,0,.20);padding:13px 14px;color:#fff}
+.topbarInner{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:-.35px}.brand:before{content:"₺";width:36px;height:36px;border-radius:14px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:950;box-shadow:0 8px 20px rgba(255,255,255,.12)}
+.navActions{display:flex;gap:8px;flex-wrap:wrap}.topbar a,.topbar button{background:rgba(255,255,255,.13);color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:9px 13px;font-weight:900;cursor:pointer}.topbar a:hover,.topbar button:hover{background:rgba(255,255,255,.20)}
+.wrap{width:min(1180px,100%);margin:0 auto;padding:18px 16px 44px}.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#111 0%,#252529 55%,#475569 100%);border-radius:34px;padding:26px;box-shadow:var(--shadow);color:white;margin:12px 0 18px}.hero:after{content:"";position:absolute;right:-55px;top:-70px;width:210px;height:210px;border-radius:50%;background:rgba(255,255,255,.10)}.hero:before{content:"";position:absolute;right:88px;bottom:-75px;width:160px;height:160px;border-radius:50%;background:rgba(34,197,94,.13)}
+.heroBadge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:8px 11px;font-size:12px;font-weight:950;margin-bottom:14px}.dot{width:8px;height:8px;border-radius:999px;background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.17)}
+h1{font-size:34px;margin:0 0 10px;font-weight:950;letter-spacing:-.9px}h2,h3{margin-top:0;letter-spacing:-.25px}p{color:var(--muted);line-height:1.45}.hero p{color:rgba(255,255,255,.74);max-width:690px;margin:0}.muted{color:var(--muted);font-size:14px}.msg{margin-top:12px;color:#c62828;font-weight:800;text-align:center;min-height:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.card{position:relative;background:rgba(255,255,255,.88);border:1px solid rgba(229,231,235,.9);border-radius:var(--r);padding:22px;box-shadow:var(--soft);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);margin-bottom:18px;overflow:hidden}.card:after{content:"";position:absolute;right:-36px;bottom:-36px;width:96px;height:96px;border-radius:50%;background:#f3f4f6;z-index:0}.card>*{position:relative;z-index:1}.premiumCard{min-height:170px}.premiumCard h3{font-size:14px;color:#374151;margin-bottom:10px}.premiumCard h1{font-size:36px}.aidatCard:after{background:#fef3c7}.ibanCard:after{background:#e0f2fe}.balanceCard:after{background:#f3f4f6}.balanceCard h3{font-size:14px;color:#374151;margin-bottom:8px}.balanceCard h1{margin-bottom:8px}
+.status{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;font-weight:950;font-size:13px;white-space:nowrap}.odendi{background:#dcfce7;color:#166534}.bekliyor{background:#fef3c7;color:#92400e}.reddedildi,.gecikti{background:#fee2e2;color:#991b1b}.status.odendi:before{content:"✓"}.status.bekliyor:before{content:"⏳"}.status.gecikti:before,.status.reddedildi:before{content:"!"}
+.ibanBox{display:flex;align-items:center;gap:10px}.iban{flex:1;background:#f8fafc;border:1px solid var(--line);border-radius:20px;padding:15px;font-size:15px;letter-spacing:.35px;font-weight:950;word-break:break-word}.copyBtn{width:52px;height:52px;border:0;border-radius:18px;background:#111;color:white;font-size:21px;cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14)}.copyBtn:active{transform:scale(.98)}.copyMsg{margin-top:8px;font-weight:900;color:#166534;min-height:20px}
+.sectionTitle{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px}.pillSoft{display:inline-flex;align-items:center;gap:7px;background:#f3f4f6;color:#374151;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950}.historyItem{background:#fff;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 7px 22px rgba(0,0,0,.045);display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px;transition:.18s transform,.18s box-shadow}.historyItem:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.08)}.historyLeft{display:flex;flex-direction:column;gap:7px}.historyTitle{font-weight:950;font-size:16px}.historyMoney{color:#4b5563;font-weight:800;line-height:1.65}.fazla,.tamam,.borc,.mahsup{display:inline-block;margin-top:7px;padding:7px 10px;border-radius:999px;font-weight:950;font-size:13px}.fazla,.tamam{color:#166534;background:#dcfce7}.borc{color:#991b1b;background:#fee2e2}.mahsup{color:#075985;background:#e0f2fe}.warningBox{background:#fee2e2;color:#991b1b;border-radius:20px;padding:15px;font-weight:950;margin-top:14px;border:1px solid #fecaca}.balanceGood{color:#166534}.balanceBad{color:#991b1b}.balanceNeutral{color:#111}.infoLine{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.infoMini{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:10px 12px;color:rgba(255,255,255,.82);font-weight:800;font-size:13px}
+@media(max-width:720px){.wrap{padding:14px 10px 36px}.topbarInner{align-items:flex-start}.navActions{width:100%}.topbar a,.topbar button{font-size:12px;padding:8px 10px}.hero{padding:22px;border-radius:28px}.hero h1,h1{font-size:27px}.card{padding:18px;border-radius:24px}.premiumCard h1{font-size:31px}.historyItem{align-items:flex-start;flex-direction:column}.ibanBox{align-items:stretch}.copyBtn{height:auto;min-width:52px}.grid{gap:12px}}
 </style>
 </head>
 
 <body>
 
 <div class="topbar">
-  <a href="panel.html">Panel</a>
-  <a href="randevu.html">Berber Randevusu</a>
-  <button onclick="logout()">Çıkış</button>
+  <div class="topbarInner">
+    <div class="brand">Kantin10 Ödeme</div>
+    <div class="navActions">
+      <a href="panel.html">Panel</a>
+      <a href="randevu.html">Berber Randevusu</a>
+      <button onclick="logout()">Çıkış</button>
+    </div>
+  </div>
 </div>
 
 <div class="wrap">
 
-  <div class="card">
+  <section class="hero">
+    <div class="heroBadge"><span class="dot"></span> Kişisel ödeme ekranı</div>
     <h1>Çay Ocağı Ödemeleri</h1>
-    <p id="personelInfo">Yükleniyor...</p>
-    <p class="muted" id="donemInfo"></p>
-  </div>
+    <p>Güncel aidatını, geçmiş devir bakiyeni ve ödeme durumunu tek ekranda premium görünümle takip et.</p>
+    <div class="infoLine">
+      <span class="infoMini" id="personelInfo">Yükleniyor...</span>
+      <span class="infoMini" id="donemInfo">Aktif dönem hesaplanıyor...</span>
+    </div>
+  </section>
 
   <div class="grid">
-    <div class="card">
+    <div class="card premiumCard aidatCard">
       <h3>Bu Dönemki Aidat</h3>
       <h1 id="aidatTutar">300 TL</h1>
       <p>Durum: <span id="personelDurum" class="status bekliyor">Ödeme Bekliyor</span></p>
       <div id="uyariAlan"></div>
     </div>
 
-    <div class="card">
+    <div class="card premiumCard ibanCard">
       <h3>Ödeme IBAN</h3>
       <div class="ibanBox">
         <div id="ibanText" class="iban">Yükleniyor...</div>
@@ -222,7 +102,13 @@ p{color:var(--muted);line-height:1.45}
   </div>
 
   <div class="card">
-    <h3>Bakiye Hareketleri</h3>
+    <div class="sectionTitle">
+      <div>
+        <h3>Bakiye Hareketleri</h3>
+        <p class="muted" style="margin-top:-6px">Dönem dönem ödeme ve devir hareketlerin.</p>
+      </div>
+      <span class="pillSoft">📌 Güncel kayıtlar</span>
+    </div>
     <div id="personelGecmis">Yükleniyor...</div>
   </div>
 
