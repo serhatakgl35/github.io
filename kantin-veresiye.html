@@ -21,7 +21,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-  const firebaseConfig = { apiKey:"BURAYA_FIREBASE_API_KEY", authDomain:"BURAYA_PROJECT.firebaseapp.com", projectId:"BURAYA_PROJECT_ID", storageBucket:"BURAYA_PROJECT.appspot.com", messagingSenderId:"BURAYA_SENDER_ID", appId:"BURAYA_APP_ID" };
+  const firebaseConfig = { apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4", authDomain:"berber-randevu-14f7f.firebaseapp.com", projectId:"berber-randevu-14f7f", storageBucket:"berber-randevu-14f7f.firebasestorage.app", messagingSenderId:"280530860977", appId:"1:280530860977:web:52c0df04c228896f211b90" };
   const app = initializeApp(firebaseConfig); const db = getFirestore(app); const $=id=>document.getElementById(id);
   const fmt=n=>(Number(n)||0).toLocaleString('tr-TR')+' ₺'; const esc=s=>String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
   const normTel = v => { let x=String(v||'').replace(/\D/g,''); if(x.startsWith('90')) x='0'+x.slice(2); if(x && !x.startsWith('0')) x='0'+x; return x; };
