@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Kantin10 | Veresiye Borcum</title>
+  <style>
+    :root{--bg:#f5f5f7;--card:#fff;--text:#111;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--red:#dc2626;--shadow:0 18px 45px rgba(0,0,0,.08);--r:22px}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif}.topbar{position:sticky;top:0;z-index:20;background:rgba(17,17,17,.92);backdrop-filter:blur(18px);color:#fff;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.topbar-inner{max-width:900px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:950}.topbar a,.topbar button{border:0;background:rgba(255,255,255,.12);color:white;border-radius:999px;padding:9px 12px;font-weight:800;font-size:13px;text-decoration:none}.wrap{max-width:900px;margin:auto;padding:18px 14px 42px}.hero{background:linear-gradient(135deg,#fff,#f8fafc);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin:12px 0 16px}.hero h1{font-size:26px;margin:0 0 8px;letter-spacing:-.8px}.hero p{margin:0;color:var(--muted);line-height:1.45}.card{background:#fff;border:1px solid rgba(229,231,235,.9);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.06);padding:16px;margin-bottom:14px}.card h2{font-size:18px;margin:0 0 12px}.login{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}label{display:block;font-size:12px;font-weight:900;color:#374151;margin:0 0 6px}input{width:100%;border:1px solid var(--line);border-radius:15px;padding:13px 12px;background:#fff;font-size:15px;outline:none}.btn{border:0;border-radius:16px;padding:13px 16px;font-weight:900;cursor:pointer;background:#111;color:white;align-self:end}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#f9fafb;border:1px solid var(--line);border-radius:18px;padding:14px}.stat b{display:block;font-size:22px;letter-spacing:-.5px}.stat span{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-top:4px}.red{color:var(--red)}.green{color:var(--green)}.list{display:flex;flex-direction:column;gap:10px}.item{border:1px solid var(--line);border-radius:18px;padding:12px;background:#fff}.item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900}.badge.borc{background:#fee2e2;color:#991b1b}.badge.odeme{background:#dcfce7;color:#166534}.amt{font-weight:950;font-size:17px}.muted{color:var(--muted);font-size:12px}.empty{padding:18px;border:1px dashed #d1d5db;border-radius:18px;color:var(--muted);text-align:center}.notice{font-size:13px;color:var(--muted);line-height:1.45;background:#f9fafb;border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:12px}.hide{display:none}@media(max-width:760px){.login{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.topbar-inner{align-items:flex-start;flex-direction:column}.hero h1{font-size:23px}}
+  </style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand">Kantin10 Veresiye</div><div><a href="index.html">Ana Sayfa</a> <button id="cikisBtn" class="hide">Çıkış</button></div></div></header>
+<main class="wrap">
+  <section class="hero"><h1>Kantin veresiye borcum</h1><p>Telefon numaran ve şifrenle giriş yap. Sadece kendi borç/ödeme hareketlerini görürsün.</p></section>
+  <section class="card" id="loginCard"><h2>Personel Girişi</h2><div class="login"><div><label>Telefon</label><input id="telefon" inputmode="tel" placeholder="0546 000 00 00" /></div><div><label>Şifre</label><input id="sifre" type="password" placeholder="Şifren" /></div><button class="btn" id="girisBtn">Giriş Yap</button></div><div class="notice" style="margin-top:12px">Deneme sürümünde giriş, <b>personeller</b> koleksiyonundaki telefon ve şifre alanına göre kontrol edilir.</div></section>
+  <section id="panel" class="hide">
+    <div class="card"><h2 id="hosgeldin">Hoş geldin</h2><div class="stats"><div class="stat"><b class="red" id="topBorc">0 ₺</b><span>Toplam Alışveriş</span></div><div class="stat"><b class="green" id="topOdeme">0 ₺</b><span>Toplam Ödeme</span></div><div class="stat"><b id="kalan">0 ₺</b><span>Kalan Borç</span></div></div></div>
+    <div class="card"><h2>Hareketlerim</h2><div id="hareketList" class="list"><div class="empty">Hareket yok.</div></div></div>
+  </section>
+</main>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  const firebaseConfig = { apiKey:"BURAYA_FIREBASE_API_KEY", authDomain:"BURAYA_PROJECT.firebaseapp.com", projectId:"BURAYA_PROJECT_ID", storageBucket:"BURAYA_PROJECT.appspot.com", messagingSenderId:"BURAYA_SENDER_ID", appId:"BURAYA_APP_ID" };
+  const app = initializeApp(firebaseConfig); const db = getFirestore(app); const $=id=>document.getElementById(id);
+  const fmt=n=>(Number(n)||0).toLocaleString('tr-TR')+' ₺'; const esc=s=>String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+  const normTel = v => { let x=String(v||'').replace(/\D/g,''); if(x.startsWith('90')) x='0'+x.slice(2); if(x && !x.startsWith('0')) x='0'+x; return x; };
+  const adSoyad=p=>[p.ad||p.isim||p.name||'',p.soyad||p.soyisim||p.surname||''].join(' ').trim()||p.adSoyad||p.displayName||'Personel';
+  const tel=p=>normTel(p.telefon||p.phone||p.tel||''); const tarihYaz=d=>{try{const x=d?.toDate?d.toDate():new Date(d);return x.toLocaleString('tr-TR',{dateStyle:'short',timeStyle:'short'});}catch{return '-'}};
+  let aktif=null;
+  $('telefon').addEventListener('input',()=>{ $('telefon').value=normTel($('telefon').value); });
+  $('cikisBtn').onclick=()=>{ localStorage.removeItem('kantin10_veresiye_pid'); location.reload(); };
+  $('girisBtn').onclick=async()=>{ await giris(); };
+  async function giris(){
+    const telefon=normTel($('telefon').value), sifre=$('sifre').value.trim(); if(!telefon||!sifre) return alert('Telefon ve şifre gir.'); $('girisBtn').disabled=true;
+    try{
+      const snap=await getDocs(query(collection(db,'personeller'), where('telefon','==',telefon)));
+      let found=null; snap.forEach(d=>{const p={id:d.id,...d.data()}; if(String(p.sifre||p.password||'')===sifre) found=p;});
+      if(!found) return alert('Telefon veya şifre hatalı.'); aktif=found; localStorage.setItem('kantin10_veresiye_pid',found.id); await panelAc();
+    }catch(e){ console.error(e); alert('Giriş yapılamadı: '+e.message); } finally{ $('girisBtn').disabled=false; }
+  }
+  async function autoLogin(){ const pid=localStorage.getItem('kantin10_veresiye_pid'); if(!pid) return; const snap=await getDocs(collection(db,'personeller')); snap.forEach(d=>{if(d.id===pid) aktif={id:d.id,...d.data()};}); if(aktif) await panelAc(); }
+  async function panelAc(){ $('loginCard').classList.add('hide'); $('panel').classList.remove('hide'); $('cikisBtn').classList.remove('hide'); $('hosgeldin').textContent='Hoş geldin, '+adSoyad(aktif); await hareketleriYukle(); }
+  async function hareketleriYukle(){
+    let rows=[]; try{const q=query(collection(db,'veresiye_hareketleri'), where('personelId','==',aktif.id), orderBy('tarih','desc')); const snap=await getDocs(q); rows=snap.docs.map(d=>({id:d.id,...d.data()}));}catch(e){const q=query(collection(db,'veresiye_hareketleri'), where('personelId','==',aktif.id)); const snap=await getDocs(q); rows=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.tarih?.seconds||0)-(a.tarih?.seconds||0));}
+    const borc=rows.filter(r=>r.tip==='borc').reduce((s,r)=>s+(Number(r.tutar)||0),0), odeme=rows.filter(r=>r.tip==='odeme').reduce((s,r)=>s+(Number(r.tutar)||0),0); $('topBorc').textContent=fmt(borc); $('topOdeme').textContent=fmt(odeme); $('kalan').textContent=fmt(borc-odeme);
+    $('hareketList').innerHTML=rows.length?rows.map(r=>`<div class="item"><div class="item-top"><div><span class="badge ${r.tip==='odeme'?'odeme':'borc'}">${r.tip==='odeme'?'ÖDEME':'BORÇ'}</span><div style="font-weight:900;margin-top:8px">${esc(r.aciklama||'-')}</div><div class="muted">${tarihYaz(r.tarih)}</div></div><div class="amt ${r.tip==='odeme'?'green':'red'}">${fmt(r.tutar)}</div></div></div>`).join(''):'<div class="empty">Henüz veresiye hareketin yok.</div>';
+  }
+  autoLogin().catch(console.error);
+</script>
+</body>
+</html>
