@@ -919,7 +919,7 @@ const popupCancel = document.getElementById("popupCancel");
 const popupOk = document.getElementById("popupOk");
 const toast = document.getElementById("toast");
 
-let aktifHafta = pazartesiBul(new Date());
+let aktifHafta = varsayilanTakvimHaftasi();
 let popupTarih = "";
 let popupSaat = "";
 let aktifRandevular = [];
@@ -1213,6 +1213,22 @@ function pazartesiBul(tarih){
   const fark = gun === 0 ? -6 : 1 - gun;
   d.setDate(d.getDate()+fark);
   return d;
+}
+
+function varsayilanTakvimHaftasi(){
+  const simdi = new Date();
+  const gun = simdi.getDay();
+  const cumaSaat18Sonrasi = gun === 5 && simdi.getHours() >= 18;
+  const haftaSonu = gun === 6 || gun === 0;
+
+  if(cumaSaat18Sonrasi || haftaSonu){
+    const gelecekHafta = new Date(simdi);
+    const eklenecekGun = gun === 0 ? 1 : (8 - gun);
+    gelecekHafta.setDate(simdi.getDate() + eklenecekGun);
+    return pazartesiBul(gelecekHafta);
+  }
+
+  return pazartesiBul(simdi);
 }
 
 function haftaGunleri(baslangic){
@@ -1865,7 +1881,7 @@ oncekiHaftaBtn.addEventListener("click", async ()=>{
 });
 
 bugunHaftaBtn.addEventListener("click", async ()=>{
-  aktifHafta = pazartesiBul(new Date());
+  aktifHafta = varsayilanTakvimHaftasi();
   await takvimCiz();
 });
 
