@@ -269,10 +269,7 @@ import {
   setDoc,
   deleteDoc,
   updateDoc,
-  serverTimestamp,
-  query,
-  where,
-  documentId
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -306,7 +303,26 @@ const toast = document.getElementById("toast");
 const SAATLER = ["09:00","09:50","10:30","11:20","13:20","14:00","14:50","15:30"];
 const GUNLER = ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"];
 
-let aktifHafta = baslangicHaftasiBul();
+function baslangicHaftasiBelirle(){
+  const simdi = new Date();
+  const gun = simdi.getDay();
+  const saat = simdi.getHours();
+
+  let hafta = pazartesiBul(simdi);
+
+  // Cuma 18:00 sonrası + Cumartesi + Pazar otomatik sonraki hafta
+  if(
+    (gun === 5 && saat >= 18) ||
+    gun === 6 ||
+    gun === 0
+  ){
+    hafta.setDate(hafta.getDate() + 7);
+  }
+
+  return hafta;
+}
+
+let aktifHafta = baslangicHaftasiBelirle();
 let randevular = [];
 let kapaliGunler = {};
 let kapaliSaatler = {};
@@ -417,21 +433,6 @@ async function randevuyuIptalEt(r){
   });
 }
 
-
-function baslangicHaftasiBul(){
-  const simdi = new Date();
-
-  // Cuma günü saat 18:00 ve sonrasında sayfa açılırsa otomatik sonraki haftayı göster.
-  // getDay(): Pazar=0, Pazartesi=1, ..., Cuma=5
-  if(simdi.getDay() === 5 && simdi.getHours() >= 18){
-    const sonrakiHafta = new Date(simdi);
-    sonrakiHafta.setDate(sonrakiHafta.getDate() + 7);
-    return pazartesiBul(sonrakiHafta);
-  }
-
-  return pazartesiBul(simdi);
-}
-
 function pazartesiBul(t){
   const d = new Date(t);
   d.setHours(0,0,0,0);
@@ -486,78 +487,33 @@ async function verileriAl(){
   kapaliGunler = {};
   kapaliSaatler = {};
 
-  // READ OPTİMİZASYONU:
-  // Eski sürüm randevular, kapali_gunler ve kapali_saatler koleksiyonlarını komple okuyordu.
-  // Bu sürüm sadece ekranda açık olan haftanın Pazartesi-Cuma aralığını okur.
-  const gunler = haftaGunleri(aktifHafta);
-  const bas = tarihKey(gunler[0]);
-  const bit = tarihKey(gunler[4]);
-
-  const rMap = new Map();
-
-  // Yeni kayıtlar genelde "date", eski kayıtlar bazen "tarih" alanını kullanabiliyor.
-  // İkisini de sorgulayıp aynı belgeyi tek kez listeye ekliyoruz.
-  const randevuSorgulari = [
-    query(collection(db,"randevular"), where("date", ">=", bas), where("date", "<=", bit)),
-    query(collection(db,"randevular"), where("tarih", ">=", bas), where("tarih", "<=", bit))
-  ];
-
-  for(const rq of randevuSorgulari){
-    try{
-      const snap = await getDocs(rq);
-      snap.forEach(x=>{
-        if(!rMap.has(x.id)) rMap.set(x.id, {id:x.id, ...x.data()});
-      });
-    }catch(e){
-      console.warn("Haftalık randevu sorgusu okunamadı:", e);
-    }
-  }
-
-  rMap.forEach(item=>{
-    const r = normalize(item,item.id);
+  const rSnap = await getDocs(collection(db,"randevular"));
+  rSnap.forEach(x=>{
+    const r = normalize(x.data(),x.id);
 
     // Berber tarafından iptal edilen / normal iptal edilen randevular takvimde DOLU sayılmaz.
     // Böylece saat tekrar MÜSAİT görünür.
     if(r.durum === "iptal" || r.durum === "cancelled" || r.durum === "canceled") return;
 
-    if(r.tarih >= bas && r.tarih <= bit && r.saat && r.ad && r.telefon){
+    if(r.tarih && r.saat && r.ad && r.telefon){
       randevular.push(r);
     }
   });
 
-  try{
-    const gq = query(
-      collection(db,"kapali_gunler"),
-      where(documentId(), ">=", bas),
-      where(documentId(), "<=", bit)
-    );
-    const gSnap = await getDocs(gq);
-    gSnap.forEach(x=>{
-      kapaliGunler[x.id] = true;
-    });
-  }catch(e){
-    console.warn("Haftalık kapalı günler okunamadı:", e);
-  }
+  const gSnap = await getDocs(collection(db,"kapali_gunler"));
+  gSnap.forEach(x=>{
+    kapaliGunler[x.id] = true;
+  });
 
-  try{
-    const sq = query(
-      collection(db,"kapali_saatler"),
-      where("tarih", ">=", bas),
-      where("tarih", "<=", bit)
-    );
-    const sSnap = await getDocs(sq);
-    sSnap.forEach(x=>{
-      const d = x.data();
-      const tarih = d.tarih || d.date || "";
-      const saat = d.saat || d.time || d.zaman || "";
-      if(tarih && saat){
-        kapaliSaatler[tarih+"_"+saat] = x.id;
-      }
-    });
-  }catch(e){
-    console.warn("Haftalık kapalı saatler okunamadı:", e);
-  }
+  const sSnap = await getDocs(collection(db,"kapali_saatler"));
+  sSnap.forEach(x=>{
+    const d = x.data();
+    if(d.tarih && d.saat){
+      kapaliSaatler[d.tarih+"_"+d.saat] = x.id;
+    }
+  });
 }
+
 function takvimCiz(){
   const gunler = haftaGunleri(aktifHafta);
   haftaYazi.innerText = tarihGoster(gunler[0]) + " - " + tarihGoster(gunler[4]);
@@ -853,7 +809,7 @@ window.oncekiHafta = function(){
 }
 
 window.buHafta = function(){
-  aktifHafta = baslangicHaftasiBul();
+  aktifHafta = pazartesiBul(new Date());
   takvimYukle();
 }
 
