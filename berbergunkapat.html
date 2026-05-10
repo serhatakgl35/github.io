@@ -306,7 +306,7 @@ const toast = document.getElementById("toast");
 const SAATLER = ["09:00","09:50","10:30","11:20","13:20","14:00","14:50","15:30"];
 const GUNLER = ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"];
 
-let aktifHafta = pazartesiBul(new Date());
+let aktifHafta = baslangicHaftasiBul();
 let randevular = [];
 let kapaliGunler = {};
 let kapaliSaatler = {};
@@ -415,6 +415,21 @@ async function randevuyuIptalEt(r){
     iptalTarihi:serverTimestamp(),
     updatedAt:serverTimestamp()
   });
+}
+
+
+function baslangicHaftasiBul(){
+  const simdi = new Date();
+
+  // Cuma günü saat 18:00 ve sonrasında sayfa açılırsa otomatik sonraki haftayı göster.
+  // getDay(): Pazar=0, Pazartesi=1, ..., Cuma=5
+  if(simdi.getDay() === 5 && simdi.getHours() >= 18){
+    const sonrakiHafta = new Date(simdi);
+    sonrakiHafta.setDate(sonrakiHafta.getDate() + 7);
+    return pazartesiBul(sonrakiHafta);
+  }
+
+  return pazartesiBul(simdi);
 }
 
 function pazartesiBul(t){
@@ -838,7 +853,7 @@ window.oncekiHafta = function(){
 }
 
 window.buHafta = function(){
-  aktifHafta = pazartesiBul(new Date());
+  aktifHafta = baslangicHaftasiBul();
   takvimYukle();
 }
 
