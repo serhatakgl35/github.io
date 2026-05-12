@@ -294,10 +294,12 @@
       font-weight:950;
     }
 
-    th:nth-child(1),td:nth-child(1){width:16%}
-    th:nth-child(2),td:nth-child(2){width:30%}
-    th:nth-child(3),td:nth-child(3){width:36%}
-    th:nth-child(4),td:nth-child(4){width:18%}
+    th:nth-child(1),td:nth-child(1){width:13%}
+    th:nth-child(2),td:nth-child(2){width:21%}
+    th:nth-child(3),td:nth-child(3){width:30%}
+    th:nth-child(4),td:nth-child(4){width:13%}
+    th:nth-child(5),td:nth-child(5){width:11%}
+    th:nth-child(6),td:nth-child(6){width:12%}
 
     .money{text-align:right;white-space:nowrap}
 
@@ -726,10 +728,12 @@
         letter-spacing:0;
       }
 
-      th:nth-child(1),td:nth-child(1){width:20%}
-      th:nth-child(2),td:nth-child(2){width:20%}
-      th:nth-child(3),td:nth-child(3){width:37%}
-      th:nth-child(4),td:nth-child(4){width:18%}
+      th:nth-child(1),td:nth-child(1){width:18%}
+      th:nth-child(2),td:nth-child(2){width:18%}
+      th:nth-child(3),td:nth-child(3){width:28%}
+      th:nth-child(4),td:nth-child(4){width:13%}
+      th:nth-child(5),td:nth-child(5){width:11%}
+      th:nth-child(6),td:nth-child(6){width:12%}
 
       .money{
         text-align:right;
@@ -879,19 +883,21 @@
               <th>Tarih</th>
               <th>Gider</th>
               <th>Açıklama</th>
+              <th class="money">Adet / Miktar</th>
+              <th class="money">Birim Fiyat</th>
               <th class="money">Tutar</th>
             </tr>
           </thead>
 
           <tbody id="giderBody">
             <tr>
-              <td colspan="4" class="empty">Henüz gider kaydı yok.</td>
+              <td colspan="6" class="empty">Henüz gider kaydı yok.</td>
             </tr>
           </tbody>
 
           <tfoot>
             <tr>
-              <td colspan="3">Toplam Gider</td>
+              <td colspan="5">Toplam Gider</td>
               <td class="money" id="tabloToplamGider">₺0</td>
             </tr>
           </tfoot>
@@ -935,8 +941,8 @@
           <span>Çay, şeker, bardak, bakım gibi kalemler ayrı ayrı gruplanır.</span>
         </div>
         <div class="explain-item">
-          <b>📊 Ortalama Tutar</b>
-          <span>Aynı isimli giderlerin toplamı, kayıt sayısına bölünür.</span>
+          <b>📊 Gerçek Birim Fiyat</b>
+          <span>Toplam tutar adet/miktar bilgisine bölünerek hesaplanır.</span>
         </div>
         <div class="explain-item">
           <b>🔍 Şeffaflık</b>
@@ -1160,7 +1166,11 @@
 
     function cikisYap(){
       localStorage.removeItem("cayBilancoLogin");
-      location.reload();
+      localStorage.removeItem("musteriGiris");
+      localStorage.removeItem("musteriTelefon");
+      localStorage.removeItem("musteriAd");
+      localStorage.removeItem("personelDocId");
+      location.href = "index.html";
     }
 
     async function verileriYukle(){
@@ -1295,8 +1305,17 @@
 
     function adetYaz(n){
       n = Number(n || 0);
-      if(!n) return "Adet bilgisi yok";
-      return Number.isInteger(n) ? `${n} adet` : `${n.toLocaleString("tr-TR")} adet`;
+      if(!n) return "-";
+      return Number.isInteger(n) ? `${n}` : `${n.toLocaleString("tr-TR")}`;
+    }
+
+    function birimFiyatSatir(g){
+      const kayitBirim = giderBirimFiyatGetir(g);
+      if(kayitBirim > 0) return kayitBirim;
+      const adet = giderAdetGetir(g);
+      const tutar = sayiyaCevir(g.tutar);
+      if(adet > 0 && tutar > 0) return tutar / adet;
+      return 0;
     }
 
     function birimFiyatGrafikCiz(){
@@ -1410,38 +1429,84 @@
       if(!giderler.length){
         body.innerHTML = `
           <tr>
-            <td colspan="4" class="empty">Bu dönem için gider kaydı yok.</td>
+            <td colspan="6" class="empty">Bu dönem için gider kaydı yok.</td>
           </tr>
         `;
         return;
       }
 
-      body.innerHTML = giderler.map(g => `
+      body.innerHTML = giderler.map(g => {
+        const adet = giderAdetGetir(g);
+        const birim = birimFiyatSatir(g);
+        return `
         <tr>
           <td>${formatTarih(g.tarih)}</td>
           <td>${escapeHTML(g.kalem || "-")}</td>
           <td>${escapeHTML(g.aciklama || "-")}</td>
+          <td class="money">${adet > 0 ? adetYaz(adet) : "-"}</td>
+          <td class="money">${birim > 0 ? para(birim) : "-"}</td>
           <td class="money">${para(g.tutar)}</td>
-        </tr>
-      `).join("");
+        </tr>`;
+      }).join("");
+    }
+
+    async function personelBilgisiGetir(telefon){
+      const tel = temizTelefon(telefon);
+      if(!tel) return null;
+
+      try{
+        const ref = doc(db, "personeller", tel);
+        const snap = await getDoc(ref);
+        if(snap.exists()){
+          return { id:snap.id, ...snap.data(), telefon: tel };
+        }
+      }catch(e){
+        console.warn("Personel doc okunamadı:", e);
+      }
+
+      try{
+        const q = query(collection(db, "personeller"), where("telefon", "==", tel));
+        const snap = await getDocs(q);
+        if(!snap.empty){
+          const d = snap.docs[0];
+          return { id:d.id, ...d.data(), telefon: tel };
+        }
+      }catch(e){
+        console.warn("Personel query okunamadı:", e);
+      }
+
+      return {
+        telefon: tel,
+        adSoyad: localStorage.getItem("musteriAd") || "Personel"
+      };
     }
 
     async function otomatikGirisKontrol(){
       document.getElementById("aySec").value = donemISO();
 
-      const kayit = localStorage.getItem("cayBilancoLogin");
+      const indexGiris = localStorage.getItem("musteriGiris") === "true";
+      const indexTelefon = localStorage.getItem("musteriTelefon") || localStorage.getItem("personelDocId");
 
+      if(indexGiris && indexTelefon){
+        aktifKullanici = await personelBilgisiGetir(indexTelefon);
+        localStorage.setItem("cayBilancoLogin", JSON.stringify({
+          telefon: aktifKullanici.telefon,
+          adSoyad: kullaniciAdiGetir(aktifKullanici)
+        }));
+        ekranAc();
+        await verileriYukle();
+        return;
+      }
+
+      const kayit = localStorage.getItem("cayBilancoLogin");
       if(!kayit) return;
 
       try{
         const data = JSON.parse(kayit);
-
         if(!data.telefon) return;
-
         aktifKullanici = data;
         ekranAc();
         await verileriYukle();
-
       }catch(e){
         localStorage.removeItem("cayBilancoLogin");
       }
