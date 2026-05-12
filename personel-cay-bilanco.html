@@ -294,12 +294,11 @@
       font-weight:950;
     }
 
-    th:nth-child(1),td:nth-child(1){width:13%}
-    th:nth-child(2),td:nth-child(2){width:21%}
-    th:nth-child(3),td:nth-child(3){width:30%}
-    th:nth-child(4),td:nth-child(4){width:13%}
-    th:nth-child(5),td:nth-child(5){width:11%}
-    th:nth-child(6),td:nth-child(6){width:12%}
+    th:nth-child(1),td:nth-child(1){width:15%}
+    th:nth-child(2),td:nth-child(2){width:20%}
+    th:nth-child(3),td:nth-child(3){width:38%}
+    th:nth-child(4),td:nth-child(4){width:12%}
+    th:nth-child(5),td:nth-child(5){width:15%}
 
     .money{text-align:right;white-space:nowrap}
 
@@ -717,27 +716,27 @@
       }
 
       th,td{
-        padding:8px 4px;
-        font-size:11px;
-        line-height:1.2;
+        padding:7px 3px;
+        font-size:9px;
+        line-height:1.12;
         word-break:break-word;
       }
 
       th{
-        font-size:9px;
+        font-size:8px;
         letter-spacing:0;
       }
 
       th:nth-child(1),td:nth-child(1){width:18%}
-      th:nth-child(2),td:nth-child(2){width:18%}
-      th:nth-child(3),td:nth-child(3){width:28%}
-      th:nth-child(4),td:nth-child(4){width:13%}
-      th:nth-child(5),td:nth-child(5){width:11%}
-      th:nth-child(6),td:nth-child(6){width:12%}
+      th:nth-child(2),td:nth-child(2){width:20%}
+      th:nth-child(3),td:nth-child(3){width:38%}
+      th:nth-child(4),td:nth-child(4){width:10%;text-align:center}
+      th:nth-child(5),td:nth-child(5){width:14%;text-align:right}
 
       .money{
         text-align:right;
         white-space:normal;
+        font-size:9px;
       }
 
       tfoot td{
@@ -883,21 +882,20 @@
               <th>Tarih</th>
               <th>Gider</th>
               <th>Açıklama</th>
-              <th class="money">Adet / Miktar</th>
-              <th class="money">Birim Fiyat</th>
+              <th class="money">Miktar</th>
               <th class="money">Tutar</th>
             </tr>
           </thead>
 
           <tbody id="giderBody">
             <tr>
-              <td colspan="6" class="empty">Henüz gider kaydı yok.</td>
+              <td colspan="5" class="empty">Henüz gider kaydı yok.</td>
             </tr>
           </tbody>
 
           <tfoot>
             <tr>
-              <td colspan="5">Toplam Gider</td>
+              <td colspan="4">Toplam Gider</td>
               <td class="money" id="tabloToplamGider">₺0</td>
             </tr>
           </tfoot>
@@ -1429,7 +1427,7 @@
       if(!giderler.length){
         body.innerHTML = `
           <tr>
-            <td colspan="6" class="empty">Bu dönem için gider kaydı yok.</td>
+            <td colspan="5" class="empty">Bu dönem için gider kaydı yok.</td>
           </tr>
         `;
         return;
@@ -1437,14 +1435,12 @@
 
       body.innerHTML = giderler.map(g => {
         const adet = giderAdetGetir(g);
-        const birim = birimFiyatSatir(g);
         return `
         <tr>
           <td>${formatTarih(g.tarih)}</td>
           <td>${escapeHTML(g.kalem || "-")}</td>
           <td>${escapeHTML(g.aciklama || "-")}</td>
           <td class="money">${adet > 0 ? adetYaz(adet) : "-"}</td>
-          <td class="money">${birim > 0 ? para(birim) : "-"}</td>
           <td class="money">${para(g.tutar)}</td>
         </tr>`;
       }).join("");
