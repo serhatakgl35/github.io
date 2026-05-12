@@ -55,14 +55,16 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
           <input id="personelArama" class="searchInput" placeholder="İsim yazınca liste filtrelenir" oninput="adminListele()">
         </div>
         <div class="importBox">
-          <label>Banka Hesap Özeti / Dekont Tablosu İçe Aktar</label>
+          <label>Ödeme Tablosu İçe Aktar</label>
           <input id="dekontExcel" type="file" accept=".csv,.txt,.xlsx,.xls" style="margin-bottom:8px">
           <div class="importActions">
             <button class="miniBtn green" onclick="dekontIceriAktar()">Excel / CSV Yükle ve İşle</button>
             <button class="miniBtn" onclick="ornekDekontCsvIndir()">Excel Şablonu İndir</button>
           </div>
           <div id="importMsg" class="miniMsg"></div>
-          <p class="muted" style="margin:8px 0 0">Enpara hesap hareketlerinde <b>Açıklama</b> içindeki isim ve <b>İşlem Tutarı (TL)</b> alanı otomatik okunur. Pozitif gelen tutarlar ödeme olarak işlenir.</p>
+          <p class="muted" style="margin:8px 0 0">
+            Yükleme formatı: <b>Personel</b> ve <b>Tutar</b>. Telefonla eşleşme yapılmaz. Büyük/küçük harf fark etmez.
+          </p>
         </div>
       </div>
       <p class="muted">CSV dosyası Excel’de açılır. İçinde personel adı, dönem aidatı, ödenen tutar, geçmiş bakiye, bu dönem bakiye ve genel bakiye bulunur. Telefon numarası dışa aktarılmaz.</p>
@@ -186,9 +188,50 @@ function normalizeTR(v){
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g,"")
     .replace(/ı/g,"i")
-    .replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ ]/gi," ")
+    .replace(/ğ/g,"g")
+    .replace(/ü/g,"u")
+    .replace(/ş/g,"s")
+    .replace(/ö/g,"o")
+    .replace(/ç/g,"c")
+    .replace(/[^a-z0-9 ]/gi," ")
     .replace(/\s+/g," ")
     .trim();
+}
+
+function kelimeler(v){
+  return normalizeTR(v).split(" ").filter(x=>x.length>=2);
+}
+
+function isimEslesir(gelenAd, sistemAd){
+  const gNorm = normalizeTR(gelenAd);
+  const sNorm = normalizeTR(sistemAd);
+
+  if(!gNorm || !sNorm) return false;
+  if(gNorm === sNorm) return true;
+  if(gNorm.includes(sNorm) || sNorm.includes(gNorm)) return true;
+
+  const gKelimeler = kelimeler(gelenAd);
+  const sKelimeler = kelimeler(sistemAd);
+
+  if(gKelimeler.length === 0 || sKelimeler.length === 0) return false;
+
+  const sistemKelimeleriGelenIceriyor = sKelimeler.every(k => gKelimeler.includes(k));
+  const gelenKelimeleriSistemIceriyor = gKelimeler.every(k => sKelimeler.includes(k));
+
+  return sistemKelimeleriGelenIceriyor || gelenKelimeleriSistemIceriyor;
+}
+
+function eslesenKisiyiBul(gelenAd, personeller){
+  const adNorm = normalizeTR(gelenAd);
+  if(!adNorm) return null;
+
+  let tam = personeller.filter(p => p.norm === adNorm);
+  if(tam.length === 1) return tam[0];
+
+  let benzer = personeller.filter(p => isimEslesir(gelenAd, p.ad));
+  if(benzer.length === 1) return benzer[0];
+
+  return null;
 }
 
 function parseMoney(v){
@@ -272,7 +315,6 @@ window.adminListele=async function(){
 
   let rows="";
   let say={odendi:0,odeme_bekliyor:0,reddedildi:0};
-  let toplamOnayliTutar=0;
   let toplamBeklenen=0;
   let toplamOdenen=0;
   let toplamGecmisNet=0;
@@ -311,7 +353,6 @@ window.adminListele=async function(){
     const genelNet=gecmisNet+buDonemNet;
 
     say[durum]=(say[durum]||0)+1;
-    if(durum==="odendi") toplamOnayliTutar+=Number(tutar||0);
 
     toplamBeklenen += aktifDonemTutari;
     toplamOdenen += buDonemOdenen;
@@ -467,23 +508,23 @@ window.reddet=async function(telefon,adSoyad,inputId){
 
 window.ornekDekontCsvIndir=function(){
   const rows=[
-    ["Telefon","Personel","Tutar"],
-    ["05469066565","Örnek PERSONEL","450"],
-    ["","İsimden Eşleşecek PERSONEL","300"]
+    ["Personel","Tutar"],
+    ["MUHAMMET SAÇAL","300"],
+    ["SERHAT AKGÜL","2700"],
+    ["BÜNYAMİN KAPLAN","300"]
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(rows);
 
   ws["!cols"] = [
-    { wch: 16 },
     { wch: 32 },
     { wch: 12 }
   ];
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Dekont Şablonu");
+  XLSX.utils.book_append_sheet(wb, ws, "Ödeme Şablonu");
 
-  XLSX.writeFile(wb, "banka-dekont-ice-aktarma-sablonu.xlsx");
+  XLSX.writeFile(wb, "cay-odeme-isim-tutar-sablonu.xlsx");
 };
 
 window.dekontIceriAktar=async function(){
@@ -505,19 +546,28 @@ window.dekontIceriAktar=async function(){
 
     for(let i=0;i<hamSatirlar.length;i++){
       const satirText = hamSatirlar[i].map(x=>normalizeTR(x)).join(" ");
-      if(
-        satirText.includes("tarih") &&
-        satirText.includes("aciklama") &&
-        (satirText.includes("islem tutar") || satirText.includes("tutar"))
-      ){
+      const isimBasligiVar =
+        satirText.includes("personel") ||
+        satirText.includes("ad soyad") ||
+        satirText.includes("adi soyadi") ||
+        satirText.includes("isim") ||
+        satirText.includes("aciklama");
+
+      const tutarBasligiVar =
+        satirText.includes("tutar") ||
+        satirText.includes("miktar") ||
+        satirText.includes("islem tutari") ||
+        satirText.includes("odenen tutar");
+
+      if(isimBasligiVar && tutarBasligiVar){
         baslikIndex = i;
         break;
       }
     }
 
     if(baslikIndex === -1){
-      msg.textContent="Tablo başlığı bulunamadı. Enpara formatında Tarih / Açıklama / İşlem Tutarı sütunları olmalı.";
-      alert("Excel içinde tablo başlığı bulunamadı.");
+      msg.textContent="Başlık bulunamadı. Dosyada Personel ve Tutar sütunları olmalı.";
+      alert("Excel içinde Personel / Tutar başlığı bulunamadı.");
       return;
     }
 
@@ -533,7 +583,7 @@ window.dekontIceriAktar=async function(){
       });
 
     if(!rows.length){
-      msg.textContent="İşlenecek hesap hareketi bulunamadı.";
+      msg.textContent="İşlenecek ödeme satırı bulunamadı.";
       return;
     }
 
@@ -544,11 +594,14 @@ window.dekontIceriAktar=async function(){
       const p={id:pdoc.id,...pdoc.data()};
       if(getAktif(p)){
         const tel=getTelefonFromDoc(p.id,p);
-        personeller.push({
-          tel,
-          ad:getAd(p),
-          norm:normalizeTR(getAd(p))
-        });
+        const ad=getAd(p);
+        if(tel && ad){
+          personeller.push({
+            tel,
+            ad,
+            norm:normalizeTR(ad)
+          });
+        }
       }
     });
 
@@ -556,49 +609,55 @@ window.dekontIceriAktar=async function(){
     const eslesmeyenler=[];
 
     for(const r of rows){
-      const aciklama = String(getAlan(r,[
+      const adRaw = String(getAlan(r,[
+        "Personel",
+        "Ad Soyad",
+        "Adı Soyadı",
+        "Adi Soyadi",
+        "İsim",
+        "Isim",
         "Açıklama",
         "Aciklama",
-        "İşlem Açıklaması",
-        "Islem Aciklamasi",
-        "Hareket Açıklaması",
-        "Hareket Aciklamasi",
-        "Açıklama / Not",
-        "Aciklama / Not"
-      ]) || "");
+        "Gönderen",
+        "Gonderen",
+        "Alıcı",
+        "Alici"
+      ]) || "").trim();
 
       const tutarRaw = getAlan(r,[
-        "İşlem Tutarı (TL)",
-        "Islem Tutari (TL)",
-        "İşlem Tutarı",
-        "Islem Tutari",
         "Tutar",
         "Miktar",
+        "Ödenen Tutar",
+        "Odenen Tutar",
+        "İşlem Tutarı",
+        "Islem Tutari",
+        "İşlem Tutarı (TL)",
+        "Islem Tutari (TL)",
         "Amount"
       ]);
 
       const tutar = parseMoney(tutarRaw);
 
-      if(tutar === null){
+      if(!adRaw){
+        eslesmeyen++;
+        eslesmeyenler.push("İsim boş satır");
+        continue;
+      }
+
+      if(tutar === null || tutar < 0){
         tutarsiz++;
         continue;
       }
 
-      if(tutar <= 0){
+      if(tutar === 0){
         continue;
       }
 
-      let kisi = null;
-      const aciklamaNorm = normalizeTR(aciklama);
-
-      kisi = personeller.find(p=>{
-        if(!p.norm) return false;
-        return aciklamaNorm.includes(p.norm) || p.norm.includes(aciklamaNorm);
-      });
+      const kisi = eslesenKisiyiBul(adRaw, personeller);
 
       if(!kisi){
         eslesmeyen++;
-        eslesmeyenler.push(aciklama || "Bilinmeyen satır");
+        eslesmeyenler.push(adRaw);
         continue;
       }
 
@@ -610,8 +669,8 @@ window.dekontIceriAktar=async function(){
         donemEtiketi:donemLabel(key),
         tutar:tutar,
         durum:"odendi",
-        adminNot:"Enpara hesap hareketlerinden içe aktarıldı",
-        bankaAciklama:aciklama,
+        adminNot:"İsim ve tutar tablosundan içe aktarıldı",
+        yuklenenIsim:adRaw,
         updatedAt:serverTimestamp()
       },{merge:true});
 
@@ -621,15 +680,15 @@ window.dekontIceriAktar=async function(){
     msg.textContent=`İçe aktarma tamam: ${basarili} ödeme işlendi. Eşleşmeyen: ${eslesmeyen}. Hatalı tutar: ${tutarsiz}.`;
 
     if(eslesmeyenler.length){
-      console.warn("Eşleşmeyen Enpara satırları:", eslesmeyenler);
+      console.warn("Eşleşmeyen ödeme satırları:", eslesmeyenler);
     }
 
     await adminListele();
 
   }catch(e){
     console.error(e);
-    msg.textContent="İçe aktarma sırasında hata oluştu. Enpara Excel dosyasını kontrol et.";
-    alert("Dosya okunamadı. Enpara hesap hareketleri Excel dosyasını tekrar deneyebilirsin.");
+    msg.textContent="İçe aktarma sırasında hata oluştu. Excel/CSV dosyasını kontrol et.";
+    alert("Dosya okunamadı. Personel / Tutar başlıklarını kontrol et.");
   }
 };
 
