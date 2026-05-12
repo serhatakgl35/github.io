@@ -310,7 +310,6 @@ function baslangicHaftasiBelirle(){
 
   let hafta = pazartesiBul(simdi);
 
-  // Cuma 18:00 sonrası + Cumartesi + Pazar otomatik sonraki hafta
   if(
     (gun === 5 && saat >= 18) ||
     gun === 6 ||
@@ -410,7 +409,7 @@ Arz / Rica Ederim.`;
 }
 
 async function telegramIptalBildirimi(r){
-  await telegramMesaj(`🗑️ Berber Personel tarafından Randevu silindi
+  await telegramMesaj(`🗑️ Berber Personel tarafından Randevu silindi ve WhatsApp'tan mesaj gönderildi.
 
 👤 Silen: ${islemYapan()}
 👥 Müşteri: ${r?.ad || "-"}
@@ -491,8 +490,6 @@ async function verileriAl(){
   rSnap.forEach(x=>{
     const r = normalize(x.data(),x.id);
 
-    // Berber tarafından iptal edilen / normal iptal edilen randevular takvimde DOLU sayılmaz.
-    // Böylece saat tekrar MÜSAİT görünür.
     if(r.durum === "iptal" || r.durum === "cancelled" || r.durum === "canceled") return;
 
     if(r.tarih && r.saat && r.ad && r.telefon){
