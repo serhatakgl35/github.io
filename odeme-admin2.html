@@ -115,10 +115,9 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
       </div>
 
       <div class="smsBox">
-        <h3>Toplu SMS Gönder</h3>
+        <h3>Borçlulara WhatsApp Gönder</h3>
         <p class="muted">
-          Bu bölüm sadece seçili dönemde <b>Ödeme Bekliyor</b> durumundaki personele SMS gönderir.
-          Başlık: <b>APITEST</b>
+          Bu bölüm seçili dönemde <b>Ödeme Bekliyor</b> durumundaki personelleri bulur ve WhatsApp mesajlarını sırayla hazırlar.
         </p>
 
         <div class="smsInfo">
@@ -127,10 +126,16 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
           <div class="smsPill">Durum: Ödeme Bekliyor</div>
         </div>
 
-        <label>SMS Mesajı</label>
-        <textarea id="smsMesaj">Sayın personelimiz, çay ocağı aidat borcunuz bulunmaktadır. Lütfen en kısa sürede ödemenizi yapınız.</textarea>
+        <label>WhatsApp Mesajı</label>
+        <textarea id="smsMesaj">Sayın {AD},
 
-        <button class="main" style="background:#111" onclick="borclularaSMSGonder()">Borçlulara SMS Gönder</button>
+{DONEM} dönemi çay ocağı aidat borcunuz bulunmaktadır.
+
+Lütfen en kısa sürede ödemenizi yapınız.
+
+Kantin10</textarea>
+
+        <button class="main" style="background:#15803d" onclick="borclularaWhatsAppGonder()">Borçlulara WhatsApp Gönder</button>
         <div id="smsMsg" class="miniMsg"></div>
       </div>
 
@@ -291,42 +296,91 @@ window.adminListele=async function(){
   document.getElementById("adminOzet").innerHTML=`<div class="card"><h3>Bu Dönem Aidatı</h3><h1>${aktifDonemTutari} TL</h1></div><div class="card"><h3>Ödendi</h3><h1>${say.odendi}</h1></div><div class="card"><h3>Ödeme Bekliyor</h3><h1>${say.odeme_bekliyor}</h1></div><div class="card"><h3>Reddedildi</h3><h1>${say.reddedildi}</h1></div><div class="card"><h3>Beklenen Toplam</h3><h1>${toplamBeklenen} TL</h1></div><div class="card"><h3>Bu Dönem Ödenen</h3><h1>${toplamOdenen} TL</h1></div><div class="card"><h3>Geçmiş Bakiye</h3><h1>${bakiyeText(toplamGecmisNet)}</h1></div><div class="card"><h3>Genel Bakiye</h3><h1>${bakiyeText(toplamGenelNet)}</h1></div>`;
 };
 
-window.borclularaSMSGonder=async function(){
+window.borclularaWhatsAppGonder=async function(){
   const smsMsg=document.getElementById("smsMsg");
-  const mesaj=(document.getElementById("smsMesaj").value||"").trim();
-  if(!mesaj){alert("SMS mesajı boş olamaz.");return;}
-  const emin=confirm("Seçili dönemde ödeme bekleyen personele SMS gönderilecek. Devam edilsin mi?");
+  const mesajSablon=(document.getElementById("smsMesaj").value||"").trim();
+  if(!mesajSablon){alert("WhatsApp mesajı boş olamaz.");return;}
+
+  const emin=confirm("Seçili dönemde ödeme bekleyen personeller için WhatsApp mesajları hazırlanacak. Devam edilsin mi?");
   if(!emin)return;
+
   smsMsg.style.color="#166534";
   smsMsg.textContent="Borçlu personeller hazırlanıyor...";
+
   try{
     const key=document.getElementById("adminAy").value||donemKey();
     const personelSnap=await getDocs(collection(db,PERSONEL_COLLECTION));
     const tumOdemeSnap=await getDocs(collection(db,ODEME_COLLECTION));
+
     const tumOdemeler={};
-    tumOdemeSnap.forEach(d=>{const o={id:d.id,...d.data()};const telKey=temizTelefon(o.telefon||o.personelId||"");if(!telKey)return;if(!tumOdemeler[telKey])tumOdemeler[telKey]=[];tumOdemeler[telKey].push(o);});
-    const numaralar=[];
+    tumOdemeSnap.forEach(d=>{
+      const o={id:d.id,...d.data()};
+      const telKey=temizTelefon(o.telefon||o.personelId||"");
+      if(!telKey)return;
+      if(!tumOdemeler[telKey])tumOdemeler[telKey]=[];
+      tumOdemeler[telKey].push(o);
+    });
+
+    const kisiler=[];
     personelSnap.forEach(pdoc=>{
       const p={id:pdoc.id,...pdoc.data()};
       if(!getAktif(p))return;
+
       const tel=getTelefonFromDoc(p.id,p);
       if(!tel)return;
+
       const kayitlar=(tumOdemeler[tel]||[]).filter(o=>o.ay===key);
       const buDonemKayit=kayitlar[0];
       const durum=buDonemKayit?(buDonemKayit.durum||"odeme_bekliyor"):"odeme_bekliyor";
+
       if(durum==="odeme_bekliyor"){
-        const smsNo=smsTelefonFormatla(tel);
-        if(smsNo.length===12&&smsNo.startsWith("90")&&!numaralar.includes(smsNo))numaralar.push(smsNo);
+        const waNo=smsTelefonFormatla(tel);
+        if(waNo.length===12&&waNo.startsWith("90")){
+          kisiler.push({ad:getAd(p),tel:waNo});
+        }
       }
     });
-    if(!numaralar.length){smsMsg.style.color="#991b1b";smsMsg.textContent="SMS gönderilecek borçlu personel bulunamadı.";alert("Borçlu personel bulunamadı.");return;}
+
+    if(!kisiler.length){
+      smsMsg.style.color="#991b1b";
+      smsMsg.textContent="WhatsApp gönderilecek borçlu personel bulunamadı.";
+      alert("Borçlu personel bulunamadı.");
+      return;
+    }
+
     smsMsg.style.color="#166534";
-    smsMsg.textContent=numaralar.length+" kişiye SMS isteği gönderiliyor...";
-    await fetch(SMS_PROXY_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({numbers:numaralar,message:mesaj})});
-    smsMsg.style.color="#166534";
-    smsMsg.textContent=numaralar.length+" kişilik SMS isteği gönderildi. İletiMerkezi panelinden raporu kontrol edebilirsin.";
-    alert(numaralar.length+" kişiye SMS gönderim isteği iletildi.");
-  }catch(err){console.error(err);smsMsg.style.color="#991b1b";smsMsg.textContent="SMS gönderiminde hata oluştu: "+err.message;alert("SMS gönderilemedi: "+err.message);}
+    smsMsg.textContent=kisiler.length+" kişi bulundu. WhatsApp pencereleri sırayla açılıyor...";
+
+    let i=0;
+    function sonrakiAc(){
+      if(i>=kisiler.length){
+        smsMsg.textContent="Tüm WhatsApp mesajları hazırlandı. Açılan pencerelerde Gönder tuşuna basman yeterli.";
+        return;
+      }
+
+      const kisi=kisiler[i];
+      const mesaj=mesajSablon
+        .replaceAll("{AD}",kisi.ad)
+        .replaceAll("{DONEM}",donemLabel(key));
+      const url="https://wa.me/"+kisi.tel+"?text="+encodeURIComponent(mesaj);
+      window.open(url,"_blank");
+      i++;
+
+      if(i<kisiler.length){
+        setTimeout(sonrakiAc,1200);
+      }else{
+        smsMsg.textContent=kisiler.length+" WhatsApp mesajı hazırlandı. Açılan pencerelerde Gönder tuşuna bas.";
+      }
+    }
+
+    sonrakiAc();
+
+  }catch(err){
+    console.error(err);
+    smsMsg.style.color="#991b1b";
+    smsMsg.textContent="WhatsApp hazırlamada hata oluştu: "+err.message;
+    alert("WhatsApp mesajı hazırlanamadı: "+err.message);
+  }
 };
 
 window.csvIndir=function(){
