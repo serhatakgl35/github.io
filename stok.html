@@ -98,6 +98,20 @@
       border:1px solid var(--line);
     }
 
+    .btn{
+      border:0;
+      border-radius:14px;
+      background:#111;
+      color:#fff;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
     .filters{
       margin:18px 0;
       display:flex;
@@ -197,6 +211,7 @@
       padding:24px;
       text-align:center;
       color:var(--muted);
+      line-height:1.5;
     }
 
     .hiddenPrice{display:none}
@@ -211,6 +226,36 @@
       text-align:center;
       color:var(--muted);
       grid-column:1/-1;
+    }
+
+    .gate{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .gateCard{
+      max-width:430px;
+      width:100%;
+      background:#fff;
+      border-radius:26px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      padding:26px;
+      text-align:center;
+    }
+
+    .gateCard h1{
+      margin:10px 0;
+      font-size:24px;
+    }
+
+    .gateCard p{
+      color:var(--muted);
+      line-height:1.5;
+      margin-bottom:18px;
     }
 
     @media(max-width:1050px){
@@ -247,44 +292,7 @@
 
 <body>
 
-  <div class="top">
-    <div class="topin">
-      <div class="brand">
-        <b>Kantin Stok Listesi</b>
-        <span>Güncel ürün durumu</span>
-      </div>
-      <div class="badge" id="countBadge">Yükleniyor...</div>
-    </div>
-  </div>
-
-  <main class="wrap">
-    <section class="hero">
-      <div>
-        <h1>Ürünleri kontrol et</h1>
-        <p>Arama yapabilir, kategoriye göre filtreleyebilir ve stok durumunu görebilirsin.</p>
-      </div>
-      <div class="badge" id="updateBadge">Güncelleniyor</div>
-    </section>
-
-    <div class="filters">
-      <input id="search" class="input" placeholder="Ürün adı veya barkod ara...">
-
-      <select id="cat">
-        <option value="">Tüm kategoriler</option>
-      </select>
-
-      <select id="stock">
-        <option value="">Tüm stoklar</option>
-        <option value="ok">Stokta var</option>
-        <option value="az">Az kaldı</option>
-        <option value="yok">Tükendi</option>
-      </select>
-    </div>
-
-    <section id="list" class="grid">
-      <div class="loading">Ürünler yükleniyor...</div>
-    </section>
-  </main>
+  <div id="app"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -306,6 +314,9 @@
       appId: "1:280530860977:web:52c0df04c228896f211b90"
     };
 
+    const GIRIS_SAYFASI = "index.html";
+    const PANEL_SAYFASI = "panel.html";
+
     const FIYAT_GOSTER = false;
     const STOK_ADEDI_GOSTER = true;
 
@@ -313,6 +324,127 @@
     const db = getFirestore(app);
 
     let products = [];
+
+    function storageBulunduMu(){
+      const tumKayitlar = [];
+
+      for(let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        tumKayitlar.push({
+          key:k,
+          value:localStorage.getItem(k)
+        });
+      }
+
+      for(let i = 0; i < sessionStorage.length; i++){
+        const k = sessionStorage.key(i);
+        tumKayitlar.push({
+          key:k,
+          value:sessionStorage.getItem(k)
+        });
+      }
+
+      const aranacakKelimeler = [
+        "personel",
+        "giris",
+        "login",
+        "uye",
+        "user",
+        "kullanici",
+        "telefon",
+        "ad",
+        "soyad"
+      ];
+
+      return tumKayitlar.some(item => {
+        const birlesik = String(item.key + " " + item.value).toLowerCase();
+
+        const girisVar =
+          birlesik.includes("true") ||
+          birlesik.includes("aktif") ||
+          birlesik.includes("personel") ||
+          birlesik.includes("telefon") ||
+          birlesik.includes("uid") ||
+          birlesik.includes("ad") ||
+          birlesik.includes("soyad");
+
+        const anahtarUygun = aranacakKelimeler.some(k => birlesik.includes(k));
+
+        return anahtarUygun && girisVar;
+      });
+    }
+
+    function personelGirisKontrol(){
+      const girisVar = storageBulunduMu();
+
+      if(!girisVar){
+        document.getElementById("app").innerHTML = `
+          <div class="gate">
+            <div class="gateCard">
+              <div style="font-size:44px">🔒</div>
+              <h1>Personel Girişi Gerekli</h1>
+              <p>Bu stok listesi sadece giriş yapmış personeller tarafından görüntülenebilir.</p>
+              <a class="btn" href="${GIRIS_SAYFASI}">Giriş Sayfasına Git</a>
+            </div>
+          </div>
+        `;
+
+        setTimeout(() => {
+          window.location.href = GIRIS_SAYFASI;
+        }, 1600);
+
+        return false;
+      }
+
+      return true;
+    }
+
+    function sayfayiKur(){
+      document.getElementById("app").innerHTML = `
+        <div class="top">
+          <div class="topin">
+            <div class="brand">
+              <b>Kantin Stok Listesi</b>
+              <span>Güncel ürün durumu</span>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <a class="btn" href="${PANEL_SAYFASI}">Panele Dön</a>
+              <div class="badge" id="countBadge">Yükleniyor...</div>
+            </div>
+          </div>
+        </div>
+
+        <main class="wrap">
+          <section class="hero">
+            <div>
+              <h1>Ürünleri kontrol et</h1>
+              <p>Arama yapabilir, kategoriye göre filtreleyebilir ve stok durumunu görebilirsin.</p>
+            </div>
+            <div class="badge" id="updateBadge">Güncelleniyor</div>
+          </section>
+
+          <div class="filters">
+            <input id="search" class="input" placeholder="Ürün adı veya barkod ara...">
+
+            <select id="cat">
+              <option value="">Tüm kategoriler</option>
+            </select>
+
+            <select id="stock">
+              <option value="">Tüm stoklar</option>
+              <option value="ok">Stokta var</option>
+              <option value="az">Az kaldı</option>
+              <option value="yok">Tükendi</option>
+            </select>
+          </div>
+
+          <section id="list" class="grid">
+            <div class="loading">Ürünler yükleniyor...</div>
+          </section>
+        </main>
+      `;
+    }
 
     const $ = id => document.getElementById(id);
 
@@ -469,7 +601,7 @@
         $("list").innerHTML = `
           <div class="empty">
             Stok listesi yüklenemedi.<br><br>
-            Firestore Rules içinde <b>stok_urunleri</b> koleksiyonu için okuma izni verilmiş olmalı.
+            Firestore Rules tarafında stok_urunleri okuma izni mevcut giriş sistemine göre açık olmalı.
           </div>
         `;
 
@@ -478,11 +610,15 @@
       }
     }
 
-    $("search").oninput = render;
-    $("cat").onchange = render;
-    $("stock").onchange = render;
+    if(personelGirisKontrol()){
+      sayfayiKur();
 
-    load();
+      $("search").oninput = render;
+      $("cat").onchange = render;
+      $("stock").onchange = render;
+
+      load();
+    }
   </script>
 </body>
 </html>
