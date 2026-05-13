@@ -223,8 +223,8 @@ async function login(){
     const aktifMi = data.aktif === true || data.active === true || durum === "aktif";
 
     if(!aktifMi){
-      msg.textContent = "Hesabınız admin onayı bekliyor.";
-      alert("Hesabınız admin onayı bekliyor. Admin onayından sonra giriş yapabilirsiniz.");
+      msg.textContent = "Hesabınız yönetici onayı bekliyor.";
+      alert("Hesabınız yönetici onayı bekliyor. Admin onayından sonra giriş yapabilirsiniz.");
       return;
     }
 
