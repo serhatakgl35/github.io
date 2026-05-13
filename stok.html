@@ -146,52 +146,9 @@ function fmtDate(ts){
 }
 
 function otomatikGorsel(p){
-  if(p.gorselUrl && String(p.gorselUrl).trim()) return p.gorselUrl;
-
-  const t=key((p.ad||"")+" "+(p.kategori||""));
-
-  const img={
-    cips:"https://images.unsplash.com/photo-1566478989037-eec170784d0b?q=80&w=700&auto=format&fit=crop",
-    tost:"https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=700&auto=format&fit=crop",
-    sandvic:"https://images.unsplash.com/photo-1553909489-cd47e0907980?q=80&w=700&auto=format&fit=crop",
-    simit:"https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?q=80&w=700&auto=format&fit=crop",
-    peynir:"https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?q=80&w=700&auto=format&fit=crop",
-    kefir:"https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=700&auto=format&fit=crop",
-    sut:"https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=700&auto=format&fit=crop",
-    su:"https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=700&auto=format&fit=crop",
-    kola:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?q=80&w=700&auto=format&fit=crop",
-    icecek:"https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=700&auto=format&fit=crop",
-    cay:"https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=700&auto=format&fit=crop",
-    kahve:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=700&auto=format&fit=crop",
-    cikolata:"https://images.unsplash.com/photo-1549007994-cb92caebd54b?q=80&w=700&auto=format&fit=crop",
-    biskuvi:"https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=700&auto=format&fit=crop",
-    seker:"https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?q=80&w=700&auto=format&fit=crop",
-    dondurma:"https://images.unsplash.com/photo-1501443762994-82bd5dace89a?q=80&w=700&auto=format&fit=crop",
-    meyve:"https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=700&auto=format&fit=crop",
-    ekmek:"https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=700&auto=format&fit=crop",
-    yumurta:"https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?q=80&w=700&auto=format&fit=crop"
-  };
-
-  if(t.includes("cips")||t.includes("chips")) return img.cips;
-  if(t.includes("tost")||t.includes("ayvalik")||t.includes("fastfood")) return img.tost;
-  if(t.includes("sandvic")||t.includes("sandwich")) return img.sandvic;
-  if(t.includes("simit")||t.includes("basak")) return img.simit;
-  if(t.includes("peynir")||t.includes("kasar")||t.includes("kaşar")) return img.peynir;
-  if(t.includes("kefir")) return img.kefir;
-  if(t.includes("sut")||t.includes("süt")||t.includes("ayran")) return img.sut;
-  if(t.includes("su ")||t==="su"||t.includes("water")) return img.su;
-  if(t.includes("cola")||t.includes("kola")||t.includes("pepsi")) return img.kola;
-  if(t.includes("fanta")||t.includes("sprite")||t.includes("meyve suyu")||t.includes("icecek")) return img.icecek;
-  if(t.includes("cay")||t.includes("çay")) return img.cay;
-  if(t.includes("kahve")||t.includes("coffee")) return img.kahve;
-  if(t.includes("cikolata")||t.includes("çikolata")||t.includes("gofret")) return img.cikolata;
-  if(t.includes("biskuvi")||t.includes("bisküvi")||t.includes("kraker")) return img.biskuvi;
-  if(t.includes("seker")||t.includes("şeker")||t.includes("lokum")) return img.seker;
-  if(t.includes("dondurma")) return img.dondurma;
-  if(t.includes("meyve")) return img.meyve;
-  if(t.includes("ekmek")) return img.ekmek;
-  if(t.includes("yumurta")) return img.yumurta;
-
+  if(p.gorselUrl && String(p.gorselUrl).trim()){
+    return p.gorselUrl;
+  }
   return "";
 }
 
