@@ -299,10 +299,7 @@
     import {
       getFirestore,
       collection,
-      getDocs,
-      query,
-      where,
-      orderBy
+      getDocs
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -569,22 +566,24 @@
         $("countBadge").textContent = "Yükleniyor...";
         $("updateBadge").textContent = "Güncelleniyor";
 
-        const snap = await getDocs(
-          query(
-            collection(db, "stok_urunleri"),
-            where("aktif", "==", true),
-            orderBy("ad")
-          )
-        );
+        const snap = await getDocs(collection(db, "stok_urunleri"));
 
-        products = snap.docs.map(d => ({
-          id:d.id,
-          ...d.data()
-        }));
+        products = snap.docs
+          .map(d => ({
+            id:d.id,
+            ...d.data()
+          }))
+          .filter(p => p.aktif !== false)
+          .sort((a,b) => String(a.ad || "").localeCompare(String(b.ad || ""), "tr"));
 
         const dates = products
           .map(p => p.updatedAt)
-          .filter(Boolean);
+          .filter(Boolean)
+          .sort((a,b) => {
+            const da = a?.toDate ? a.toDate().getTime() : 0;
+            const dbb = b?.toDate ? b.toDate().getTime() : 0;
+            return da - dbb;
+          });
 
         const last = dates.length ? dates[dates.length - 1] : null;
 
@@ -601,7 +600,7 @@
         $("list").innerHTML = `
           <div class="empty">
             Stok listesi yüklenemedi.<br><br>
-            Firestore Rules tarafında stok_urunleri okuma izni mevcut giriş sistemine göre açık olmalı.
+            Firestore Rules içinde <b>stok_urunleri</b> için <b>allow read: if true;</b> olmalı.
           </div>
         `;
 
