@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Üye Onay Paneli</title>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --bg:#f5f5f7;
+  --card:#fff;
+  --text:#111;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --green:#16a34a;
+  --red:#dc2626;
+  --orange:#f97316;
+  --blue:#2563eb;
+  --shadow:0 18px 45px rgba(0,0,0,.09);
+  --radius:26px;
+}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.95), transparent 32%),
+    radial-gradient(circle at 80% 0%, rgba(225,229,238,.9), transparent 35%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(245,245,247,.88);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(229,231,235,.8);
+}
+
+.nav{
+  max-width:1150px;
+  margin:auto;
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.brand{
+  font-size:18px;
+  font-weight:950;
+  letter-spacing:-.5px;
+}
+
+.nav-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.nav a,.nav button{
+  border:0;
+  background:#111;
+  color:#fff;
+  text-decoration:none;
+  border-radius:999px;
+  padding:10px 15px;
+  font-size:14px;
+  font-weight:900;
+  cursor:pointer;
+  font-family:inherit;
+}
+
+.nav a.light{
+  background:#fff;
+  color:#111;
+  border:1px solid rgba(0,0,0,.12);
+}
+
+.wrap{
+  max-width:1150px;
+  margin:24px auto;
+  padding:0 16px 44px;
+}
+
+.hero{
+  background:linear-gradient(135deg,#111,#2d2d2d);
+  color:#fff;
+  border-radius:32px;
+  padding:24px;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+
+.hero h1{
+  margin:0 0 8px;
+  font-size:29px;
+  letter-spacing:-.8px;
+}
+
+.hero p{
+  margin:0;
+  color:#d1d5db;
+  line-height:1.45;
+  font-weight:650;
+}
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.card{
+  background:#fff;
+  border-radius:22px;
+  padding:17px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(229,231,235,.8);
+}
+
+.card .title{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.card .value{
+  font-size:23px;
+  font-weight:950;
+  letter-spacing:-.6px;
+}
+
+.green{color:var(--green)}
+.red{color:var(--red)}
+.orange{color:var(--orange)}
+.blue{color:var(--blue)}
+
+.toolbar{
+  background:#fff;
+  border-radius:24px;
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(229,231,235,.8);
+  display:flex;
+  gap:12px;
+  align-items:end;
+  flex-wrap:wrap;
+}
+
+.field{
+  flex:1;
+  min-width:190px;
+}
+
+label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:950;
+  margin:0 0 7px;
+}
+
+input,select{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:13px 14px;
+  background:#f9fafb;
+  outline:none;
+  font-size:15px;
+  font-weight:800;
+  font-family:inherit;
+}
+
+input:focus,select:focus{
+  border-color:#111;
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(0,0,0,.06);
+}
+
+.btn{
+  border:0;
+  background:#111;
+  color:#fff;
+  border-radius:16px;
+  padding:13px 16px;
+  height:46px;
+  font-weight:950;
+  cursor:pointer;
+  font-family:inherit;
+}
+
+.panel{
+  background:#fff;
+  border-radius:28px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(229,231,235,.85);
+}
+
+.panel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+
+.panel-head h2{
+  margin:0;
+  font-size:21px;
+  letter-spacing:-.5px;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:12px;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+.badge.wait{background:#fef3c7;color:#92400e}
+.badge.ok{background:#dcfce7;color:#166534}
+.badge.passive{background:#fee2e2;color:#991b1b}
+.badge.all{background:#eef2ff;color:#3730a3}
+
+.table-wrap{
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:20px;
+}
+
+table{
+  width:100%;
+  min-width:820px;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:13px 12px;
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  font-size:14px;
+  font-weight:750;
+  vertical-align:middle;
+}
+
+th{
+  background:#f9fafb;
+  color:#374151;
+  font-size:12px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+
+tr:last-child td{border-bottom:0}
+
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.action-btn{
+  border:0;
+  border-radius:12px;
+  padding:9px 11px;
+  font-size:12px;
+  font-weight:950;
+  cursor:pointer;
+  color:#fff;
+  font-family:inherit;
+}
+
+.action-btn.approve{background:#15803d}
+.action-btn.waiting{background:#f97316}
+.action-btn.passive{background:#b91c1c}
+.action-btn.delete{background:#374151}
+
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:28px;
+  font-weight:850;
+}
+
+.msg{
+  margin:0 0 14px;
+  display:none;
+  border-radius:16px;
+  padding:12px 14px;
+  font-size:13px;
+  font-weight:850;
+}
+
+.msg.show{display:block}
+.msg.ok{background:#dcfce7;color:#166534}
+.msg.err{background:#fee2e2;color:#991b1b}
+.msg.info{background:#eef2ff;color:#3730a3}
+
+.small-muted{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+  line-height:1.35;
+}
+
+@media(max-width:850px){
+  .summary{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:520px){
+  .wrap{
+    margin:16px auto;
+    padding:0 10px 32px;
+  }
+
+  .nav{
+    align-items:stretch;
+    flex-direction:column;
+    padding:12px 10px;
+  }
+
+  .nav-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+  }
+
+  .nav a,.nav button{
+    width:100%;
+    text-align:center;
+  }
+
+  .hero{
+    border-radius:24px;
+    padding:18px;
+  }
+
+  .hero h1{font-size:24px}
+
+  .summary{
+    gap:8px;
+  }
+
+  .card{
+    border-radius:18px;
+    padding:13px;
+  }
+
+  .card .value{
+    font-size:20px;
+  }
+
+  .toolbar{
+    border-radius:20px;
+    padding:13px;
+  }
+
+  .field{
+    min-width:100%;
+  }
+
+  .btn{
+    width:100%;
+  }
+
+  .panel{
+    border-radius:22px;
+    padding:12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="nav">
+    <div class="brand">👥 Üye Onay Paneli</div>
+    <div class="nav-actions">
+      <a class="light" href="panel.html">← Panel</a>
+      <button onclick="verileriYukle()">Yenile</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section class="hero">
+    <h1>Personel Üyelik Onayları</h1>
+    <p>Yeni kayıt olan personelleri buradan görebilir, üyelik durumlarını aktif, beklemede veya pasif yapabilirsin.</p>
+  </section>
+
+  <section class="summary">
+    <div class="card">
+      <div class="title">Toplam Personel</div>
+      <div class="value blue" id="toplamSayi">0</div>
+    </div>
+    <div class="card">
+      <div class="title">Bekleyen</div>
+      <div class="value orange" id="bekleyenSayi">0</div>
+    </div>
+    <div class="card">
+      <div class="title">Aktif</div>
+      <div class="value green" id="aktifSayi">0</div>
+    </div>
+    <div class="card">
+      <div class="title">Pasif</div>
+      <div class="value red" id="pasifSayi">0</div>
+    </div>
+  </section>
+
+  <section class="toolbar">
+    <div class="field">
+      <label>Arama</label>
+      <input id="arama" placeholder="Ad, soyad veya telefon ara..." oninput="listeyiCiz()">
+    </div>
+
+    <div class="field">
+      <label>Durum Filtresi</label>
+      <select id="durumFiltre" onchange="listeyiCiz()">
+        <option value="beklemede">Bekleyenler</option>
+        <option value="aktif">Aktifler</option>
+        <option value="pasif">Pasifler</option>
+        <option value="hepsi">Hepsi</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="verileriYukle()">Listeyi Yenile</button>
+  </section>
+
+  <div class="msg" id="msg"></div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Personel Listesi</h2>
+      <span class="badge all" id="listeRozet">0 kayıt</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ad Soyad</th>
+            <th>Telefon</th>
+            <th>Durum</th>
+            <th>Kayıt Tarihi</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="personelBody">
+          <tr>
+            <td colspan="5" class="empty">Yükleniyor...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="small-muted">
+      Not: Onay verilen personel giriş sayfasından sisteme girebilir. Beklemede veya pasif olan personel giriş yapamaz.
+    </p>
+  </section>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain:"berber-randevu-14f7f.firebaseapp.com",
+  projectId:"berber-randevu-14f7f",
+  storageBucket:"berber-randevu-14f7f.firebasestorage.app",
+  messagingSenderId:"280530860977",
+  appId:"1:280530860977:web:52c0df04c228896f211b90"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let personeller = [];
+
+const body = document.getElementById("personelBody");
+const msg = document.getElementById("msg");
+
+function mesajYaz(tip, metin){
+  msg.className = "msg show " + tip;
+  msg.textContent = metin;
+  setTimeout(() => {
+    msg.className = "msg";
+    msg.textContent = "";
+  }, 2600);
+}
+
+function escapeHTML(v){
+  return String(v ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function adSoyadGetir(p){
+  return (
+    p.adSoyad ||
+    p.adSoyisim ||
+    p.isim ||
+    p.name ||
+    p.fullName ||
+    `${p.ad || ""} ${p.soyad || ""}`.trim() ||
+    "İsimsiz Personel"
+  );
+}
+
+function tarihYaz(v){
+  if(!v) return "-";
+
+  try{
+    const d = new Date(v);
+    if(!isNaN(d.getTime())){
+      return d.toLocaleString("tr-TR", {
+        day:"2-digit",
+        month:"2-digit",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+      });
+    }
+  }catch(e){}
+
+  return String(v);
+}
+
+function durumGetir(p){
+  const d = String(p.durum || "").toLowerCase();
+
+  if(d === "aktif") return "aktif";
+  if(d === "beklemede") return "beklemede";
+  if(d === "pasif") return "pasif";
+
+  if(p.aktif === true || p.active === true) return "aktif";
+  if(p.aktif === false || p.active === false) return "beklemede";
+
+  return "beklemede";
+}
+
+function durumBadge(durum){
+  if(durum === "aktif") return `<span class="badge ok">Aktif</span>`;
+  if(durum === "pasif") return `<span class="badge passive">Pasif</span>`;
+  return `<span class="badge wait">Beklemede</span>`;
+}
+
+async function verileriYukle(){
+  body.innerHTML = `<tr><td colspan="5" class="empty">Yükleniyor...</td></tr>`;
+
+  try{
+    const snap = await getDocs(collection(db, "personeller"));
+    personeller = [];
+
+    snap.forEach(d => {
+      personeller.push({
+        id:d.id,
+        ...d.data()
+      });
+    });
+
+    personeller.sort((a,b) => {
+      const da = durumGetir(a);
+      const dbb = durumGetir(b);
+
+      if(da === "beklemede" && dbb !== "beklemede") return -1;
+      if(da !== "beklemede" && dbb === "beklemede") return 1;
+
+      return adSoyadGetir(a).localeCompare(adSoyadGetir(b), "tr");
+    });
+
+    ozetCiz();
+    listeyiCiz();
+
+  }catch(e){
+    console.error(e);
+    body.innerHTML = `<tr><td colspan="5" class="empty">Personeller yüklenemedi. Firebase izinlerini kontrol et.</td></tr>`;
+    mesajYaz("err", "Personeller yüklenemedi.");
+  }
+}
+
+function ozetCiz(){
+  const toplam = personeller.length;
+  const bekleyen = personeller.filter(p => durumGetir(p) === "beklemede").length;
+  const aktif = personeller.filter(p => durumGetir(p) === "aktif").length;
+  const pasif = personeller.filter(p => durumGetir(p) === "pasif").length;
+
+  document.getElementById("toplamSayi").textContent = toplam;
+  document.getElementById("bekleyenSayi").textContent = bekleyen;
+  document.getElementById("aktifSayi").textContent = aktif;
+  document.getElementById("pasifSayi").textContent = pasif;
+}
+
+function listeyiCiz(){
+  const arama = String(document.getElementById("arama").value || "").toLocaleLowerCase("tr-TR").trim();
+  const filtre = document.getElementById("durumFiltre").value;
+
+  let liste = personeller.filter(p => {
+    const durum = durumGetir(p);
+    if(filtre !== "hepsi" && durum !== filtre) return false;
+
+    const metin = `${adSoyadGetir(p)} ${p.telefon || p.id || ""}`.toLocaleLowerCase("tr-TR");
+    if(arama && !metin.includes(arama)) return false;
+
+    return true;
+  });
+
+  document.getElementById("listeRozet").textContent = `${liste.length} kayıt`;
+
+  if(!liste.length){
+    body.innerHTML = `<tr><td colspan="5" class="empty">Bu filtreye uygun personel bulunamadı.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = liste.map(p => {
+    const durum = durumGetir(p);
+    const ad = adSoyadGetir(p);
+    const tel = p.telefon || p.id || "-";
+    const tarih = p.createdAt || p.updatedAt || p.kayitTarihi || "";
+
+    return `
+      <tr>
+        <td>
+          <b>${escapeHTML(ad)}</b>
+        </td>
+        <td>${escapeHTML(tel)}</td>
+        <td>${durumBadge(durum)}</td>
+        <td>${escapeHTML(tarihYaz(tarih))}</td>
+        <td>
+          <div class="actions">
+            <button class="action-btn approve" onclick="durumDegistir('${escapeHTML(p.id)}','aktif')">Onayla</button>
+            <button class="action-btn waiting" onclick="durumDegistir('${escapeHTML(p.id)}','beklemede')">Beklet</button>
+            <button class="action-btn passive" onclick="durumDegistir('${escapeHTML(p.id)}','pasif')">Pasif</button>
+            <button class="action-btn delete" onclick="personelSil('${escapeHTML(p.id)}')">Sil</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+async function durumDegistir(id, yeniDurum){
+  if(!id) return;
+
+  const aktifMi = yeniDurum === "aktif";
+
+  try{
+    await updateDoc(doc(db, "personeller", id), {
+      durum: yeniDurum,
+      aktif: aktifMi,
+      active: aktifMi,
+      updatedAt: new Date().toISOString()
+    });
+
+    const p = personeller.find(x => x.id === id);
+    if(p){
+      p.durum = yeniDurum;
+      p.aktif = aktifMi;
+      p.active = aktifMi;
+      p.updatedAt = new Date().toISOString();
+    }
+
+    ozetCiz();
+    listeyiCiz();
+
+    if(yeniDurum === "aktif") mesajYaz("ok", "Personel onaylandı.");
+    else if(yeniDurum === "pasif") mesajYaz("info", "Personel pasife alındı.");
+    else mesajYaz("info", "Personel beklemeye alındı.");
+
+  }catch(e){
+    console.error(e);
+    mesajYaz("err", "İşlem yapılamadı. Firebase izinlerini kontrol et.");
+  }
+}
+
+async function personelSil(id){
+  if(!id) return;
+
+  const p = personeller.find(x => x.id === id);
+  const ad = p ? adSoyadGetir(p) : "Bu personel";
+
+  if(!confirm(`${ad} kaydı silinsin mi? Bu işlem geri alınamaz.`)) return;
+
+  try{
+    await deleteDoc(doc(db, "personeller", id));
+    personeller = personeller.filter(x => x.id !== id);
+    ozetCiz();
+    listeyiCiz();
+    mesajYaz("ok", "Personel kaydı silindi.");
+  }catch(e){
+    console.error(e);
+    mesajYaz("err", "Silme işlemi yapılamadı. Firebase izinlerini kontrol et.");
+  }
+}
+
+window.verileriYukle = verileriYukle;
+window.listeyiCiz = listeyiCiz;
+window.durumDegistir = durumDegistir;
+window.personelSil = personelSil;
+
+verileriYukle();
+</script>
+
+</body>
+</html>
