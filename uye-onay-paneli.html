@@ -291,6 +291,7 @@ tr:last-child td{border-bottom:0}
 }
 
 .action-btn.approve{background:#15803d}
+.action-btn.edit{background:#2563eb}
 .action-btn.waiting{background:#f97316}
 .action-btn.passive{background:#b91c1c}
 .action-btn.delete{background:#374151}
@@ -540,6 +541,55 @@ function adSoyadGetir(p){
   );
 }
 
+function trBuyukHarf(metin){
+  return String(metin || "")
+    .replace(/i/g,"İ")
+    .replace(/ı/g,"I")
+    .replace(/ğ/g,"Ğ")
+    .replace(/ü/g,"Ü")
+    .replace(/ş/g,"Ş")
+    .replace(/ö/g,"Ö")
+    .replace(/ç/g,"Ç")
+    .toUpperCase();
+}
+
+function adBasHarfBuyut(metin){
+  return String(metin || "")
+    .toLocaleLowerCase("tr-TR")
+    .replace(/(^|\s|-)([a-zçğıöşü])/g, function(tam, bosluk, harf){
+      return bosluk + harf.toLocaleUpperCase("tr-TR");
+    });
+}
+
+function isimParcalaVeDuzenle(tamAd){
+  let temiz = String(tamAd || "")
+    .replace(/[^a-zA-ZçÇğĞıİöÖşŞüÜ\s-]/g,"")
+    .replace(/\s+/g," ")
+    .trim();
+
+  if(!temiz) return null;
+
+  const parcalar = temiz.split(" ");
+  let soyad = "";
+  let ad = "";
+
+  if(parcalar.length === 1){
+    ad = adBasHarfBuyut(parcalar[0]);
+    soyad = "";
+  }else{
+    soyad = trBuyukHarf(parcalar.pop());
+    ad = adBasHarfBuyut(parcalar.join(" "));
+  }
+
+  const isim = soyad ? `${ad} ${soyad}`.trim() : ad;
+
+  return {
+    ad,
+    soyad,
+    isim
+  };
+}
+
 function tarihYaz(v){
   if(!v) return "-";
 
@@ -662,6 +712,7 @@ function listeyiCiz(){
         <td>
           <div class="actions">
             <button class="action-btn approve" onclick="durumDegistir('${escapeHTML(p.id)}','aktif')">Onayla</button>
+            <button class="action-btn edit" onclick="personelAdDuzenle('${escapeHTML(p.id)}')">İsim Düzenle</button>
             <button class="action-btn waiting" onclick="durumDegistir('${escapeHTML(p.id)}','beklemede')">Beklet</button>
             <button class="action-btn passive" onclick="durumDegistir('${escapeHTML(p.id)}','pasif')">Pasif</button>
             <button class="action-btn delete" onclick="personelSil('${escapeHTML(p.id)}')">Sil</button>
@@ -706,6 +757,60 @@ async function durumDegistir(id, yeniDurum){
   }
 }
 
+async function personelAdDuzenle(id){
+  if(!id) return;
+
+  const p = personeller.find(x => x.id === id);
+  if(!p){
+    mesajYaz("err", "Personel bulunamadı.");
+    return;
+  }
+
+  const mevcutAd = adSoyadGetir(p);
+  const yeniAd = prompt("Ad soyad bilgisini düzenle:", mevcutAd);
+
+  if(yeniAd === null) return;
+
+  const duzenli = isimParcalaVeDuzenle(yeniAd);
+
+  if(!duzenli || !duzenli.isim){
+    mesajYaz("err", "Geçerli bir ad soyad gir.");
+    return;
+  }
+
+  if(!duzenli.soyad){
+    if(!confirm("Soyad boş görünüyor. Yine de kaydedilsin mi?")) return;
+  }
+
+  try{
+    await updateDoc(doc(db, "personeller", id), {
+      ad: duzenli.ad,
+      soyad: duzenli.soyad,
+      isim: duzenli.isim,
+      adSoyad: duzenli.isim,
+      name: duzenli.isim,
+      fullName: duzenli.isim,
+      updatedAt: new Date().toISOString()
+    });
+
+    p.ad = duzenli.ad;
+    p.soyad = duzenli.soyad;
+    p.isim = duzenli.isim;
+    p.adSoyad = duzenli.isim;
+    p.name = duzenli.isim;
+    p.fullName = duzenli.isim;
+    p.updatedAt = new Date().toISOString();
+
+    personeller.sort((a,b) => adSoyadGetir(a).localeCompare(adSoyadGetir(b), "tr"));
+    listeyiCiz();
+    mesajYaz("ok", "Ad soyad güncellendi.");
+
+  }catch(e){
+    console.error(e);
+    mesajYaz("err", "Ad soyad güncellenemedi. Firebase izinlerini kontrol et.");
+  }
+}
+
 async function personelSil(id){
   if(!id) return;
 
@@ -730,6 +835,7 @@ window.verileriYukle = verileriYukle;
 window.listeyiCiz = listeyiCiz;
 window.durumDegistir = durumDegistir;
 window.personelSil = personelSil;
+window.personelAdDuzenle = personelAdDuzenle;
 
 verileriYukle();
 </script>
