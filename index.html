@@ -218,6 +218,16 @@ async function login(){
     if(!snap.exists()){ msg.textContent="Kayıt yok"; return; }
 
     const data = snap.data();
+
+    const durum = String(data.durum || "").toLocaleLowerCase("tr-TR");
+    const aktifMi = data.aktif === true || data.active === true || durum === "aktif";
+
+    if(!aktifMi){
+      msg.textContent = "Hesabınız admin onayı bekliyor.";
+      alert("Hesabınız admin onayı bekliyor. Admin onayından sonra giriş yapabilirsiniz.");
+      return;
+    }
+
     if(String(data.sifre || data.password || data.pass || "") !== String(sifre)){
       msg.textContent="Şifre yanlış";
       return;
