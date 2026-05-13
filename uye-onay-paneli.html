@@ -447,6 +447,7 @@ tr:last-child td{border-bottom:0}
     </div>
 
     <button class="btn" onclick="verileriYukle()">Listeyi Yenile</button>
+    <button class="btn" onclick="pdfExport()">PDF Export</button>
   </section>
 
   <div class="msg" id="msg"></div>
@@ -831,11 +832,186 @@ async function personelSil(id){
   }
 }
 
+
+function filtreliListeGetir(){
+  const arama = String(document.getElementById("arama").value || "").toLocaleLowerCase("tr-TR").trim();
+  const filtre = document.getElementById("durumFiltre").value;
+
+  return personeller.filter(p => {
+    const durum = durumGetir(p);
+    if(filtre !== "hepsi" && durum !== filtre) return false;
+
+    const metin = `${adSoyadGetir(p)} ${p.telefon || p.id || ""}`.toLocaleLowerCase("tr-TR");
+    if(arama && !metin.includes(arama)) return false;
+
+    return true;
+  });
+}
+
+function pdfExport(){
+  const liste = filtreliListeGetir();
+
+  if(!liste.length){
+    mesajYaz("err", "PDF için listede kayıt yok.");
+    return;
+  }
+
+  const filtre = document.getElementById("durumFiltre");
+  const filtreText = filtre.options[filtre.selectedIndex]?.text || "Liste";
+  const tarih = new Date().toLocaleString("tr-TR");
+
+  const satirlar = liste.map((p, i) => {
+    const durum = durumGetir(p);
+    const ad = adSoyadGetir(p);
+    const tel = p.telefon || p.id || "-";
+    const kayit = tarihYaz(p.createdAt || p.updatedAt || p.kayitTarihi || "");
+
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${escapeHTML(ad)}</td>
+        <td>${escapeHTML(tel)}</td>
+        <td>${escapeHTML(durum.toLocaleUpperCase("tr-TR"))}</td>
+        <td>${escapeHTML(kayit)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const htmlPDF = `
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Üye Onay Paneli PDF</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding:28px;
+    color:#111;
+    font-family:Arial,Helvetica,sans-serif;
+  }
+  .head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    border-bottom:2px solid #111;
+    padding-bottom:14px;
+    margin-bottom:18px;
+    gap:16px;
+  }
+  h1{
+    margin:0 0 6px;
+    font-size:22px;
+  }
+  .meta{
+    color:#555;
+    font-size:12px;
+    line-height:1.5;
+  }
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin:16px 0;
+  }
+  .box{
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:10px;
+  }
+  .box b{
+    display:block;
+    font-size:18px;
+    margin-bottom:3px;
+  }
+  .box span{
+    color:#555;
+    font-size:11px;
+    font-weight:bold;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:14px;
+  }
+  th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:left;
+    font-size:12px;
+  }
+  th{
+    background:#f3f4f6;
+    font-size:11px;
+    text-transform:uppercase;
+  }
+  .footer{
+    margin-top:18px;
+    color:#777;
+    font-size:11px;
+  }
+  @media print{
+    body{padding:18px}
+    .no-print{display:none}
+  }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div>
+      <h1>Üye Onay Paneli</h1>
+      <div class="meta">Filtre: ${escapeHTML(filtreText)}<br>Oluşturulma: ${escapeHTML(tarih)}</div>
+    </div>
+    <button class="no-print" onclick="window.print()" style="background:#111;color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:bold;cursor:pointer;">PDF Olarak Kaydet / Yazdır</button>
+  </div>
+
+  <div class="summary">
+    <div class="box"><b>${escapeHTML(document.getElementById("toplamSayi").textContent)}</b><span>Toplam Personel</span></div>
+    <div class="box"><b>${escapeHTML(document.getElementById("bekleyenSayi").textContent)}</b><span>Bekleyen</span></div>
+    <div class="box"><b>${escapeHTML(document.getElementById("aktifSayi").textContent)}</b><span>Aktif</span></div>
+    <div class="box"><b>${escapeHTML(document.getElementById("pasifSayi").textContent)}</b><span>Pasif</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Ad Soyad</th>
+        <th>Telefon</th>
+        <th>Durum</th>
+        <th>Kayıt / Güncelleme Tarihi</th>
+      </tr>
+    </thead>
+    <tbody>${satirlar}</tbody>
+  </table>
+
+  <div class="footer">Kantin10 Admin Panel üzerinden oluşturulmuştur.</div>
+
+  <script>
+    setTimeout(() => window.print(), 400);
+  <\/script>
+</body>
+</html>
+`;
+
+  const pencere = window.open("", "_blank");
+  if(!pencere){
+    mesajYaz("err", "PDF penceresi açılamadı. Tarayıcı pop-up iznini kontrol et.");
+    return;
+  }
+
+  pencere.document.open();
+  pencere.document.write(htmlPDF);
+  pencere.document.close();
+}
+
 window.verileriYukle = verileriYukle;
 window.listeyiCiz = listeyiCiz;
 window.durumDegistir = durumDegistir;
 window.personelSil = personelSil;
 window.personelAdDuzenle = personelAdDuzenle;
+window.pdfExport = pdfExport;
 
 verileriYukle();
 </script>
