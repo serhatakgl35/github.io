@@ -1,623 +1,280 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Kantin Stok Listesi</title>
-
-  <style>
-    :root{
-      --bg:#f5f5f7;
-      --card:#fff;
-      --text:#111;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --green:#16a34a;
-      --red:#dc2626;
-      --yellow:#ca8a04;
-      --shadow:0 18px 55px rgba(0,0,0,.08);
-      --radius:22px;
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
-    }
-
-    .top{
-      position:sticky;
-      top:0;
-      z-index:5;
-      background:rgba(245,245,247,.84);
-      backdrop-filter:blur(18px);
-      border-bottom:1px solid rgba(0,0,0,.06);
-    }
-
-    .topin{
-      max-width:1180px;
-      margin:auto;
-      padding:18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-
-    .brand b{font-size:22px}
-
-    .brand span{
-      display:block;
-      color:var(--muted);
-      font-size:13px;
-      margin-top:3px;
-    }
-
-    .wrap{
-      max-width:1180px;
-      margin:22px auto;
-      padding:0 18px 45px;
-    }
-
-    .hero{
-      background:linear-gradient(135deg,#111,#2a2a2a);
-      color:#fff;
-      border-radius:28px;
-      padding:26px;
-      box-shadow:var(--shadow);
-      display:flex;
-      justify-content:space-between;
-      gap:20px;
-      align-items:center;
-    }
-
-    .hero h1{
-      margin:0;
-      font-size:30px;
-    }
-
-    .hero p{
-      margin:8px 0 0;
-      color:#d1d5db;
-    }
-
-    .badge{
-      background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.18);
-      border-radius:999px;
-      padding:10px 13px;
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .top .badge{
-      background:#fff;
-      border:1px solid var(--line);
-    }
-
-    .btn{
-      border:0;
-      border-radius:14px;
-      background:#111;
-      color:#fff;
-      padding:10px 14px;
-      font-weight:900;
-      cursor:pointer;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .filters{
-      margin:18px 0;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .input,select{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:16px;
-      padding:13px 14px;
-      font:inherit;
-      outline:none;
-    }
-
-    .input{
-      min-width:240px;
-      flex:1;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:15px;
-    }
-
-    .card{
-      background:#fff;
-      border:1px solid rgba(0,0,0,.06);
-      border-radius:22px;
-      box-shadow:0 12px 35px rgba(0,0,0,.06);
-      overflow:hidden;
-    }
-
-    .img{
-      height:150px;
-      background:#f0f0f0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#9ca3af;
-      font-size:36px;
-    }
-
-    .img img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    .body{padding:15px}
-
-    .name{
-      font-weight:950;
-      line-height:1.18;
-      min-height:38px;
-    }
-
-    .meta{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .foot{
-      margin-top:13px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      border-radius:999px;
-      padding:7px 10px;
-      font-size:12px;
-      font-weight:950;
-    }
-
-    .ok{background:#dcfce7;color:#166534}
-    .az{background:#fef3c7;color:#92400e}
-    .yok{background:#fee2e2;color:#991b1b}
-
-    .qty{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-    }
-
-    .empty{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:22px;
-      padding:24px;
-      text-align:center;
-      color:var(--muted);
-      line-height:1.5;
-    }
-
-    .hiddenPrice{display:none}
-
-    .price{
-      margin-top:10px;
-      font-weight:950;
-    }
-
-    .loading{
-      padding:26px;
-      text-align:center;
-      color:var(--muted);
-      grid-column:1/-1;
-    }
-
-    .gate{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-    }
-
-    .gateCard{
-      max-width:430px;
-      width:100%;
-      background:#fff;
-      border-radius:26px;
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
-      padding:26px;
-      text-align:center;
-    }
-
-    .gateCard h1{
-      margin:10px 0;
-      font-size:24px;
-    }
-
-    .gateCard p{
-      color:var(--muted);
-      line-height:1.5;
-      margin-bottom:18px;
-    }
-
-    @media(max-width:1050px){
-      .grid{grid-template-columns:repeat(3,1fr)}
-    }
-
-    @media(max-width:760px){
-      .topin,.hero{
-        align-items:flex-start;
-        flex-direction:column;
-      }
-
-      .grid{
-        grid-template-columns:repeat(2,1fr);
-        gap:12px;
-      }
-
-      .hero h1{font-size:24px}
-      .img{height:120px}
-      .body{padding:12px}
-      .name{font-size:14px}
-
-      .input,select{
-        width:100%;
-        min-width:0;
-      }
-    }
-
-    @media(max-width:420px){
-      .grid{grid-template-columns:1fr}
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Kantin Stok Listesi</title>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--text:#111;--muted:#6b7280;--line:#e5e7eb;--shadow:0 18px 55px rgba(0,0,0,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif}
+.top{position:sticky;top:0;z-index:5;background:rgba(245,245,247,.84);backdrop-filter:blur(18px);border-bottom:1px solid rgba(0,0,0,.06)}
+.topin{max-width:1180px;margin:auto;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand b{font-size:22px}.brand span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.wrap{max-width:1180px;margin:22px auto;padding:0 18px 45px}
+.hero{background:linear-gradient(135deg,#111,#2a2a2a);color:#fff;border-radius:28px;padding:26px;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:20px;align-items:center}
+.hero h1{margin:0;font-size:30px}.hero p{margin:8px 0 0;color:#d1d5db}
+.badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:10px 13px;font-weight:900;white-space:nowrap}
+.top .badge{background:#fff;border:1px solid var(--line)}
+.btn{border:0;border-radius:14px;background:#111;color:#fff;padding:10px 14px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.filters{margin:18px 0;display:flex;gap:10px;flex-wrap:wrap}
+.input,select{border:1px solid var(--line);background:#fff;border-radius:16px;padding:13px 14px;font:inherit;outline:none}
+.input{min-width:240px;flex:1}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:22px;box-shadow:0 12px 35px rgba(0,0,0,.06);overflow:hidden}
+.img{height:170px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:36px;padding:18px}
+.img img{max-width:100%;max-height:100%;object-fit:contain}
+.body{padding:15px}.name{font-weight:950;line-height:1.18;min-height:38px}.meta{margin-top:8px;color:var(--muted);font-size:12px}
+.foot{margin-top:13px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950}
+.ok{background:#dcfce7;color:#166534}.az{background:#fef3c7;color:#92400e}.yok{background:#fee2e2;color:#991b1b}
+.qty{font-size:12px;color:var(--muted);font-weight:800}
+.empty{background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;text-align:center;color:var(--muted);line-height:1.5}
+.hiddenPrice{display:none}.price{margin-top:10px;font-weight:950}.loading{padding:26px;text-align:center;color:var(--muted);grid-column:1/-1}
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.gateCard{max-width:430px;width:100%;background:#fff;border-radius:26px;border:1px solid var(--line);box-shadow:var(--shadow);padding:26px;text-align:center}
+.gateCard h1{margin:10px 0;font-size:24px}.gateCard p{color:var(--muted);line-height:1.5;margin-bottom:18px}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.topin,.hero{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:repeat(2,1fr);gap:12px}.hero h1{font-size:24px}.img{height:140px}.body{padding:12px}.name{font-size:14px}.input,select{width:100%;min-width:0}}
+@media(max-width:420px){.grid{grid-template-columns:1fr}}
+</style>
 </head>
-
 <body>
+<div id="app"></div>
 
-  <div id="app"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig={
+  apiKey:"AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
+  authDomain:"berber-randevu-14f7f.firebaseapp.com",
+  projectId:"berber-randevu-14f7f",
+  storageBucket:"berber-randevu-14f7f.firebasestorage.app",
+  messagingSenderId:"280530860977",
+  appId:"1:280530860977:web:52c0df04c228896f211b90"
+};
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
-      authDomain: "berber-randevu-14f7f.firebaseapp.com",
-      projectId: "berber-randevu-14f7f",
-      storageBucket: "berber-randevu-14f7f.firebasestorage.app",
-      messagingSenderId: "280530860977",
-      appId: "1:280530860977:web:52c0df04c228896f211b90"
-    };
+const GIRIS_SAYFASI="index.html";
+const PANEL_SAYFASI="panel.html";
+const FIYAT_GOSTER=false;
+const STOK_ADEDI_GOSTER=true;
 
-    const GIRIS_SAYFASI = "index.html";
-    const PANEL_SAYFASI = "panel.html";
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+let products=[];
 
-    const FIYAT_GOSTER = false;
-    const STOK_ADEDI_GOSTER = true;
+function storageBulunduMu(){
+  const arr=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);arr.push({key:k,value:localStorage.getItem(k)})}
+  for(let i=0;i<sessionStorage.length;i++){const k=sessionStorage.key(i);arr.push({key:k,value:sessionStorage.getItem(k)})}
+  const keys=["personel","giris","login","uye","user","kullanici","telefon","ad","soyad"];
+  return arr.some(item=>{
+    const s=String(item.key+" "+item.value).toLowerCase();
+    const giris=s.includes("true")||s.includes("aktif")||s.includes("personel")||s.includes("telefon")||s.includes("uid")||s.includes("ad")||s.includes("soyad");
+    return keys.some(k=>s.includes(k))&&giris;
+  });
+}
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+function personelGirisKontrol(){
+  if(!storageBulunduMu()){
+    document.getElementById("app").innerHTML=`
+    <div class="gate"><div class="gateCard">
+      <div style="font-size:44px">🔒</div>
+      <h1>Personel Girişi Gerekli</h1>
+      <p>Bu stok listesi sadece giriş yapmış personeller tarafından görüntülenebilir.</p>
+      <a class="btn" href="${GIRIS_SAYFASI}">Giriş Sayfasına Git</a>
+    </div></div>`;
+    setTimeout(()=>{window.location.href=GIRIS_SAYFASI},1600);
+    return false;
+  }
+  return true;
+}
 
-    let products = [];
+function sayfayiKur(){
+  document.getElementById("app").innerHTML=`
+  <div class="top"><div class="topin">
+    <div class="brand"><b>Kantin Stok Listesi</b><span>Güncel ürün durumu</span></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <a class="btn" href="${PANEL_SAYFASI}">Panele Dön</a>
+      <div class="badge" id="countBadge">Yükleniyor...</div>
+    </div>
+  </div></div>
+  <main class="wrap">
+    <section class="hero">
+      <div><h1>Ürünleri kontrol et</h1><p>Arama yapabilir, kategoriye göre filtreleyebilir ve stok durumunu görebilirsin.</p></div>
+      <div class="badge" id="updateBadge">Güncelleniyor</div>
+    </section>
+    <div class="filters">
+      <input id="search" class="input" placeholder="Ürün adı veya barkod ara...">
+      <select id="cat"><option value="">Tüm kategoriler</option></select>
+      <select id="stock">
+        <option value="">Tüm stoklar</option>
+        <option value="ok">Stokta var</option>
+        <option value="az">Az kaldı</option>
+        <option value="yok">Tükendi</option>
+      </select>
+    </div>
+    <section id="list" class="grid"><div class="loading">Ürünler yükleniyor...</div></section>
+  </main>`;
+}
 
-    function storageBulunduMu(){
-      const tumKayitlar = [];
+const $=id=>document.getElementById(id);
 
-      for(let i = 0; i < localStorage.length; i++){
-        const k = localStorage.key(i);
-        tumKayitlar.push({
-          key:k,
-          value:localStorage.getItem(k)
-        });
-      }
+function key(s){
+  return String(s??"").trim().toLowerCase()
+    .replaceAll("ı","i").replaceAll("ğ","g").replaceAll("ü","u")
+    .replaceAll("ş","s").replaceAll("ö","o").replaceAll("ç","c");
+}
 
-      for(let i = 0; i < sessionStorage.length; i++){
-        const k = sessionStorage.key(i);
-        tumKayitlar.push({
-          key:k,
-          value:sessionStorage.getItem(k)
-        });
-      }
+function esc(s){
+  return String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+}
 
-      const aranacakKelimeler = [
-        "personel",
-        "giris",
-        "login",
-        "uye",
-        "user",
-        "kullanici",
-        "telefon",
-        "ad",
-        "soyad"
-      ];
+function st(q){
+  const miktar=Number(q||0);
+  if(miktar<=0)return["yok","TÜKENDİ"];
+  if(miktar<=5)return["az","AZ KALDI"];
+  return["ok","STOKTA VAR"];
+}
 
-      return tumKayitlar.some(item => {
-        const birlesik = String(item.key + " " + item.value).toLowerCase();
+function fmtDate(ts){
+  try{
+    const d=ts?.toDate?ts.toDate():null;
+    return d?d.toLocaleString("tr-TR",{dateStyle:"short",timeStyle:"short"}):"Güncel";
+  }catch{return"Güncel"}
+}
 
-        const girisVar =
-          birlesik.includes("true") ||
-          birlesik.includes("aktif") ||
-          birlesik.includes("personel") ||
-          birlesik.includes("telefon") ||
-          birlesik.includes("uid") ||
-          birlesik.includes("ad") ||
-          birlesik.includes("soyad");
+function otomatikGorsel(p){
+  if(p.gorselUrl && String(p.gorselUrl).trim()) return p.gorselUrl;
 
-        const anahtarUygun = aranacakKelimeler.some(k => birlesik.includes(k));
+  const t=key((p.ad||"")+" "+(p.kategori||""));
 
-        return anahtarUygun && girisVar;
-      });
-    }
+  const img={
+    cips:"https://images.unsplash.com/photo-1566478989037-eec170784d0b?q=80&w=700&auto=format&fit=crop",
+    tost:"https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=700&auto=format&fit=crop",
+    sandvic:"https://images.unsplash.com/photo-1553909489-cd47e0907980?q=80&w=700&auto=format&fit=crop",
+    simit:"https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?q=80&w=700&auto=format&fit=crop",
+    peynir:"https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?q=80&w=700&auto=format&fit=crop",
+    kefir:"https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=700&auto=format&fit=crop",
+    sut:"https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=700&auto=format&fit=crop",
+    su:"https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=700&auto=format&fit=crop",
+    kola:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?q=80&w=700&auto=format&fit=crop",
+    icecek:"https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=700&auto=format&fit=crop",
+    cay:"https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=700&auto=format&fit=crop",
+    kahve:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=700&auto=format&fit=crop",
+    cikolata:"https://images.unsplash.com/photo-1549007994-cb92caebd54b?q=80&w=700&auto=format&fit=crop",
+    biskuvi:"https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=700&auto=format&fit=crop",
+    seker:"https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?q=80&w=700&auto=format&fit=crop",
+    dondurma:"https://images.unsplash.com/photo-1501443762994-82bd5dace89a?q=80&w=700&auto=format&fit=crop",
+    meyve:"https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=700&auto=format&fit=crop",
+    ekmek:"https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=700&auto=format&fit=crop",
+    yumurta:"https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?q=80&w=700&auto=format&fit=crop"
+  };
 
-    function personelGirisKontrol(){
-      const girisVar = storageBulunduMu();
+  if(t.includes("cips")||t.includes("chips")) return img.cips;
+  if(t.includes("tost")||t.includes("ayvalik")||t.includes("fastfood")) return img.tost;
+  if(t.includes("sandvic")||t.includes("sandwich")) return img.sandvic;
+  if(t.includes("simit")||t.includes("basak")) return img.simit;
+  if(t.includes("peynir")||t.includes("kasar")||t.includes("kaşar")) return img.peynir;
+  if(t.includes("kefir")) return img.kefir;
+  if(t.includes("sut")||t.includes("süt")||t.includes("ayran")) return img.sut;
+  if(t.includes("su ")||t==="su"||t.includes("water")) return img.su;
+  if(t.includes("cola")||t.includes("kola")||t.includes("pepsi")) return img.kola;
+  if(t.includes("fanta")||t.includes("sprite")||t.includes("meyve suyu")||t.includes("icecek")) return img.icecek;
+  if(t.includes("cay")||t.includes("çay")) return img.cay;
+  if(t.includes("kahve")||t.includes("coffee")) return img.kahve;
+  if(t.includes("cikolata")||t.includes("çikolata")||t.includes("gofret")) return img.cikolata;
+  if(t.includes("biskuvi")||t.includes("bisküvi")||t.includes("kraker")) return img.biskuvi;
+  if(t.includes("seker")||t.includes("şeker")||t.includes("lokum")) return img.seker;
+  if(t.includes("dondurma")) return img.dondurma;
+  if(t.includes("meyve")) return img.meyve;
+  if(t.includes("ekmek")) return img.ekmek;
+  if(t.includes("yumurta")) return img.yumurta;
 
-      if(!girisVar){
-        document.getElementById("app").innerHTML = `
-          <div class="gate">
-            <div class="gateCard">
-              <div style="font-size:44px">🔒</div>
-              <h1>Personel Girişi Gerekli</h1>
-              <p>Bu stok listesi sadece giriş yapmış personeller tarafından görüntülenebilir.</p>
-              <a class="btn" href="${GIRIS_SAYFASI}">Giriş Sayfasına Git</a>
-            </div>
-          </div>
-        `;
+  return "";
+}
 
-        setTimeout(() => {
-          window.location.href = GIRIS_SAYFASI;
-        }, 1600);
+function render(){
+  const q=key($("search").value),c=$("cat").value,sf=$("stock").value;
+  const cats=[...new Set(products.map(p=>p.kategori||"Genel"))].sort((a,b)=>a.localeCompare(b,"tr"));
+  const keep=$("cat").value;
+  $("cat").innerHTML='<option value="">Tüm kategoriler</option>'+cats.map(x=>`<option ${x===keep?"selected":""}>${esc(x)}</option>`).join("");
 
-        return false;
-      }
+  const filtered=products.filter(p=>{
+    const ss=st(p.miktar)[0];
+    return(!q||key(p.ad).includes(q)||key(p.barkod).includes(q))&&(!c||(p.kategori||"Genel")===c)&&(!sf||ss===sf);
+  });
 
-      return true;
-    }
+  $("countBadge").textContent=filtered.length+" ürün";
 
-    function sayfayiKur(){
-      document.getElementById("app").innerHTML = `
-        <div class="top">
-          <div class="topin">
-            <div class="brand">
-              <b>Kantin Stok Listesi</b>
-              <span>Güncel ürün durumu</span>
-            </div>
+  if(!filtered.length){
+    $("list").className="";
+    $("list").innerHTML='<div class="empty">Ürün bulunamadı.</div>';
+    return;
+  }
 
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-              <a class="btn" href="${PANEL_SAYFASI}">Panele Dön</a>
-              <div class="badge" id="countBadge">Yükleniyor...</div>
-            </div>
-          </div>
+  $("list").className="grid";
+  $("list").innerHTML=filtered.map(p=>{
+    const s=st(p.miktar);
+    const img=otomatikGorsel(p);
+
+    return`
+    <article class="card">
+      <div class="img">
+        ${img?`<img src="${esc(img)}" alt="${esc(p.ad)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();this.parentElement.textContent='📦'">`:"📦"}
+      </div>
+      <div class="body">
+        <div class="name">${esc(p.ad)}</div>
+        <div class="meta">${esc(p.kategori||"Genel")}${p.barkod?" · "+esc(p.barkod):""}</div>
+        <div class="price ${FIYAT_GOSTER?"":"hiddenPrice"}">${Number(p.satisFiyat||0).toLocaleString("tr-TR")} TL</div>
+        <div class="foot">
+          <span class="pill ${s[0]}">${s[1]}</span>
+          <span class="qty">${STOK_ADEDI_GOSTER?Number(p.miktar||0)+" adet":""}</span>
         </div>
+      </div>
+    </article>`;
+  }).join("");
+}
 
-        <main class="wrap">
-          <section class="hero">
-            <div>
-              <h1>Ürünleri kontrol et</h1>
-              <p>Arama yapabilir, kategoriye göre filtreleyebilir ve stok durumunu görebilirsin.</p>
-            </div>
-            <div class="badge" id="updateBadge">Güncelleniyor</div>
-          </section>
+async function load(){
+  try{
+    $("countBadge").textContent="Yükleniyor...";
+    $("updateBadge").textContent="Güncelleniyor";
 
-          <div class="filters">
-            <input id="search" class="input" placeholder="Ürün adı veya barkod ara...">
+    const snap=await getDocs(collection(db,"stok_urunleri"));
 
-            <select id="cat">
-              <option value="">Tüm kategoriler</option>
-            </select>
+    products=snap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(p=>p.aktif!==false)
+      .sort((a,b)=>String(a.ad||"").localeCompare(String(b.ad||""),"tr"));
 
-            <select id="stock">
-              <option value="">Tüm stoklar</option>
-              <option value="ok">Stokta var</option>
-              <option value="az">Az kaldı</option>
-              <option value="yok">Tükendi</option>
-            </select>
-          </div>
+    const dates=products.map(p=>p.updatedAt).filter(Boolean).sort((a,b)=>{
+      const da=a?.toDate?a.toDate().getTime():0;
+      const dbb=b?.toDate?b.toDate().getTime():0;
+      return da-dbb;
+    });
 
-          <section id="list" class="grid">
-            <div class="loading">Ürünler yükleniyor...</div>
-          </section>
-        </main>
-      `;
-    }
+    const last=dates.length?dates[dates.length-1]:null;
+    $("updateBadge").textContent=last?"Son güncelleme: "+fmtDate(last):"Güncel liste";
+    render();
 
-    const $ = id => document.getElementById(id);
+  }catch(e){
+    console.error(e);
+    $("list").className="";
+    $("list").innerHTML=`<div class="empty">Stok listesi yüklenemedi.<br><br>Firestore Rules içinde <b>stok_urunleri</b> için <b>allow read: if true;</b> olmalı.</div>`;
+    $("countBadge").textContent="Hata";
+    $("updateBadge").textContent="Bağlantı hatası";
+  }
+}
 
-    function key(s){
-      return String(s ?? "")
-        .trim()
-        .toLowerCase()
-        .replaceAll("ı","i")
-        .replaceAll("ğ","g")
-        .replaceAll("ü","u")
-        .replaceAll("ş","s")
-        .replaceAll("ö","o")
-        .replaceAll("ç","c");
-    }
-
-    function esc(s){
-      return String(s ?? "").replace(/[&<>"]/g, m => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;"
-      }[m]));
-    }
-
-    function st(q){
-      const miktar = Number(q || 0);
-
-      if(miktar <= 0) return ["yok","TÜKENDİ"];
-      if(miktar <= 5) return ["az","AZ KALDI"];
-
-      return ["ok","STOKTA VAR"];
-    }
-
-    function fmtDate(ts){
-      try{
-        const d = ts?.toDate ? ts.toDate() : null;
-
-        return d
-          ? d.toLocaleString("tr-TR", {
-              dateStyle:"short",
-              timeStyle:"short"
-            })
-          : "Güncel";
-      }catch{
-        return "Güncel";
-      }
-    }
-
-    function render(){
-      const q = key($("search").value);
-      const c = $("cat").value;
-      const sf = $("stock").value;
-
-      const cats = [...new Set(products.map(p => p.kategori || "Genel"))]
-        .sort((a,b) => a.localeCompare(b,"tr"));
-
-      const keep = $("cat").value;
-
-      $("cat").innerHTML =
-        '<option value="">Tüm kategoriler</option>' +
-        cats.map(x => `<option ${x === keep ? "selected" : ""}>${esc(x)}</option>`).join("");
-
-      const filtered = products.filter(p => {
-        const ss = st(p.miktar)[0];
-
-        return (
-          (!q || key(p.ad).includes(q) || key(p.barkod).includes(q)) &&
-          (!c || (p.kategori || "Genel") === c) &&
-          (!sf || ss === sf)
-        );
-      });
-
-      $("countBadge").textContent = filtered.length + " ürün";
-
-      if(!filtered.length){
-        $("list").className = "";
-        $("list").innerHTML = '<div class="empty">Ürün bulunamadı.</div>';
-        return;
-      }
-
-      $("list").className = "grid";
-
-      $("list").innerHTML = filtered.map(p => {
-        const s = st(p.miktar);
-
-        return `
-          <article class="card">
-            <div class="img">
-              ${
-                p.gorselUrl
-                  ? `<img src="${esc(p.gorselUrl)}" alt="${esc(p.ad)}" loading="lazy" onerror="this.remove();this.parentElement.textContent='📦'">`
-                  : "📦"
-              }
-            </div>
-
-            <div class="body">
-              <div class="name">${esc(p.ad)}</div>
-
-              <div class="meta">
-                ${esc(p.kategori || "Genel")}
-                ${p.barkod ? " · " + esc(p.barkod) : ""}
-              </div>
-
-              <div class="price ${FIYAT_GOSTER ? "" : "hiddenPrice"}">
-                ${Number(p.satisFiyat || 0).toLocaleString("tr-TR")} TL
-              </div>
-
-              <div class="foot">
-                <span class="pill ${s[0]}">${s[1]}</span>
-                <span class="qty">
-                  ${STOK_ADEDI_GOSTER ? Number(p.miktar || 0) + " adet" : ""}
-                </span>
-              </div>
-            </div>
-          </article>
-        `;
-      }).join("");
-    }
-
-    async function load(){
-      try{
-        $("countBadge").textContent = "Yükleniyor...";
-        $("updateBadge").textContent = "Güncelleniyor";
-
-        const snap = await getDocs(collection(db, "stok_urunleri"));
-
-        products = snap.docs
-          .map(d => ({
-            id:d.id,
-            ...d.data()
-          }))
-          .filter(p => p.aktif !== false)
-          .sort((a,b) => String(a.ad || "").localeCompare(String(b.ad || ""), "tr"));
-
-        const dates = products
-          .map(p => p.updatedAt)
-          .filter(Boolean)
-          .sort((a,b) => {
-            const da = a?.toDate ? a.toDate().getTime() : 0;
-            const dbb = b?.toDate ? b.toDate().getTime() : 0;
-            return da - dbb;
-          });
-
-        const last = dates.length ? dates[dates.length - 1] : null;
-
-        $("updateBadge").textContent = last
-          ? "Son güncelleme: " + fmtDate(last)
-          : "Güncel liste";
-
-        render();
-
-      }catch(e){
-        console.error(e);
-
-        $("list").className = "";
-        $("list").innerHTML = `
-          <div class="empty">
-            Stok listesi yüklenemedi.<br><br>
-            Firestore Rules içinde <b>stok_urunleri</b> için <b>allow read: if true;</b> olmalı.
-          </div>
-        `;
-
-        $("countBadge").textContent = "Hata";
-        $("updateBadge").textContent = "Bağlantı hatası";
-      }
-    }
-
-    if(personelGirisKontrol()){
-      sayfayiKur();
-
-      $("search").oninput = render;
-      $("cat").onchange = render;
-      $("stock").onchange = render;
-
-      load();
-    }
-  </script>
+if(personelGirisKontrol()){
+  sayfayiKur();
+  $("search").oninput=render;
+  $("cat").onchange=render;
+  $("stock").onchange=render;
+  load();
+}
+</script>
 </body>
 </html>
