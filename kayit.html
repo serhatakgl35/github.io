@@ -276,7 +276,32 @@ window.telDuzenle = function(input){
   input.value = v.slice(0,11);
 }
 
+async function telegramBildirimGonder(mesaj){
+
+  const BOT_TOKEN = "BURAYA_BOT_TOKEN";
+  const CHAT_ID = "BURAYA_CHAT_ID";
+
+  const url =
+    `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+  try{
+    await fetch(url,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        chat_id: CHAT_ID,
+        text: mesaj
+      })
+    });
+  }catch(e){
+    console.error("Telegram gönderim hatası:", e);
+  }
+}
+
 window.kayitOl = async function(){
+
   const btn = document.getElementById("kayitBtn");
 
   const ad = adBasHarfBuyut(document.getElementById("ad").value.trim());
@@ -306,6 +331,7 @@ window.kayitOl = async function(){
   }
 
   try{
+
     btn.disabled = true;
     btn.textContent = "Kaydediliyor...";
 
@@ -315,6 +341,7 @@ window.kayitOl = async function(){
     const snap = await getDoc(ref);
 
     if(snap.exists()){
+
       const eski = snap.data() || {};
       const zatenUye = eski.uyeMi === true || !!eski.sifre;
 
@@ -339,6 +366,15 @@ window.kayitOl = async function(){
         durum: "beklemede",
         updatedAt: new Date().toISOString()
       }, { merge:true });
+
+      await telegramBildirimGonder(
+`🆕 YENİ PERSONEL KAYDI
+
+👤 ${isim}
+📞 ${tel}
+
+⏳ Durum: Onay Bekliyor`
+      );
 
       localStorage.removeItem("musteriGiris");
       localStorage.removeItem("musteriAd");
@@ -366,6 +402,15 @@ window.kayitOl = async function(){
       updatedAt: new Date().toISOString()
     });
 
+    await telegramBildirimGonder(
+`🆕 YENİ PERSONEL KAYDI
+
+👤 ${isim}
+📞 ${tel}
+
+⏳ Durum: Onay Bekliyor`
+    );
+
     localStorage.removeItem("musteriGiris");
     localStorage.removeItem("musteriAd");
     localStorage.removeItem("musteriTelefon");
@@ -374,8 +419,11 @@ window.kayitOl = async function(){
     location.href = "index.html";
 
   }catch(e){
+
     console.error(e);
+
     alert("Kayıt yapılamadı: " + e.message);
+
     btn.disabled = false;
     btn.textContent = "Kayıt Ol";
   }
