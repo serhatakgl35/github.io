@@ -27,13 +27,20 @@ button.main,.btnMain{width:100%;display:block;text-align:center;background:#111;
 .tutarInput{width:105px!important;padding:8px!important;border-radius:10px!important;margin:0!important}
 .toolsRow{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end;margin-top:14px}.importBox{background:#f8fafc;border:1px dashed rgba(0,0,0,.18);border-radius:18px;padding:14px}.importActions{display:flex;gap:8px;flex-wrap:wrap}.miniBtn{background:#111;color:white;border:0;border-radius:14px;padding:11px 13px;font-weight:950;cursor:pointer}.miniBtn.green{background:#15803d}.miniMsg{font-size:13px;font-weight:800;margin-top:8px;color:#166534;min-height:18px}.searchInput{background:white!important;border:1px solid rgba(0,0,0,.12)!important;margin-bottom:0!important}
 .smsBox{background:#f8fafc;border:1px solid rgba(0,0,0,.08);border-radius:22px;padding:16px;margin-top:12px}
+.waQueueBox{display:none;background:white;border:1px solid rgba(0,0,0,.08);border-radius:18px;padding:14px;margin-top:12px;box-shadow:0 4px 12px rgba(0,0,0,.04)}
+.waQueueBox.show{display:block}
+.waProgress{font-weight:950;color:#111;margin-bottom:8px}
+.waCurrent{color:#166534;font-weight:950;margin-bottom:10px}
+.waActions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.waActions button{margin:0}
+
 .smsInfo{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:10px 0}
 .smsPill{background:white;border-radius:16px;padding:13px;font-weight:950;box-shadow:0 4px 12px rgba(0,0,0,.04)}
 .fazla,.tamam{display:inline-block;margin-top:6px;color:#166534;background:#dcfce7;padding:6px 10px;border-radius:999px;font-weight:950}
 .borc{display:inline-block;margin-top:6px;color:#991b1b;background:#fee2e2;padding:6px 10px;border-radius:999px;font-weight:950}
 .hide{display:none!important}
 @media(max-width:720px){
-.toolsRow{grid-template-columns:1fr}.importActions{display:block}.miniBtn{width:100%;margin-top:8px}
+.toolsRow{grid-template-columns:1fr}.importActions{display:block}.miniBtn{width:100%;margin-top:8px}.waActions{grid-template-columns:1fr}
 .wrap{padding:0 10px;margin:16px auto}.card{padding:16px;border-radius:20px}h1{font-size:26px}h3{font-size:17px}.topbar{padding:10px 8px}.topbar a,.topbar button{padding:8px 11px;font-size:12px}
 .grid{grid-template-columns:1fr;gap:10px}.tableWrap{overflow:visible;border-radius:0}table,thead,tbody,tr,td{display:block;width:100%}thead{display:none}tr{background:#fff;border-radius:18px;padding:10px;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,.055)}td{border:0;padding:7px 6px;font-size:13px}td::before{content:attr(data-label);display:block;font-size:11px;color:#777;font-weight:950;margin-bottom:3px}.tutarInput{width:92px!important}.small{padding:8px 9px;font-size:12px}.status{font-size:12px;padding:7px 10px}
 }
@@ -135,7 +142,17 @@ Lütfen en kısa sürede ödemenizi yapınız.
 
 Kantin10</textarea>
 
-        <button class="main" style="background:#15803d" onclick="borclularaWhatsAppGonder()">Borçlulara WhatsApp Gönder</button>
+        <button class="main" style="background:#15803d" onclick="borclularaWhatsAppGonder()">Borçluları Hazırla ve İlk Kişiyi Aç</button>
+
+        <div class="waQueueBox" id="waQueueBox">
+          <div class="waProgress" id="waProgress">Hazırlanıyor...</div>
+          <div class="waCurrent" id="waCurrent">Sıradaki kişi bekleniyor.</div>
+          <div class="waActions">
+            <button class="main" style="background:#15803d" onclick="whatsappSiradakiAc()">Sonraki Kişiye Geç</button>
+            <button class="main" style="background:#4b5563" onclick="whatsappSirayiSifirla()">Sırayı Sıfırla</button>
+          </div>
+        </div>
+
         <div id="smsMsg" class="miniMsg"></div>
       </div>
 
@@ -228,6 +245,10 @@ function csvSatir(arr){return arr.map(csvEscape).join(";");}
 let sonRaporSatirlari=[];
 let sonRaporOzet=null;
 let aktifDonemTutari=VARSAYILAN_AIDAT;
+let whatsappKuyruk=[];
+let whatsappIndex=0;
+let whatsappAktifDonem="";
+let whatsappMesajSablon="";
 
 async function adminMi(user){try{const snap=await getDoc(doc(db,"admins",user.uid));if(!snap.exists())return false;const d=snap.data()||{};return d.aktif===true&&(!d.role||d.role==="admin");}catch(e){console.error("Admin kontrol hatası",e);return false;}}
 function getAd(p){return p.isim||p.adSoyad||p.ad||p.name||p.fullName||"İsimsiz Personel";}
@@ -296,19 +317,108 @@ window.adminListele=async function(){
   document.getElementById("adminOzet").innerHTML=`<div class="card"><h3>Bu Dönem Aidatı</h3><h1>${aktifDonemTutari} TL</h1></div><div class="card"><h3>Ödendi</h3><h1>${say.odendi}</h1></div><div class="card"><h3>Ödeme Bekliyor</h3><h1>${say.odeme_bekliyor}</h1></div><div class="card"><h3>Reddedildi</h3><h1>${say.reddedildi}</h1></div><div class="card"><h3>Beklenen Toplam</h3><h1>${toplamBeklenen} TL</h1></div><div class="card"><h3>Bu Dönem Ödenen</h3><h1>${toplamOdenen} TL</h1></div><div class="card"><h3>Geçmiş Bakiye</h3><h1>${bakiyeText(toplamGecmisNet)}</h1></div><div class="card"><h3>Genel Bakiye</h3><h1>${bakiyeText(toplamGenelNet)}</h1></div>`;
 };
 
+function whatsappDurumCiz(){
+  const box=document.getElementById("waQueueBox");
+  const progress=document.getElementById("waProgress");
+  const current=document.getElementById("waCurrent");
+
+  if(!box||!progress||!current)return;
+
+  if(!whatsappKuyruk.length){
+    box.classList.remove("show");
+    progress.textContent="Hazır değil";
+    current.textContent="Sıradaki kişi yok.";
+    return;
+  }
+
+  box.classList.add("show");
+
+  const toplam=whatsappKuyruk.length;
+  const gosterilen=Math.min(whatsappIndex+1,toplam);
+  progress.textContent=`${gosterilen} / ${toplam} kişi`;
+
+  if(whatsappIndex>=toplam){
+    current.textContent="Tüm borçlu personeller için WhatsApp sohbeti açıldı.";
+  }else{
+    const kisi=whatsappKuyruk[whatsappIndex];
+    current.textContent=`Sıradaki: ${kisi.ad}`;
+  }
+}
+
+function whatsappLinkOlustur(kisi){
+  const mesaj=whatsappMesajSablon
+    .replaceAll("{AD}",kisi.ad)
+    .replaceAll("{DONEM}",donemLabel(whatsappAktifDonem));
+
+  return "https://wa.me/"+kisi.tel+"?text="+encodeURIComponent(mesaj);
+}
+
+window.whatsappSiradakiAc=function(){
+  const smsMsg=document.getElementById("smsMsg");
+
+  if(!whatsappKuyruk.length){
+    smsMsg.style.color="#991b1b";
+    smsMsg.textContent="Önce borçlu listesini hazırla.";
+    return;
+  }
+
+  if(whatsappIndex>=whatsappKuyruk.length){
+    smsMsg.style.color="#166534";
+    smsMsg.textContent="Tüm kişiler açıldı. İstersen sırayı sıfırlayıp tekrar başlatabilirsin.";
+    whatsappDurumCiz();
+    return;
+  }
+
+  const kisi=whatsappKuyruk[whatsappIndex];
+  const url=whatsappLinkOlustur(kisi);
+
+  const acilan=window.open(url,"_blank");
+
+  if(!acilan){
+    smsMsg.style.color="#991b1b";
+    smsMsg.textContent="WhatsApp penceresi açılamadı. Tarayıcı pop-up iznini kontrol et.";
+    return;
+  }
+
+  whatsappIndex++;
+  whatsappDurumCiz();
+
+  if(whatsappIndex>=whatsappKuyruk.length){
+    smsMsg.style.color="#166534";
+    smsMsg.textContent="Son kişi açıldı. Açılan WhatsApp pencerelerinde Gönder tuşuna bas.";
+  }else{
+    smsMsg.style.color="#166534";
+    smsMsg.textContent=`${kisi.ad} için WhatsApp açıldı. Mesajı gönderdikten sonra Sonraki Kişiye Geç butonuna bas.`;
+  }
+};
+
+window.whatsappSirayiSifirla=function(){
+  whatsappIndex=0;
+  whatsappDurumCiz();
+  const smsMsg=document.getElementById("smsMsg");
+  smsMsg.style.color="#166534";
+  smsMsg.textContent="WhatsApp sırası başa alındı.";
+};
+
 window.borclularaWhatsAppGonder=async function(){
   const smsMsg=document.getElementById("smsMsg");
   const mesajSablon=(document.getElementById("smsMesaj").value||"").trim();
   if(!mesajSablon){alert("WhatsApp mesajı boş olamaz.");return;}
 
-  const emin=confirm("Seçili dönemde ödeme bekleyen personeller için WhatsApp mesajları hazırlanacak. Devam edilsin mi?");
+  const emin=confirm("Seçili dönemde ödeme bekleyen personeller hazırlanacak. İlk kişinin WhatsApp sohbeti açılacak. Devam edilsin mi?");
   if(!emin)return;
 
   smsMsg.style.color="#166534";
   smsMsg.textContent="Borçlu personeller hazırlanıyor...";
 
+  whatsappKuyruk=[];
+  whatsappIndex=0;
+  whatsappAktifDonem=document.getElementById("adminAy").value||donemKey();
+  whatsappMesajSablon=mesajSablon;
+  whatsappDurumCiz();
+
   try{
-    const key=document.getElementById("adminAy").value||donemKey();
+    const key=whatsappAktifDonem;
     const personelSnap=await getDocs(collection(db,PERSONEL_COLLECTION));
     const tumOdemeSnap=await getDocs(collection(db,ODEME_COLLECTION));
 
@@ -341,42 +451,32 @@ window.borclularaWhatsAppGonder=async function(){
       }
     });
 
+    kisiler.sort((a,b)=>a.ad.localeCompare(b.ad,"tr",{sensitivity:"base"}));
+
     if(!kisiler.length){
+      whatsappKuyruk=[];
+      whatsappIndex=0;
+      whatsappDurumCiz();
       smsMsg.style.color="#991b1b";
       smsMsg.textContent="WhatsApp gönderilecek borçlu personel bulunamadı.";
       alert("Borçlu personel bulunamadı.");
       return;
     }
 
+    whatsappKuyruk=kisiler;
+    whatsappIndex=0;
+    whatsappDurumCiz();
+
     smsMsg.style.color="#166534";
-    smsMsg.textContent=kisiler.length+" kişi bulundu. WhatsApp pencereleri sırayla açılıyor...";
+    smsMsg.textContent=`${kisiler.length} borçlu personel hazırlandı. İlk kişi açılıyor...`;
 
-    let i=0;
-    function sonrakiAc(){
-      if(i>=kisiler.length){
-        smsMsg.textContent="Tüm WhatsApp mesajları hazırlandı. Açılan pencerelerde Gönder tuşuna basman yeterli.";
-        return;
-      }
-
-      const kisi=kisiler[i];
-      const mesaj=mesajSablon
-        .replaceAll("{AD}",kisi.ad)
-        .replaceAll("{DONEM}",donemLabel(key));
-      const url="https://wa.me/"+kisi.tel+"?text="+encodeURIComponent(mesaj);
-      window.open(url,"_blank");
-      i++;
-
-      if(i<kisiler.length){
-        setTimeout(sonrakiAc,1200);
-      }else{
-        smsMsg.textContent=kisiler.length+" WhatsApp mesajı hazırlandı. Açılan pencerelerde Gönder tuşuna bas.";
-      }
-    }
-
-    sonrakiAc();
+    setTimeout(()=>window.whatsappSiradakiAc(),250);
 
   }catch(err){
     console.error(err);
+    whatsappKuyruk=[];
+    whatsappIndex=0;
+    whatsappDurumCiz();
     smsMsg.style.color="#991b1b";
     smsMsg.textContent="WhatsApp hazırlamada hata oluştu: "+err.message;
     alert("WhatsApp mesajı hazırlanamadı: "+err.message);
