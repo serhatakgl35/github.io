@@ -334,18 +334,18 @@ window.kayitOl = async function(){
         telefon: tel,
         sifre: sifre,
         uyeMi: true,
-        aktif: true,
-        active: true,
-        durum: "aktif",
+        aktif: false,
+        active: false,
+        durum: "beklemede",
         updatedAt: new Date().toISOString()
       }, { merge:true });
 
-      localStorage.setItem("musteriGiris","true");
-      localStorage.setItem("musteriAd",isim);
-      localStorage.setItem("musteriTelefon",tel);
+      localStorage.removeItem("musteriGiris");
+      localStorage.removeItem("musteriAd");
+      localStorage.removeItem("musteriTelefon");
 
-      alert("Şifren oluşturuldu. Artık giriş yapabilirsin.");
-      location.href = "randevu.html";
+      alert("Kayıt alındı. Hesabınız admin onayı bekliyor.");
+      location.href = "index.html";
       return;
     }
 
@@ -359,19 +359,19 @@ window.kayitOl = async function(){
       telefon: tel,
       sifre: sifre,
       uyeMi: true,
-      aktif: true,
-      active: true,
-      durum: "aktif",
+      aktif: false,
+      active: false,
+      durum: "beklemede",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
 
-    localStorage.setItem("musteriGiris","true");
-    localStorage.setItem("musteriAd",isim);
-    localStorage.setItem("musteriTelefon",tel);
+    localStorage.removeItem("musteriGiris");
+    localStorage.removeItem("musteriAd");
+    localStorage.removeItem("musteriTelefon");
 
-    alert("Kayıt başarılı.");
-    location.href = "randevu.html";
+    alert("Kayıt alındı. Hesabınız admin onayı bekliyor.");
+    location.href = "index.html";
 
   }catch(e){
     console.error(e);
