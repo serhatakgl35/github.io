@@ -45,14 +45,7 @@
     .yok{background:#fee2e2;color:#991b1b}
     .log{white-space:pre-wrap;background:#0b1220;color:#d1fae5;border-radius:18px;padding:14px;min-height:120px;font-size:12px;overflow:auto}
     .small{font-size:12px;color:var(--muted)}
-    @media(max-width:850px){
-      .grid{grid-template-columns:1fr}
-      .stats{grid-template-columns:repeat(2,1fr)}
-      .topin{align-items:flex-start}
-      .topin .row{justify-content:flex-end}
-      .btn{padding:10px 12px}
-      .card{padding:16px}
-    }
+    @media(max-width:850px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.topin{align-items:flex-start}.topin .row{justify-content:flex-end}.btn{padding:10px 12px}.card{padding:16px}}
   </style>
 </head>
 <body>
@@ -74,10 +67,7 @@
     <section class="grid">
       <div class="card">
         <h2>Dosya Yükle</h2>
-        <p class="muted">
-          Depo programından aldığın <b>CSV, XLS veya XLSX</b> dosyasını buraya yükle.
-          Başlıklar otomatik eşleştirilmeye çalışılır.
-        </p>
+        <p class="muted">Depo programından aldığın <b>CSV, XLS veya XLSX</b> dosyasını buraya yükle. Excel’de <b>Görsel</b> veya <b>Görsel URL</b> sütunu varsa Drive linki otomatik dönüştürülür.</p>
 
         <div class="drop" id="drop">
           <div style="font-size:42px">📦</div>
@@ -106,10 +96,7 @@
 
       <div class="card">
         <h2>Admin Girişi</h2>
-        <p class="muted">
-          Bu sayfa müşteriye açık olmamalı. Giriş yapan kullanıcının UID bilgisi
-          Firestore <b>admins</b> koleksiyonunda varsa aktarım aktif olur.
-        </p>
+        <p class="muted">Bu sayfa müşteriye açık olmamalı. Giriş yapan kullanıcının UID bilgisi Firestore <b>admins</b> koleksiyonunda varsa aktarım aktif olur.</p>
 
         <div id="loginBox">
           <input id="email" class="input" placeholder="E-posta" style="width:100%;margin-bottom:10px">
@@ -184,7 +171,6 @@
     let products = [];
     let currentUser = null;
     let isAdmin = false;
-    let adminChecked = false;
 
     const $ = id => document.getElementById(id);
 
@@ -223,6 +209,23 @@
       return "";
     }
 
+    function fixDriveUrl(url) {
+      url = String(url || "").trim();
+      if (!url) return "";
+
+      let match = url.match(/\/file\/d\/([^/]+)/);
+      if (match && match[1]) {
+        return "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w800";
+      }
+
+      match = url.match(/[?&]id=([^&]+)/);
+      if (match && match[1] && url.includes("drive.google.com")) {
+        return "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w800";
+      }
+
+      return url;
+    }
+
     function slugify(s) {
       return key(s)
         .replace(/[^a-z0-9]+/g, "-")
@@ -238,7 +241,6 @@
 
     async function checkAdminByUid(user) {
       isAdmin = false;
-      adminChecked = false;
 
       if (!user) {
         $("adminStatus").textContent = "";
@@ -267,7 +269,6 @@
         alert("Admin yetkisi kontrol edilemedi: " + e.message);
       }
 
-      adminChecked = true;
       render();
     }
 
@@ -309,6 +310,26 @@
           "Kod"
         ]));
 
+        const rawImage = norm(findVal(r, [
+          "Görsel",
+          "Gorsel",
+          "Görsel URL",
+          "Gorsel URL",
+          "Görsel Link",
+          "Gorsel Link",
+          "Resim",
+          "Resim URL",
+          "Resim Link",
+          "Image",
+          "Image URL",
+          "Foto",
+          "Foto URL",
+          "Fotoğraf",
+          "Fotograf",
+          "Fotoğraf URL",
+          "Fotograf URL"
+        ]));
+
         return {
           id: slugify(name + "-" + barkod),
           ad: name,
@@ -328,13 +349,7 @@
             "Satış Fiyatı",
             "Qiymet"
           ])),
-          gorselUrl: norm(findVal(r, [
-            "Görsel",
-            "Gorsel",
-            "Resim",
-            "Image",
-            "Foto"
-          ])) || "",
+          gorselUrl: fixDriveUrl(rawImage),
           aktif: true,
           updatedAt: null
         };
@@ -401,7 +416,11 @@
 
       products = mapRows(rows);
 
+      const imageCount = products.filter(p => p.gorselUrl).length;
+
       log(`Dosya okundu: ${file.name} / ${products.length} ürün`);
+      log(`Görsel URL bulunan ürün: ${imageCount}`);
+
       render();
     }
 
@@ -445,7 +464,6 @@
     onAuthStateChanged(auth, async user => {
       currentUser = user;
       isAdmin = false;
-      adminChecked = false;
 
       $("loginBox").style.display = user ? "none" : "block";
       $("userBox").style.display = user ? "block" : "none";
