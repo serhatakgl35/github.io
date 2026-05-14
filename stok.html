@@ -109,6 +109,7 @@ function sayfayiKur(){
       <input id="search" class="input" placeholder="Ürün adı veya barkod ara...">
       <select id="cat"><option value="">Tüm kategoriler</option></select>
       <select id="stock">
+        <option value="mevcut" selected>Stokta olanlar</option>
         <option value="">Tüm stoklar</option>
         <option value="ok">Stokta var</option>
         <option value="az">Az kaldı</option>
@@ -160,7 +161,7 @@ function render(){
 
   const filtered=products.filter(p=>{
     const ss=st(p.miktar)[0];
-    return(!q||key(p.ad).includes(q)||key(p.barkod).includes(q))&&(!c||(p.kategori||"Genel")===c)&&(!sf||ss===sf);
+    return(!q||key(p.ad).includes(q)||key(p.barkod).includes(q))&&(!c||(p.kategori||"Genel")===c)&&(!sf||(sf==="mevcut"?ss!=="yok":ss===sf));
   });
 
   $("countBadge").textContent=filtered.length+" ürün";
