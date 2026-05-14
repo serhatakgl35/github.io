@@ -68,7 +68,7 @@
       margin: 0 0 14px;
     }
 
-    input, select, button {
+    input, button {
       width: 100%;
       padding: 13px;
       border-radius: 14px;
@@ -97,12 +97,6 @@
       background: #087f23;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
     .hidden {
       display: none !important;
     }
@@ -114,6 +108,17 @@
       font-weight: 700;
       margin-top: 10px;
       white-space: pre-wrap;
+    }
+
+    .info-box {
+      background: #f1f1f4;
+      border: 1px solid #e2e2e7;
+      color: #555;
+      padding: 13px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 12px;
     }
 
     .table-wrap {
@@ -150,32 +155,8 @@
       font-size: 12px;
     }
 
-    .closed-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .item {
-      background: #fff;
-      padding: 12px;
-      border-radius: 16px;
-      border: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .item button {
-      width: auto;
-      padding: 9px 12px;
-      margin: 0;
-    }
-
     @media (max-width: 700px) {
       .wrap { padding: 12px; }
-      .grid, .closed-list { grid-template-columns: 1fr; }
       h1 { font-size: 24px; }
       .topbar {
         justify-content: flex-start;
@@ -220,11 +201,15 @@
       <div class="card">
         <h1>Kantin10 Admin Paneli</h1>
         <div id="adminInfo" class="status"></div>
+        <div class="info-box">
+          Read azaltma aktif: Bu sayfa açıldığında randevu kayıtları otomatik yüklenmez. 
+          Sadece ilgili butona bastığında Firestore okuması yapılır.
+        </div>
       </div>
 
       <div class="card">
         <h2>Randevular</h2>
-        <button id="refreshBtn">Randevuları Yenile</button>
+        <button id="refreshBtn">Aktif Randevuları Yükle / Yenile</button>
         <button id="movePastBtn" class="green">Süresi Geçen Randevuları Geçmişe Taşı</button>
         <div class="table-wrap">
           <table>
@@ -240,16 +225,18 @@
               </tr>
             </thead>
             <tbody id="appointmentsBody">
-              <tr><td colspan="7">Yükleniyor...</td></tr>
+              <tr><td colspan="7">Veriler henüz yüklenmedi. Okuma yapmak için butona bas.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-
       <div class="card">
         <h2>Geçmiş Randevular</h2>
-        <button id="refreshPastBtn" class="gray">Geçmiş Randevuları Yenile</button>
+        <div class="info-box">
+          Geçmiş randevular otomatik yüklenmez. Butona basınca en fazla son 50 kayıt okunur.
+        </div>
+        <button id="refreshPastBtn" class="gray">Son 50 Geçmiş Randevuyu Yükle</button>
         <div class="table-wrap">
           <table>
             <thead>
@@ -264,38 +251,10 @@
               </tr>
             </thead>
             <tbody id="pastAppointmentsBody">
-              <tr><td colspan="7">Yükleniyor...</td></tr>
+              <tr><td colspan="7">Geçmiş kayıtlar henüz yüklenmedi.</td></tr>
             </tbody>
           </table>
         </div>
-      </div>
-      <div class="card">
-        <h2>Gün Kapat</h2>
-        <div class="grid">
-          <input id="closedDayDate" type="date" />
-          <button id="closeDayBtn">Bu Günü Kapat</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Saat Kapat</h2>
-        <div class="grid">
-          <input id="closedHourDate" type="date" />
-          <select id="closedHourTime">
-            <option value="">Saat seç</option>
-          </select>
-        </div>
-        <button id="closeHourBtn">Bu Saati Kapat</button>
-      </div>
-
-      <div class="card">
-        <h2>Kapalı Günler</h2>
-        <div id="closedDaysList" class="closed-list"></div>
-      </div>
-
-      <div class="card">
-        <h2>Kapalı Saatler</h2>
-        <div id="closedHoursList" class="closed-list"></div>
       </div>
 
       <div id="mainStatus" class="status hidden"></div>
@@ -321,7 +280,8 @@
       setDoc,
       deleteDoc,
       query,
-      orderBy
+      orderBy,
+      limit
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -337,11 +297,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const SAATLER = [
-      "08:20", "09:00", "09:50", "10:30", "11:20",
-      "13:20", "14:00", "14:50", "15:30", "16:20"
-    ];
-
     const topbar = document.getElementById("topbar");
     const loginCard = document.getElementById("loginCard");
     const adminPanel = document.getElementById("adminPanel");
@@ -352,22 +307,12 @@
 
     const appointmentsBody = document.getElementById("appointmentsBody");
     const pastAppointmentsBody = document.getElementById("pastAppointmentsBody");
-    const closedHourTime = document.getElementById("closedHourTime");
-    const closedDaysList = document.getElementById("closedDaysList");
-    const closedHoursList = document.getElementById("closedHoursList");
-
-    SAATLER.forEach(saat => {
-      const opt = document.createElement("option");
-      opt.value = saat;
-      opt.textContent = saat;
-      closedHourTime.appendChild(opt);
-    });
 
     function showStatus(msg, error = false) {
       mainStatus.classList.remove("hidden");
       mainStatus.style.background = error ? "#ffe5e5" : "#e8f5e9";
       mainStatus.textContent = msg;
-      setTimeout(() => mainStatus.classList.add("hidden"), 3500);
+      setTimeout(() => mainStatus.classList.add("hidden"), 4500);
     }
 
     function showLoginStatus(msg) {
@@ -423,8 +368,6 @@
           const tarih = normalizeDate(getField(data, ["tarih", "date", "randevuTarihi", "randevu_tarihi"]));
           const saat = normalizeTime(getField(data, ["saat", "zaman", "time", "randevuSaati", "randevu_saati"]));
 
-          // Boş/eksik sistem kayıtlarını gizle.
-          // Örnek: sadece telegramHatirlatma10Gonderildi alanı olan kayıtlar tabloda görünmez.
           if (!tarih || !saat) return;
 
           const isim = getField(data, ["isim", "name", "ad", "adSoyad", "ad_soyad", "musteriAdi", "musteri_adi"], "-");
@@ -446,7 +389,7 @@
         list.sort((a, b) => `${a.tarih} ${a.saat}`.localeCompare(`${b.tarih} ${b.saat}`));
 
         if (list.length === 0) {
-          appointmentsBody.innerHTML = `<tr><td colspan="7">Aktif randevu yok veya eksik/boş kayıtlar gizlendi.</td></tr>`;
+          appointmentsBody.innerHTML = `<tr><td colspan="7">Aktif randevu yok veya eksik kayıtlar gizlendi.</td></tr>`;
           return;
         }
 
@@ -483,12 +426,27 @@
       }
     }
 
-
     async function loadPastAppointments() {
-      pastAppointmentsBody.innerHTML = `<tr><td colspan="7">Yükleniyor...</td></tr>`;
+      pastAppointmentsBody.innerHTML = `<tr><td colspan="7">Son 50 geçmiş randevu yükleniyor...</td></tr>`;
 
       try {
-        const snap = await getDocs(collection(db, "randevu_gecmisi"));
+        let snap;
+
+        try {
+          const q = query(
+            collection(db, "randevu_gecmisi"),
+            orderBy("tarih", "desc"),
+            limit(50)
+          );
+          snap = await getDocs(q);
+        } catch (e) {
+          const q = query(
+            collection(db, "randevu_gecmisi"),
+            limit(50)
+          );
+          snap = await getDocs(q);
+        }
+
         const list = [];
 
         snap.forEach(d => {
@@ -497,7 +455,6 @@
           const tarih = normalizeDate(getField(data, ["tarih", "date", "randevuTarihi", "randevu_tarihi"]));
           const saat = normalizeTime(getField(data, ["saat", "zaman", "time", "randevuSaati", "randevu_saati"]));
 
-          // Boş/eksik sistem kayıtlarını gizle.
           if (!tarih || !saat) return;
 
           const isim = getField(data, ["isim", "name", "ad", "adSoyad", "ad_soyad", "musteriAdi", "musteri_adi"], "-");
@@ -519,7 +476,7 @@
         list.sort((a, b) => `${b.tarih} ${b.saat}`.localeCompare(`${a.tarih} ${a.saat}`));
 
         if (list.length === 0) {
-          pastAppointmentsBody.innerHTML = `<tr><td colspan="7">Geçmiş randevu yok veya eksik/boş kayıtlar gizlendi.</td></tr>`;
+          pastAppointmentsBody.innerHTML = `<tr><td colspan="7">Geçmiş randevu yok veya kayıtlar eksik.</td></tr>`;
           return;
         }
 
@@ -556,78 +513,6 @@
       }
     }
 
-    async function loadClosedDays() {
-      closedDaysList.innerHTML = "Yükleniyor...";
-
-      try {
-        const snap = await getDocs(collection(db, "kapali_gunler"));
-        closedDaysList.innerHTML = "";
-
-        if (snap.empty) {
-          closedDaysList.innerHTML = "<div>Kapalı gün yok.</div>";
-          return;
-        }
-
-        snap.forEach(d => {
-          const item = document.createElement("div");
-          item.className = "item";
-          item.innerHTML = `
-            <strong>${escapeHtml(d.id)}</strong>
-            <button class="danger">Aç</button>
-          `;
-
-          item.querySelector("button").addEventListener("click", async () => {
-            await deleteDoc(doc(db, "kapali_gunler", d.id));
-            showStatus("Kapalı gün açıldı.");
-            loadClosedDays();
-          });
-
-          closedDaysList.appendChild(item);
-        });
-
-      } catch (err) {
-        closedDaysList.innerHTML = "Hata: " + escapeHtml(err.message);
-      }
-    }
-
-    async function loadClosedHours() {
-      closedHoursList.innerHTML = "Yükleniyor...";
-
-      try {
-        const snap = await getDocs(collection(db, "kapali_saatler"));
-        closedHoursList.innerHTML = "";
-
-        if (snap.empty) {
-          closedHoursList.innerHTML = "<div>Kapalı saat yok.</div>";
-          return;
-        }
-
-        snap.forEach(d => {
-          const data = d.data();
-          const tarih = normalizeDate(getField(data, ["tarih", "date"], "-"));
-          const saat = normalizeTime(getField(data, ["saat", "time"], "-"));
-
-          const item = document.createElement("div");
-          item.className = "item";
-          item.innerHTML = `
-            <strong>${escapeHtml(tarih)} - ${escapeHtml(saat)}</strong>
-            <button class="danger">Aç</button>
-          `;
-
-          item.querySelector("button").addEventListener("click", async () => {
-            await deleteDoc(doc(db, "kapali_saatler", d.id));
-            showStatus("Kapalı saat açıldı.");
-            loadClosedHours();
-          });
-
-          closedHoursList.appendChild(item);
-        });
-
-      } catch (err) {
-        closedHoursList.innerHTML = "Hata: " + escapeHtml(err.message);
-      }
-    }
-
     function parseAppointmentDateTime(tarih, saat) {
       const t = normalizeDate(tarih);
       const s = normalizeTime(saat);
@@ -641,49 +526,13 @@
     function randevuSuresiGectiMi(tarih, saat) {
       const dt = parseAppointmentDateTime(tarih, saat);
       if (!dt) return false;
-      const limit = new Date(dt);
-      limit.setMinutes(limit.getMinutes() + 1);
-      return new Date() >= limit;
-    }
-
-    function iptalKaydiMi(data) {
-      const durum = String(getField(data, ["durum", "status"], "")).toLowerCase();
-      const iptalEden = String(getField(data, ["iptalEden", "iptal_eden"], "")).toLowerCase();
-      return durum === "iptal" || durum === "cancelled" || durum === "canceled" || iptalEden === "berber";
-    }
-
-    async function istatistikleriGecmistenYenidenSay() {
-      const snap = await getDocs(collection(db, "randevu_gecmisi"));
-      const gunlukSayilar = {};
-
-      snap.forEach(d => {
-        const data = d.data() || {};
-        const tarih = normalizeDate(getField(data, ["tarih", "date", "randevuTarihi", "randevu_tarihi"]));
-        const saat = normalizeTime(getField(data, ["saat", "zaman", "time", "randevuSaati", "randevu_saati"]));
-
-        // Eksik kayıtları ve berber/admin iptal kayıtlarını istatistiğe katma.
-        if (!tarih || !saat) return;
-        if (iptalKaydiMi(data)) return;
-
-        gunlukSayilar[tarih] = (gunlukSayilar[tarih] || 0) + 1;
-      });
-
-      const tarihListesi = Object.keys(gunlukSayilar);
-
-      for (const tarih of tarihListesi) {
-        await setDoc(doc(db, "istatistikler", tarih), {
-          tarih,
-          toplam: Number(gunlukSayilar[tarih] || 0),
-          updatedAt: new Date().toISOString(),
-          hesaplamaKaynak: "randevu_gecmisi_yeniden_sayim"
-        });
-      }
-
-      return tarihListesi.length;
+      const limitDate = new Date(dt);
+      limitDate.setMinutes(limitDate.getMinutes() + 1);
+      return new Date() >= limitDate;
     }
 
     async function gecmisRandevularaTasi() {
-      if (!confirm("Süresi geçen randevular randevu_gecmisi içine taşınacak ve aktif randevulardan silinecek. Devam edilsin mi?")) return;
+      if (!confirm("Süresi geçen randevular geçmişe taşınacak. Bu işlem sadece butona basınca okuma yapar. Devam edilsin mi?")) return;
 
       const btn = document.getElementById("movePastBtn");
       btn.disabled = true;
@@ -721,47 +570,17 @@
           tasinan++;
         }
 
-        const guncellenenGun = await istatistikleriGecmistenYenidenSay();
-        showStatus(`${tasinan} randevu geçmişe taşındı. ${atlanan} kayıt atlandı. İstatistikler geçmiş randevulardan yeniden sayıldı (${guncellenenGun} gün).`);
+        showStatus(`${tasinan} randevu geçmişe taşındı. ${atlanan} kayıt atlandı. İstatistik yeniden sayımı yapılmadı, böylece ekstra read engellendi.`);
         await loadAppointments();
-        await loadPastAppointments();
+
+        pastAppointmentsBody.innerHTML = `<tr><td colspan="7">Geçmiş liste güncellenmiş olabilir. Görmek için "Son 50 Geçmiş Randevuyu Yükle" butonuna bas.</td></tr>`;
+
       } catch (err) {
         showStatus("Geçmişe taşıma hatası: " + err.message, true);
       } finally {
         btn.disabled = false;
         btn.textContent = "Süresi Geçen Randevuları Geçmişe Taşı";
       }
-    }
-
-    async function closeDay() {
-      const tarih = document.getElementById("closedDayDate").value;
-      if (!tarih) return showStatus("Önce tarih seç.", true);
-
-      await setDoc(doc(db, "kapali_gunler", tarih), {
-        tarih,
-        createdAt: new Date().toISOString()
-      });
-
-      showStatus("Gün kapatıldı.");
-      loadClosedDays();
-    }
-
-    async function closeHour() {
-      const tarih = document.getElementById("closedHourDate").value;
-      const saat = document.getElementById("closedHourTime").value;
-
-      if (!tarih || !saat) return showStatus("Tarih ve saat seç.", true);
-
-      const id = `${tarih}_${saat.replace(":", "-")}`;
-
-      await setDoc(doc(db, "kapali_saatler", id), {
-        tarih,
-        saat,
-        createdAt: new Date().toISOString()
-      });
-
-      showStatus("Saat kapatıldı.");
-      loadClosedHours();
     }
 
     function escapeHtml(str) {
@@ -777,10 +596,20 @@
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
+      if (!email || !password) {
+        return showLoginStatus("E-posta ve şifre gir.");
+      }
+
       try {
         await signInWithEmailAndPassword(auth, email, password);
       } catch (err) {
         showLoginStatus("Giriş başarısız: " + err.message);
+      }
+    });
+
+    document.getElementById("password").addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        document.getElementById("loginBtn").click();
       }
     });
 
@@ -791,8 +620,6 @@
     document.getElementById("refreshBtn").addEventListener("click", loadAppointments);
     document.getElementById("movePastBtn").addEventListener("click", gecmisRandevularaTasi);
     document.getElementById("refreshPastBtn").addEventListener("click", loadPastAppointments);
-    document.getElementById("closeDayBtn").addEventListener("click", closeDay);
-    document.getElementById("closeHourBtn").addEventListener("click", closeHour);
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -819,10 +646,8 @@
 
       adminInfo.textContent = `Giriş yapıldı: ${user.email}`;
 
-      await loadAppointments();
-      await loadPastAppointments();
-      await loadClosedDays();
-      await loadClosedHours();
+      appointmentsBody.innerHTML = `<tr><td colspan="7">Aktif randevuları görmek için "Aktif Randevuları Yükle / Yenile" butonuna bas.</td></tr>`;
+      pastAppointmentsBody.innerHTML = `<tr><td colspan="7">Geçmiş randevuları görmek için "Son 50 Geçmiş Randevuyu Yükle" butonuna bas.</td></tr>`;
     });
   </script>
 
