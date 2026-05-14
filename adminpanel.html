@@ -269,14 +269,7 @@
     <div id="panel" class="hidden">
       <div class="hero" id="dashboardHero">
         <h1>Yönetim Merkezi</h1>
-        <div class="muted">Sadeleştirilmiş admin paneli. En çok kullanılan sayfalara kartlardan ulaşabilirsin.</div>
-
-        <div class="quick-row">
-          <div class="quick"><b id="personelSayisi">0</b><span>Personel</span></div>
-          <div class="quick"><b id="aktifRandevu">0</b><span>Aktif Randevu</span></div>
-          <div class="quick"><b id="gecmisRandevu">0</b><span>Geçmiş Randevu</span></div>
-          <div class="quick"><b>✓</b><span>Panel Aktif</span></div>
-        </div>
+        <div class="muted">Az okuma modu aktif. Sayfalar yalnızca kartına basınca yüklenir; ana panelde sayaç verisi çekilmez.</div>
       </div>
 
       <div class="card" id="dashboardPanel">
@@ -365,7 +358,7 @@
           </div>
         </div>
         <div class="frame-wrap">
-          <iframe id="panelFrame" title="Admin iç panel"></iframe>
+          <iframe id="panelFrame" title="Admin iç panel" loading="lazy"></iframe>
         </div>
       </div>
     </div>
@@ -374,7 +367,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBUzlpulUCX3OAg2vBjGvHKZQbkswWPxE4",
@@ -486,21 +479,6 @@
       return d.aktif === true && (!d.role || d.role === "admin");
     }
 
-    async function sayiYukle(){
-      async function say(k){
-        try{
-          const s = await getDocs(collection(db,k));
-          return s.size;
-        }catch(e){
-          return 0;
-        }
-      }
-
-      document.getElementById("personelSayisi").textContent = await say("personeller");
-      document.getElementById("aktifRandevu").textContent = await say("randevular");
-      document.getElementById("gecmisRandevu").textContent = await say("randevu_gecmisi");
-    }
-
     window.sekmeAc = function(key){
       aktifKey = key;
       const bilgi = SAYFALAR[key] || SAYFALAR.dashboard;
@@ -595,8 +573,6 @@
       loginCard.classList.add("hidden");
       topbar.classList.remove("hidden");
       panel.classList.remove("hidden");
-
-      await sayiYukle();
 
       const hash = (location.hash || "#dashboard").replace("#","");
       window.sekmeAc(SAYFALAR[hash] ? hash : "dashboard");
