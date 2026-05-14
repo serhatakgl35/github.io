@@ -44,6 +44,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
@@ -52,8 +53,8 @@ const firebaseConfig={
   projectId:"berber-randevu-14f7f",
   storageBucket:"berber-randevu-14f7f.firebasestorage.app",
   messagingSenderId:"280530860977",
-  appId:"1:280530860977:web:52c0df04c228896f211b90"
-};
+  appId:"1:280530860977:web:52c0df04c228896f211b90",
+  measurementId: "G-NK6DBBQQNZ"};
 
 const GIRIS_SAYFASI="index.html";
 const PANEL_SAYFASI="panel.html";
@@ -61,6 +62,7 @@ const FIYAT_GOSTER=false;
 const STOK_ADEDI_GOSTER=true;
 
 const app=initializeApp(firebaseConfig);
+getAnalytics(app);
 const db=getFirestore(app);
 let products=[];
 
